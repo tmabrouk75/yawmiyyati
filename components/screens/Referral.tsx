@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -6,7 +6,7 @@ import { useLang } from '@/contexts/LanguageContext'
 import { cn } from '@/lib/utils'
 import { REFERRAL_COSTS, REFERRAL_RULES } from '@/lib/referral'
 
-// ─── Types ────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface ReferralData {
   referralCode:   string
   referralPoints: number
@@ -29,7 +29,7 @@ interface ReferralData {
   }>
 }
 
-// ─── Translations ─────────────────────────────────────────
+// â”€â”€â”€ Translations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const T = {
   en: {
     title:        'Referrals & Points',
@@ -43,7 +43,7 @@ const T = {
     invitePh:     'friend@email.com',
     inviteBtn:    'Send Invite',
     sending:      'Sending...',
-    sentOk:       'Sent ✓',
+    sentOk:       'Sent âœ“',
     inviteErr:    'Could not send invite.',
     statsTitle:   'Your Referrals',
     total:        'Total',
@@ -58,64 +58,64 @@ const T = {
     redeemBtn:    'Redeem',
     notEnough:    'Not enough points',
     redeeming:    'Redeeming...',
-    redeemOk:     'Done! ✓',
+    redeemOk:     'Done! âœ“',
     historyTitle: 'Redemption History',
     noHistory:    'No redemptions yet.',
     rulesTitle:   'How It Works',
     listTitle:    'Referral List',
     noReferrals:  'No referrals yet. Share your link!',
-    statusSent:      '📨 Sent',
-    statusPending:   '⏳ Pending',
-    statusActivated: '✅ Activated',
-    back:         '‹ Back',
+    statusSent:      'ðŸ“¨ Sent',
+    statusPending:   'â³ Pending',
+    statusActivated: 'âœ… Activated',
+    back:         'â€¹ Back',
     loading:      'Loading...',
     themeSelect:  'Select a theme to unlock:',
     cancel:       'Cancel',
   },
   ar: {
-    title:        'الإحالات والنقاط',
-    balance:      'رصيد نقاطك',
-    points:       'نقطة',
-    copyLink:     'نسخ الرابط',
-    copied:       'تم النسخ!',
-    shareQR:      'عرض رمز QR',
-    hideQR:       'إخفاء QR',
-    inviteTitle:  'دعوة عبر الإيميل',
+    title:        'Ø§Ù„Ø¥Ø­Ø§Ù„Ø§Øª ÙˆØ§Ù„Ù†Ù‚Ø§Ø·',
+    balance:      'Ø±ØµÙŠØ¯ Ù†Ù‚Ø§Ø·Ùƒ',
+    points:       'Ù†Ù‚Ø·Ø©',
+    copyLink:     'Ù†Ø³Ø® Ø§Ù„Ø±Ø§Ø¨Ø·',
+    copied:       'ØªÙ… Ø§Ù„Ù†Ø³Ø®!',
+    shareQR:      'Ø¹Ø±Ø¶ Ø±Ù…Ø² QR',
+    hideQR:       'Ø¥Ø®ÙØ§Ø¡ QR',
+    inviteTitle:  'Ø¯Ø¹ÙˆØ© Ø¹Ø¨Ø± Ø§Ù„Ø¥ÙŠÙ…ÙŠÙ„',
     invitePh:     'friend@email.com',
-    inviteBtn:    'إرسال الدعوة',
-    sending:      'جارٍ الإرسال...',
-    sentOk:       'تم الإرسال ✓',
-    inviteErr:    'تعذّر الإرسال.',
-    statsTitle:   'إحالاتك',
-    total:        'الكل',
-    sent:         'مُرسَلة',
-    pending:      'في الانتظار',
-    activated:    'مفعّلة',
-    redeemTitle:  'استبدال النقاط',
-    redeemPrem:   'شهر بريميوم',
-    redeemTheme:  'فتح ثيم',
-    premCost:     '٥ نقاط',
-    themeCost:    '٢٥ نقطة',
-    redeemBtn:    'استبدال',
-    notEnough:    'نقاط غير كافية',
-    redeeming:    'جارٍ الاستبدال...',
-    redeemOk:     'تم! ✓',
-    historyTitle: 'سجل الاستبدال',
-    noHistory:    'لا يوجد استبدال بعد.',
-    rulesTitle:   'كيف يعمل النظام',
-    listTitle:    'قائمة الإحالات',
-    noReferrals:  'لا توجد إحالات بعد. شارك رابطك!',
-    statusSent:      '📨 مُرسَلة',
-    statusPending:   '⏳ في الانتظار',
-    statusActivated: '✅ مفعّلة',
-    back:         '› رجوع',
-    loading:      'جارٍ التحميل...',
-    themeSelect:  'اختر ثيماً لفتحه:',
-    cancel:       'إلغاء',
+    inviteBtn:    'Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¯Ø¹ÙˆØ©',
+    sending:      'Ø¬Ø§Ø±Ù Ø§Ù„Ø¥Ø±Ø³Ø§Ù„...',
+    sentOk:       'ØªÙ… Ø§Ù„Ø¥Ø±Ø³Ø§Ù„ âœ“',
+    inviteErr:    'ØªØ¹Ø°Ù‘Ø± Ø§Ù„Ø¥Ø±Ø³Ø§Ù„.',
+    statsTitle:   'Ø¥Ø­Ø§Ù„Ø§ØªÙƒ',
+    total:        'Ø§Ù„ÙƒÙ„',
+    sent:         'Ù…ÙØ±Ø³ÙŽÙ„Ø©',
+    pending:      'ÙÙŠ Ø§Ù„Ø§Ù†ØªØ¸Ø§Ø±',
+    activated:    'Ù…ÙØ¹Ù‘Ù„Ø©',
+    redeemTitle:  'Ø§Ø³ØªØ¨Ø¯Ø§Ù„ Ø§Ù„Ù†Ù‚Ø§Ø·',
+    redeemPrem:   'Ø´Ù‡Ø± Ø¨Ø±ÙŠÙ…ÙŠÙˆÙ…',
+    redeemTheme:  'ÙØªØ­ Ø«ÙŠÙ…',
+    premCost:     'Ù¥ Ù†Ù‚Ø§Ø·',
+    themeCost:    'Ù¢Ù¥ Ù†Ù‚Ø·Ø©',
+    redeemBtn:    'Ø§Ø³ØªØ¨Ø¯Ø§Ù„',
+    notEnough:    'Ù†Ù‚Ø§Ø· ØºÙŠØ± ÙƒØ§ÙÙŠØ©',
+    redeeming:    'Ø¬Ø§Ø±Ù Ø§Ù„Ø§Ø³ØªØ¨Ø¯Ø§Ù„...',
+    redeemOk:     'ØªÙ…! âœ“',
+    historyTitle: 'Ø³Ø¬Ù„ Ø§Ù„Ø§Ø³ØªØ¨Ø¯Ø§Ù„',
+    noHistory:    'Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ø§Ø³ØªØ¨Ø¯Ø§Ù„ Ø¨Ø¹Ø¯.',
+    rulesTitle:   'ÙƒÙŠÙ ÙŠØ¹Ù…Ù„ Ø§Ù„Ù†Ø¸Ø§Ù…',
+    listTitle:    'Ù‚Ø§Ø¦Ù…Ø© Ø§Ù„Ø¥Ø­Ø§Ù„Ø§Øª',
+    noReferrals:  'Ù„Ø§ ØªÙˆØ¬Ø¯ Ø¥Ø­Ø§Ù„Ø§Øª Ø¨Ø¹Ø¯. Ø´Ø§Ø±Ùƒ Ø±Ø§Ø¨Ø·Ùƒ!',
+    statusSent:      'ðŸ“¨ Ù…ÙØ±Ø³ÙŽÙ„Ø©',
+    statusPending:   'â³ ÙÙŠ Ø§Ù„Ø§Ù†ØªØ¸Ø§Ø±',
+    statusActivated: 'âœ… Ù…ÙØ¹Ù‘Ù„Ø©',
+    back:         'â€º Ø±Ø¬ÙˆØ¹',
+    loading:      'Ø¬Ø§Ø±Ù Ø§Ù„ØªØ­Ù…ÙŠÙ„...',
+    themeSelect:  'Ø§Ø®ØªØ± Ø«ÙŠÙ…Ø§Ù‹ Ù„ÙØªØ­Ù‡:',
+    cancel:       'Ø¥Ù„ØºØ§Ø¡',
   },
 }
 
-// ─── QR Generator component ──────────────────────────────
+// â”€â”€â”€ QR Generator component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function QRCode({ url }: { url: string }) {
   const encoded = encodeURIComponent(url)
   const src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encoded}&color=0D1F2D&bgcolor=F5F0E8&margin=10`
@@ -128,7 +128,7 @@ function QRCode({ url }: { url: string }) {
   )
 }
 
-// ─── Main Screen ──────────────────────────────────────────
+// â”€â”€â”€ Main Screen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function ReferralScreen() {
   const { lang, dir } = useLang()
   const t = T[lang]
@@ -229,14 +229,14 @@ export default function ReferralScreen() {
   return (
     <div dir={dir} className="flex flex-col min-h-full bg-gray-50 pb-10">
 
-      {/* ── TOP BAR ── */}
+      {/* â”€â”€ TOP BAR â”€â”€ */}
       <div className={cn('flex items-center justify-between px-4 pt-5 pb-3', dir === 'rtl' && 'flex-row-reverse')}>
         <button onClick={() => router.back()} className="text-[13px] text-gray-400">{t.back}</button>
         <h1 className="text-[17px] font-bold text-gray-900">{t.title}</h1>
         <div className="w-10" />
       </div>
 
-      {/* ── POINTS BALANCE ── */}
+      {/* â”€â”€ POINTS BALANCE â”€â”€ */}
       <div className="mx-4 mb-4 bg-[#0D1F2D] rounded-[16px] px-5 py-5 flex flex-col items-center">
         <p className="text-[11px] text-white/50 uppercase tracking-widest mb-1">{t.balance}</p>
         <p className="text-[52px] font-bold text-[#C9AA71] leading-none">{data?.referralPoints ?? 0}</p>
@@ -256,10 +256,10 @@ export default function ReferralScreen() {
         </div>
       </div>
 
-      {/* ── REFERRAL LINK ── */}
+      {/* â”€â”€ REFERRAL LINK â”€â”€ */}
       <div className="mx-4 mb-4 bg-white border border-gray-200 rounded-[14px] p-4">
         <p className={cn('text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-3', dir === 'rtl' && 'text-right')}>
-          {lang === 'ar' ? 'رابط الإحالة الخاص بك' : 'Your Referral Link'}
+          {lang === 'ar' ? 'Ø±Ø§Ø¨Ø· Ø§Ù„Ø¥Ø­Ø§Ù„Ø© Ø§Ù„Ø®Ø§Øµ Ø¨Ùƒ' : 'Your Referral Link'}
         </p>
         <div className={cn('flex items-center gap-2 bg-gray-50 rounded-[10px] px-3 py-2 mb-3', dir === 'rtl' && 'flex-row-reverse')}>
           <p className="flex-1 text-[12px] text-gray-600 font-mono truncate" dir="ltr">{referralLink}</p>
@@ -282,7 +282,7 @@ export default function ReferralScreen() {
         {showQR && referralLink && <QRCode url={referralLink} />}
       </div>
 
-      {/* ── INVITE BY EMAIL ── */}
+      {/* â”€â”€ INVITE BY EMAIL â”€â”€ */}
       <div className="mx-4 mb-4 bg-white border border-gray-200 rounded-[14px] p-4">
         <p className={cn('text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-3', dir === 'rtl' && 'text-right')}>{t.inviteTitle}</p>
         <div className={cn('flex gap-2', dir === 'rtl' && 'flex-row-reverse')}>
@@ -311,7 +311,7 @@ export default function ReferralScreen() {
         </div>
       </div>
 
-      {/* ── REDEEM POINTS ── */}
+      {/* â”€â”€ REDEEM POINTS â”€â”€ */}
       <div className="mx-4 mb-4 bg-white border border-gray-200 rounded-[14px] p-4">
         <p className={cn('text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-3', dir === 'rtl' && 'text-right')}>{t.redeemTitle}</p>
         <div className="flex flex-col gap-2">
@@ -319,7 +319,7 @@ export default function ReferralScreen() {
           {/* Premium month */}
           <div className={cn('flex items-center justify-between bg-amber-50 border border-amber-200 rounded-[12px] px-4 py-3', dir === 'rtl' && 'flex-row-reverse')}>
             <div className={dir === 'rtl' ? 'text-right' : ''}>
-              <p className="text-[14px] font-semibold text-amber-900">⭐ {t.redeemPrem}</p>
+              <p className="text-[14px] font-semibold text-amber-900">â­ {t.redeemPrem}</p>
               <p className="text-[11px] text-amber-600">{t.premCost}</p>
             </div>
             <button
@@ -340,7 +340,7 @@ export default function ReferralScreen() {
           {/* Theme unlock */}
           <div className={cn('flex items-center justify-between bg-purple-50 border border-purple-200 rounded-[12px] px-4 py-3', dir === 'rtl' && 'flex-row-reverse')}>
             <div className={dir === 'rtl' ? 'text-right' : ''}>
-              <p className="text-[14px] font-semibold text-purple-900">🎨 {t.redeemTheme}</p>
+              <p className="text-[14px] font-semibold text-purple-900">ðŸŽ¨ {t.redeemTheme}</p>
               <p className="text-[11px] text-purple-600">{t.themeCost}</p>
             </div>
             <button
@@ -357,18 +357,18 @@ export default function ReferralScreen() {
         </div>
       </div>
 
-      {/* ── THEME PICKER MODAL ── */}
+      {/* â”€â”€ THEME PICKER MODAL â”€â”€ */}
       {showThemePicker && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end">
           <div className="bg-white w-full rounded-t-[24px] p-5 pb-10 max-h-[70vh] overflow-y-auto">
             <p className="text-[15px] font-bold text-gray-900 mb-4">{t.themeSelect}</p>
-            {/* Simplified theme list — hardcoded keys matching the app's theme definitions */}
+            {/* Simplified theme list â€” hardcoded keys matching the app's theme definitions */}
             {[
-              { key: 'desert-gold',     label: '🌅 Desert Gold' },
-              { key: 'ocean-teal',      label: '🌊 Ocean Teal' },
-              { key: 'midnight-purple', label: '🌙 Midnight Purple' },
-              { key: 'olive-grove',     label: '🫒 Olive Grove' },
-              { key: 'rose-dawn',       label: '🌸 Rose Dawn' },
+              { key: 'desert-gold',     label: 'ðŸŒ… Desert Gold' },
+              { key: 'ocean-teal',      label: 'ðŸŒŠ Ocean Teal' },
+              { key: 'midnight-purple', label: 'ðŸŒ™ Midnight Purple' },
+              { key: 'olive-grove',     label: 'ðŸ«’ Olive Grove' },
+              { key: 'rose-dawn',       label: 'ðŸŒ¸ Rose Dawn' },
             ].map(theme => (
               <button
                 key={theme.key}
@@ -385,7 +385,7 @@ export default function ReferralScreen() {
         </div>
       )}
 
-      {/* ── REFERRAL LIST ── */}
+      {/* â”€â”€ REFERRAL LIST â”€â”€ */}
       <div className="mx-4 mb-4">
         <p className={cn('text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2', dir === 'rtl' && 'text-right tracking-normal')}>{t.listTitle}</p>
         <div className="bg-white border border-gray-200 rounded-[14px] overflow-hidden">
@@ -400,7 +400,7 @@ export default function ReferralScreen() {
                 <div className={cn('flex items-center justify-between', dir === 'rtl' && 'flex-row-reverse')}>
                   <div className={dir === 'rtl' ? 'text-right' : ''}>
                     <p className="text-[13px] font-semibold text-gray-900">
-                      {ref.referred?.name ?? ref.sentToEmail ?? '—'}
+                      {ref.referred?.name ?? ref.sentToEmail ?? 'â€”'}
                     </p>
                     <p className="text-[11px] text-gray-400">
                       {ref.referred?.email ?? ref.sentToEmail ?? ''}
@@ -421,7 +421,7 @@ export default function ReferralScreen() {
         </div>
       </div>
 
-      {/* ── HOW IT WORKS ── */}
+      {/* â”€â”€ HOW IT WORKS â”€â”€ */}
       <div className="mx-4 mb-4 bg-white border border-gray-200 rounded-[14px] p-4">
         <p className={cn('text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-3', dir === 'rtl' && 'text-right')}>{t.rulesTitle}</p>
         <ol className={cn('flex flex-col gap-2', dir === 'rtl' && 'text-right')}>
@@ -434,7 +434,7 @@ export default function ReferralScreen() {
         </ol>
       </div>
 
-      {/* ── REDEMPTION HISTORY ── */}
+      {/* â”€â”€ REDEMPTION HISTORY â”€â”€ */}
       {(data?.redemptions.length ?? 0) > 0 && (
         <div className="mx-4 mb-4">
           <p className={cn('text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2', dir === 'rtl' && 'text-right tracking-normal')}>{t.historyTitle}</p>
@@ -443,11 +443,11 @@ export default function ReferralScreen() {
               <div key={r.id} className={cn('flex items-center justify-between px-4 py-3', dir === 'rtl' && 'flex-row-reverse', i < data!.redemptions.length - 1 && 'border-b border-gray-100')}>
                 <div className={dir === 'rtl' ? 'text-right' : ''}>
                   <p className="text-[13px] font-medium text-gray-800">
-                    {r.type === 'PREMIUM_MONTH' ? '⭐ ' + t.redeemPrem : '🎨 ' + (r.themeKey ?? t.redeemTheme)}
+                    {r.type === 'PREMIUM_MONTH' ? 'â­ ' + t.redeemPrem : 'ðŸŽ¨ ' + (r.themeKey ?? t.redeemTheme)}
                   </p>
                   <p className="text-[11px] text-gray-400">{new Date(r.createdAt).toLocaleDateString()}</p>
                 </div>
-                <span className="text-[12px] font-bold text-red-400">−{r.pointsCost} pts</span>
+                <span className="text-[12px] font-bold text-red-400">âˆ’{r.pointsCost} pts</span>
               </div>
             ))}
           </div>
@@ -457,3 +457,4 @@ export default function ReferralScreen() {
     </div>
   )
 }
+
