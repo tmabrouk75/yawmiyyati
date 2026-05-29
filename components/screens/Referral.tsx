@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLang } from '@/contexts/LanguageContext'
 import { cn } from '@/lib/utils'
@@ -117,22 +117,12 @@ const T = {
 
 // ─── QR Generator component ──────────────────────────────
 function QRCode({ url }: { url: string }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-
-  useEffect(() => {
-    if (!canvasRef.current) return
-    import('qrcode').then(QR => {
-      QR.toCanvas(canvasRef.current!, url, {
-        width:  180,
-        margin: 2,
-        color:  { dark: '#0D1F2D', light: '#F5F0E8' },
-      })
-    })
-  }, [url])
+  const encoded = encodeURIComponent(url)
+  const src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encoded}&color=0D1F2D&bgcolor=F5F0E8&margin=10`
 
   return (
     <div className="flex flex-col items-center gap-2 py-4">
-      <canvas ref={canvasRef} className="rounded-[12px]" />
+      <img src={src} alt="QR Code" width={180} height={180} className="rounded-[12px]" />
       <p className="text-[11px] text-gray-400 text-center">Scan to join Yawmiyyati</p>
     </div>
   )
