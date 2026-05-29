@@ -4,7 +4,11 @@ import { prisma } from '@/lib/db/prisma'
 import { generateReferralCode } from '@/lib/referral'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+let _resend: Resend | null = null
+function getResend(): Resend {
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY || 'missing')
+  return _resend
+}
 
 // ─── GET /api/referral ────────────────────────────────────
 // Returns the current user's referral code, stats, and referral list
