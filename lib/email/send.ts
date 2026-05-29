@@ -16,7 +16,7 @@ export interface SendEmailParams {
 
 export async function sendEmail(params: SendEmailParams): Promise<{ success: boolean; id?: string }> {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from:    `${process.env.EMAIL_FROM_NAME} <${process.env.EMAIL_FROM}>`,
       to:      params.to,
       subject: params.subject,
