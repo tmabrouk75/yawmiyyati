@@ -148,6 +148,10 @@ interface PrayerState {
   duhaDone:    boolean
   witrDone:    boolean
   qiyamRakaat: number
+  // Special prayers
+  taraweehDone?: boolean
+  eidFitrDone?:  boolean
+  eidAdhaDone?:  boolean
 }
 
 // Convert two booleans ↔ FardState enum
