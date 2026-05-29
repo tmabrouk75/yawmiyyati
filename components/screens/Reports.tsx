@@ -103,7 +103,7 @@ const T = {
     loading:      'جارٍ التحميل...',
   },
 }
-
+export type ReportT = (typeof T)['en']
 const PERIODS: Period[] = ['weekly', 'monthly', 'quarterly', 'yearly']
 
 type ViewMode = 'completion' | 'streaks'
