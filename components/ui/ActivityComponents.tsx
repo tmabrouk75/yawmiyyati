@@ -58,7 +58,7 @@ export function FardCheckBox({ state, onChange, size = 'md' }: FardCheckBoxProps
 interface CheckBoxProps {
   checked:  boolean
   onChange: (val: boolean) => void
-  variant?: 'default' | 'fard' | 'azkar' | 'ramadan' | 'monday' | 'whitedays'
+  variant?: 'default' | 'fard' | 'azkar' | 'ramadan' | 'monday' | 'whitedays' | 'mosque'
   size?:    'sm' | 'md'
   disabled?: boolean
 }
