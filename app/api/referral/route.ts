@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
   })
 
   // Create SENT referral record
-  await prisma.referral.create({
+  await getResend().emails.send({
     data: {
       referrerId:  user.id,
       // referredId is required by schema — we use a placeholder until they sign up.
