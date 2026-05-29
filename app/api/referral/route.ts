@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
   const link   = `${appUrl}/register?ref=${referralCode}`
 
   // Send email
-  await resend.emails.send({
+  await getResend().emails.send({
     from:    `${process.env.EMAIL_FROM_NAME ?? 'Yawmiyyati'} <${process.env.EMAIL_FROM ?? 'noreply@yawmiyyati.com'}>`,
     to:      email,
     subject: `${user.name} invited you to Yawmiyyati — يومياتي`,
