@@ -78,6 +78,8 @@ export async function getAuthUser() {
       remindersEnabled: true,
       emailReminders: true,
       gender: true,
+      referralCode: true,
+      referralPoints: true,
     },
   })
 
