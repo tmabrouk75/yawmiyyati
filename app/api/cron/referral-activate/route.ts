@@ -39,11 +39,11 @@ export async function POST(req: NextRequest) {
     // Count distinct calendar days the referred user has a daily log
     const logs = await prisma.dailyLog.findMany({
       where:  { userId: ref.referredId },
-      select: { date: true },
+      select: { dateGregorian: true },
     })
 
     const distinctDays = new Set(
-      logs.map(l => l.date.toISOString().slice(0, 10)) // "YYYY-MM-DD"
+      logs.map(l => l.dateGregorian.toISOString().slice(0, 10)) // "YYYY-MM-DD"
     )
 
     if (distinctDays.size >= 3) {
