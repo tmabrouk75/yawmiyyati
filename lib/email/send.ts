@@ -1,7 +1,11 @@
 import { Resend } from 'resend'
 import { createHmac } from 'crypto'
 
-const resend = new Resend(process.env.RESEND_API_KEY!)
+let _resend: Resend | null = null
+function getResend(): Resend {
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY || 'missing')
+  return _resend
+}
 
 export interface SendEmailParams {
   to:      string
