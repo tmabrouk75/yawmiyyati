@@ -259,12 +259,12 @@ export default function AuthForm({ mode }: { mode: 'login' | 'register' }) {
 
       {/* Switch mode */}
       <p className={`mt-6 text-[13px] text-gray-500 ${dir === 'rtl' ? 'text-right' : 'text-center'}`}>
-        {mode === 'login' ? t.switchLogin : t.switchReg}
+        {mode === 'login' ? t.switchReg : t.switchLogin}
         <button
           onClick={() => router.push(mode === 'login' ? '/register' : '/login')}
           className="text-emerald-600 font-medium"
         >
-          {mode === 'login' ? t.switchLoginLink : t.switchRegLink}
+          {mode === 'login' ? t.switchRegLink : t.switchLoginLink}
         </button>
       </p>
 
