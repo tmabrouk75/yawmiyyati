@@ -39,8 +39,7 @@ const T = {
     promoChecking:'Checking...',
     promoOk:      (label: string) => `✓ ${label}`,
     promoErr:     'Invalid or expired code',
-    costNote:     'These prices are not for profit. They exist solely to cover the costs of keeping Yawmiyyati running — servers, email, and payment processing. We are grateful for every subscriber who helps keep this free for others. 🤲',
-  },
+},
   ar: {
     title:        'اشترك في بريميوم',
     sub:          'افتح التجربة الكاملة ليومياتي',
