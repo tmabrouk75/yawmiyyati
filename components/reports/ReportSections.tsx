@@ -3,6 +3,7 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { cn } from '@/lib/utils'
 import type { ActivityStat, StreakStat, HeatmapDay, TrendPoint } from '@/hooks/useReports'
+import type { ReportT } from '@/components/screens/Reports'
 
 // ─── COLOUR HELPERS ──────────────────────────────────────
 
@@ -34,7 +35,7 @@ export function Heatmap({
   onToggleCal: () => void
   lang: 'en' | 'ar'
   dir: 'ltr' | 'rtl'
-  t: Record<string, string>
+  t: ReportT
 }) {
   // Group by week (Sun-Sat) for grid
   const DAYS_EN = ['S','M','T','W','T','F','S']
@@ -154,7 +155,7 @@ export function ScoreCard({
   streakCurrent: number
   streakBest: number
   dir: 'ltr' | 'rtl'
-  t: Record<string, string>
+  t: ReportT
 }) {
   const circ = 2 * Math.PI * 24
   const offset = circ - (score / 100) * circ
@@ -205,7 +206,7 @@ export function CompletionCards({
   activities: ActivityStat[]
   lang: 'en' | 'ar'
   dir: 'ltr' | 'rtl'
-  t: Record<string, string>
+  t: ReportT
 }) {
   if (activities.length === 0) return null
 
@@ -262,7 +263,7 @@ export function StreakCards({
   streaks: StreakStat[]
   lang: 'en' | 'ar'
   dir: 'ltr' | 'rtl'
-  t: Record<string, string>
+  t: ReportT
 }) {
   if (streaks.length === 0) return null
 
@@ -329,7 +330,7 @@ export function FastingSummary({
   }
   lang: 'en' | 'ar'
   dir: 'ltr' | 'rtl'
-  t: Record<string, string>
+  t: ReportT
 }) {
   const rows = [
     { label: t.fastRamadan,  value: fasting.ramadanDays,    color: '#059669' },
@@ -398,7 +399,7 @@ export function CounterCard({
   trendKey: 'istighfar' | 'salawat'
   lang: 'en' | 'ar'
   dir: 'ltr' | 'rtl'
-  t: Record<string, string>
+  t: ReportT
 }) {
   const rows = [
     { label: t.today,   value: data.today },
