@@ -1,0 +1,735 @@
+// Yawmiyyati — Islamic Daily Tracker
+// Prisma Schema v1.0
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────
+// USERS
+// ─────────────────────────────────────────────────────────
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  passwordHash      String
+  name              String
+  nameAr            String?
+  avatarUrl         String?
+  language          Language  @default(EN)
+  country           String    @default("SA")   // ISO 3166-1 alpha-2 country code
+  theme             String    @default("madinah-night")
+  isAdmin           Boolean   @default(false)
+  // Paymob payment fields
+  paymobCustomerId  String?   // Paymob order/customer reference
+  isPremium         Boolean   @default(false)
+  premiumExpiresAt  DateTime?
+  passwordResetToken     String?
+  passwordResetExpiresAt DateTime?
+  onboardingDone    Boolean   @default(false)
+  remindersEnabled  Boolean   @default(true)
+  emailReminders    Boolean   @default(true)
+  gender            String?   // 'male' | 'female' — controls period toggle visibility
+  // Onboarding personalisation (collected during onboarding flow)
+  ageRange           String?    // e.g. "21-25", "26-30"
+  acquisitionChannel String?    // e.g. "INSTAGRAM", "FRIENDS", "GOOGLE"
+  commitmentFactors  String[]   // e.g. ["PRIVACY", "NO_ADS", "BEAUTIFUL"]
+  // Referral & points
+  referralCode      String?   @unique  // auto-generated 8-char code e.g. "A3K7P2XM"
+  referredByCode    String?            // code used at signup
+  referralPoints    Int       @default(0)  // current redeemable balance
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  activities        UserActivity[]
+  dailyLogs         DailyLog[]
+  prayerLogs        PrayerLog[]
+  dhikrLogs         DhikrLog[]
+  quranLogs         QuranLog[]
+  fastingLogs       FastingLog[]
+  sadaqahLogs       SadaqahLog[]
+  qadaRecords       QadaRecord[]
+  userSurahs        UserSurah[]
+  xpLogs            XpLog[]
+  badges            UserBadge[]
+  groupsOwned       Group[]          @relation("GroupOwner")
+  groupMemberships  GroupMember[]
+  purchasedThemes   UserTheme[]
+  remindersSent     ReminderLog[]
+  promoCodeUsages   PromoCodeUsage[]
+  paymentOrders     PaymentOrder[]
+  savedCards        SavedCard[]
+  subscription      Subscription?
+  referralsSent     Referral[]       @relation("ReferrerUser")
+  referralReceived  Referral?        @relation("ReferredUser")
+  pointRedemptions  PointRedemption[]
+
+  @@map("users")
+}
+
+// ─── PAYMOB — Payment Orders ──────────────────────────────
+model PaymentOrder {
+  id                   String    @id @default(cuid())
+  userId               String
+  paymobOrderId        String    @unique
+  intentionId          String?
+  paymobTransactionId  String?
+  planKey              String
+  status               String    @default("PENDING") // PENDING | COMPLETED | FAILED
+  amountCents          Int
+  currency             String    @default("EGP")
+  completedAt          DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payment_orders")
+}
+
+// ─── PAYMOB — Saved Cards for MIT renewals ────────────────
+model SavedCard {
+  id          String  @id @default(cuid())
+  userId      String
+  token       String
+  maskedPan   String
+  cardSubtype String  // Visa, MasterCard, etc.
+  planKey     String
+  isDefault   Boolean @default(true)
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, maskedPan])
+  @@map("saved_cards")
+}
+
+// ─── PAYMOB — Subscription state ─────────────────────────
+model Subscription {
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  planKey              String
+  status               String    @default("ACTIVE") // ACTIVE | CANCELLED | PAYMENT_FAILED | EXPIRED
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  paymobOrderId        String?
+  paymobTransactionId  String?
+  cancelledAt          DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+enum Language {
+  EN
+  AR
+}
+
+// ─────────────────────────────────────────────────────────
+// ACTIVITY SETTINGS (what shows on home screen)
+// ─────────────────────────────────────────────────────────
+
+model ActivityDefinition {
+  id           String         @id @default(cuid())
+  key          String         @unique
+  nameEn       String
+  nameAr       String
+  category     ActivityCategory
+  trackingType TrackingType
+  defaultOn    Boolean        @default(false)
+  canDisable   Boolean        @default(true)   // false = locked ON (Fard prayers)
+  sortOrder    Int
+
+  userActivities UserActivity[]
+
+  @@map("activity_definitions")
+}
+
+enum ActivityCategory {
+  SALAH
+  DHIKR
+  QURAN
+  FASTING
+  SADAQAH
+}
+
+enum TrackingType {
+  CHECKBOX          // simple done/not done
+  NUMBER_INPUT      // enter a number
+  SUNNAH_TRIPLE     // before/fard/after checkboxes
+  PAGES             // quran pages
+  AMOUNT            // sadaqah amount + checkbox
+}
+
+model UserActivity {
+  id                   String             @id @default(cuid())
+  userId               String
+  activityDefinitionId String
+  isEnabled            Boolean            @default(false)
+  sortOrder            Int                @default(0)
+  createdAt            DateTime           @default(now())
+
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activityDefinition ActivityDefinition @relation(fields: [activityDefinitionId], references: [id])
+
+  @@unique([userId, activityDefinitionId])
+  @@map("user_activities")
+}
+
+// ─────────────────────────────────────────────────────────
+// DAILY LOG (master record per day per user)
+// ─────────────────────────────────────────────────────────
+
+model DailyLog {
+  id             String   @id @default(cuid())
+  userId         String
+  dateGregorian  DateTime @db.Date
+  dateHijriYear  Int
+  dateHijriMonth Int
+  dateHijriDay   Int
+  completionPct  Float    @default(0)   // overall % across all enabled activities
+  salahPerfect   Boolean  @default(false) // true when all fard + enabled sunnah/witr/qiyam done
+  totalXpEarned  Int      @default(0)
+  isPeriod       Boolean  @default(false) // female users: period day — prayers exempt from streak break
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prayerLog   PrayerLog?
+  dhikrLog    DhikrLog?
+  quranLog    QuranLog?
+  fastingLog  FastingLog?
+  sadaqahLog  SadaqahLog?
+
+  @@unique([userId, dateGregorian])
+  @@map("daily_logs")
+}
+
+// ─────────────────────────────────────────────────────────
+// PRAYER LOG
+// ─────────────────────────────────────────────────────────
+
+model PrayerLog {
+  id           String   @id @default(cuid())
+  userId       String
+  dailyLogId   String   @unique
+  dateGregorian DateTime @db.Date
+
+  // Fard prayers — state: 'unchecked' | 'done' | 'qadaa'
+  fajrDone     Boolean  @default(false)
+  fajrIsQada   Boolean  @default(false)
+  dhuhrDone    Boolean  @default(false)
+  dhuhrIsQada  Boolean  @default(false)
+  asrDone      Boolean  @default(false)
+  asrIsQada    Boolean  @default(false)
+  maghribDone  Boolean  @default(false)
+  maghribIsQada Boolean @default(false)
+  ishaDone     Boolean  @default(false)
+  ishaIsQada   Boolean  @default(false)
+
+  // Sunnah rawatib (before/after per prayer)
+  fajrBefore   Boolean  @default(false)   // 2 rakaat before Fajr
+  dhuhrBefore  Boolean  @default(false)
+  dhuhrAfter   Boolean  @default(false)
+  maghribAfter Boolean  @default(false)
+  ishaAfter    Boolean  @default(false)
+  ishaBefore   Boolean  @default(false)
+
+  // Post-prayer Azkar (tasbih + dhikr after each Fard)
+  fajrAzkar    Boolean  @default(false)
+  dhuhrAzkar   Boolean  @default(false)
+  asrAzkar     Boolean  @default(false)
+  maghribAzkar Boolean  @default(false)
+  ishaAzkar    Boolean  @default(false)
+
+  // Mosque (Jama'ah) tracking — male users only
+  fajrMosque    Boolean @default(false)
+  dhuhrMosque   Boolean @default(false)
+  asrMosque     Boolean @default(false)
+  maghribMosque Boolean @default(false)
+  ishaMosque    Boolean @default(false)
+
+  // Other salah
+  duhaDone     Boolean  @default(false)
+  witrDone     Boolean  @default(false)
+  qiyamRakaat  Int      @default(0)
+  jumuahDone   Boolean  @default(false)
+  taraweehDone Boolean  @default(false)
+  eidFitrDone  Boolean  @default(false)
+  eidAdhaDone  Boolean  @default(false)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyLog DailyLog @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dateGregorian])
+  @@map("prayer_logs")
+}
+
+// ─────────────────────────────────────────────────────────
+// DHIKR LOG
+// ─────────────────────────────────────────────────────────
+
+model DhikrLog {
+  id            String   @id @default(cuid())
+  userId        String
+  dailyLogId    String   @unique
+  dateGregorian DateTime @db.Date
+
+  morningAzkarDone  Boolean @default(false)
+  eveningAzkarDone  Boolean @default(false)
+  istighfarCount    Int     @default(0)
+  salawatCount      Int     @default(0)
+  tasbihCount       Int     @default(0)   // 33×3 post-prayer tasbih count
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyLog DailyLog @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dateGregorian])
+  @@map("dhikr_logs")
+}
+
+// ─────────────────────────────────────────────────────────
+// QURAN LOG
+// ─────────────────────────────────────────────────────────
+
+model QuranLog {
+  id            String   @id @default(cuid())
+  userId        String
+  dailyLogId    String   @unique
+  dateGregorian DateTime @db.Date
+
+  pagesRead     Int     @default(0)
+  kahfDone      Boolean @default(false)  // Friday only
+
+  surahChecks   SurahDailyCheck[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyLog DailyLog @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dateGregorian])
+  @@map("quran_logs")
+}
+
+// User's list of daily Surahs
+model UserSurah {
+  id         String  @id @default(cuid())
+  userId     String
+  surahNumber Int
+  surahNameEn String
+  surahNameAr String
+  sortOrder   Int    @default(0)
+  isEnabled   Boolean @default(true)
+
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyChecks SurahDailyCheck[]
+
+  @@unique([userId, surahNumber])
+  @@map("user_surahs")
+}
+
+model SurahDailyCheck {
+  id          String   @id @default(cuid())
+  quranLogId  String
+  userSurahId String
+  isDone      Boolean  @default(false)
+
+  quranLog  QuranLog  @relation(fields: [quranLogId], references: [id], onDelete: Cascade)
+  userSurah UserSurah @relation(fields: [userSurahId], references: [id], onDelete: Cascade)
+
+  @@unique([quranLogId, userSurahId])
+  @@map("surah_daily_checks")
+}
+
+// ─────────────────────────────────────────────────────────
+// FASTING LOG
+// ─────────────────────────────────────────────────────────
+
+model FastingLog {
+  id            String      @id @default(cuid())
+  userId        String
+  dailyLogId    String      @unique
+  dateGregorian DateTime    @db.Date
+  fastingType   FastingType @default(VOLUNTARY)
+  isFasting     Boolean     @default(false)
+  isQada        Boolean     @default(false)
+  comment       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyLog DailyLog @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dateGregorian])
+  @@map("fasting_logs")
+}
+
+enum FastingType {
+  RAMADAN
+  MONDAY_THURSDAY
+  WHITE_DAYS
+  VOLUNTARY
+  QADA
+}
+
+// Qada' counter per Ramadan year
+model QadaRecord {
+  id             String   @id @default(cuid())
+  userId         String
+  ramadanYear    Int      // Hijri year e.g. 1447
+  totalOwed      Int      @default(0)
+  totalCompensated Int    @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, ramadanYear])
+  @@map("qada_records")
+}
+
+// ─────────────────────────────────────────────────────────
+// SADAQAH LOG
+// ─────────────────────────────────────────────────────────
+
+model SadaqahLog {
+  id            String   @id @default(cuid())
+  userId        String
+  dailyLogId    String   @unique
+  dateGregorian DateTime @db.Date
+  gave          Boolean  @default(false)
+  amount        Float?
+  currency      String?  @default("EGP")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyLog DailyLog @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dateGregorian])
+  @@map("sadaqah_logs")
+}
+
+// ─────────────────────────────────────────────────────────
+// GAMIFICATION
+// ─────────────────────────────────────────────────────────
+
+model XpLog {
+  id          String   @id @default(cuid())
+  userId      String
+  points      Int
+  reason      String   // e.g. "fajr_done", "perfect_day", "7_day_streak"
+  dateGregorian DateTime @db.Date
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("xp_logs")
+}
+
+model BadgeDefinition {
+  id          String      @id @default(cuid())
+  key         String      @unique
+  nameEn      String
+  nameAr      String
+  descriptionEn String
+  descriptionAr String
+  icon        String
+  category    BadgeCategory
+  triggerType String      // e.g. "perfect_day", "streak_7", "khatm"
+  triggerValue Int?       // threshold value if applicable
+
+  userBadges UserBadge[]
+
+  @@map("badge_definitions")
+}
+
+enum BadgeCategory {
+  DAILY
+  WEEKLY
+  MONTHLY
+  MILESTONE
+}
+
+model UserBadge {
+  id                String   @id @default(cuid())
+  userId            String
+  badgeDefinitionId String
+  earnedAt          DateTime @default(now())
+
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeDefinition BadgeDefinition @relation(fields: [badgeDefinitionId], references: [id])
+
+  @@unique([userId, badgeDefinitionId])
+  @@map("user_badges")
+}
+
+// ─────────────────────────────────────────────────────────
+// GROUPS
+// ─────────────────────────────────────────────────────────
+
+model Group {
+  id          String      @id @default(cuid())
+  ownerId     String
+  nameEn      String
+  nameAr      String?
+  goalType    GoalType
+  goalTarget  Float
+  goalUnit    String      // "pages", "count", "days"
+  deadline    DateTime?
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  owner       User          @relation("GroupOwner", fields: [ownerId], references: [id])
+  members     GroupMember[]
+
+  @@map("groups")
+}
+
+enum GoalType {
+  QURAN_KHATM
+  ISTIGHFAR
+  SALAWAT
+  FASTING
+  CUSTOM
+}
+
+model GroupMember {
+  id           String   @id @default(cuid())
+  groupId      String
+  userId       String
+  contribution Float    @default(0)
+  joinedAt     DateTime @default(now())
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@map("group_members")
+}
+
+// ─────────────────────────────────────────────────────────
+// THEMES
+// ─────────────────────────────────────────────────────────
+
+model ThemeDefinition {
+  id           String   @id @default(cuid())
+  key          String   @unique
+  nameEn       String
+  nameAr       String
+  isFree       Boolean  @default(false)
+  isSeasonal   Boolean  @default(false)
+  seasonStart  Int?     // Hijri month number
+  seasonEnd    Int?     // Hijri month number
+  paddlePriceId String?
+  previewColor String
+
+  userThemes UserTheme[]
+
+  @@map("theme_definitions")
+}
+
+model UserTheme {
+  id                String   @id @default(cuid())
+  userId            String
+  themeDefinitionId String
+  purchasedAt       DateTime @default(now())
+  paddleOrderId     String?
+
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  themeDefinition ThemeDefinition @relation(fields: [themeDefinitionId], references: [id])
+
+  @@unique([userId, themeDefinitionId])
+  @@map("user_themes")
+}
+
+// ─────────────────────────────────────────────────────────
+// ISLAMIC CALENDAR OVERRIDES
+// Admin sets real moon-sighting dates per event per country
+// ─────────────────────────────────────────────────────────
+
+model IslamicCalendarEvent {
+  id            String            @id @default(cuid())
+  hijriYear     Int
+  hijriMonth    Int               // 1–12
+  eventType     CalendarEventType
+  // Calculated base date (from algorithm — used as default)
+  calculatedDate DateTime         @db.Date
+  // Admin notes
+  notes         String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  countryOverrides CountryCalendarOverride[]
+
+  @@unique([hijriYear, hijriMonth, eventType])
+  @@map("islamic_calendar_events")
+}
+
+enum CalendarEventType {
+  MONTH_START   // Start of any Hijri month
+  EID_FITR      // 1 Shawwal — Eid al-Fitr
+  EID_ADHA      // 10 Dhul Hijjah — Eid al-Adha
+}
+
+model CountryCalendarOverride {
+  id                      String              @id @default(cuid())
+  islamicCalendarEventId  String
+  countryCode             String              // ISO 3166-1 alpha-2 e.g. "SA", "EG"
+  // dayOffset: 0 = same as calculated, 1 = +1 day, 2 = +2 days, -1 = -1 day
+  dayOffset               Int                 @default(0)
+  confirmedDate           DateTime            @db.Date
+  source                  String?             // e.g. "Official announcement", "Moon sighting committee"
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+
+  event IslamicCalendarEvent @relation(fields: [islamicCalendarEventId], references: [id], onDelete: Cascade)
+
+  @@unique([islamicCalendarEventId, countryCode])
+  @@map("country_calendar_overrides")
+}
+
+
+
+model ReminderLog {
+  id             String   @id @default(cuid())
+  userId         String
+  hijriYear      Int
+  hijriMonth     Int
+  sentAt         DateTime @default(now())
+  channel        String   // "email" or "in_app"
+  messageSnippet String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, hijriYear, hijriMonth, channel])
+  @@map("reminder_logs")
+}
+
+// ─────────────────────────────────────────────────────────
+// PROMO / ACTIVATION CODES
+// ─────────────────────────────────────────────────────────
+
+model PromoCode {
+  id               String        @id @default(cuid())
+  code             String        @unique  // e.g. "RAMADAN2025", "WELCOME-FREE"
+  type             PromoCodeType
+  // For FREE_PREMIUM / TRIAL: days of premium granted (0 = lifetime)
+  premiumDays      Int           @default(30)
+  // For DISCOUNT: percentage off (e.g. 50 = 50% off)
+  discountPct      Int           @default(0)
+  // For THEME_UNLOCK: the theme identifier to unlock
+  themeKey         String?
+  description      String?       // Admin-facing note
+  labelEn          String?       // User-facing label e.g. "Ramadan Gift"
+  labelAr          String?       // Arabic label
+  maxUses          Int           @default(1)   // 0 = unlimited
+  usedCount        Int           @default(0)
+  isActive         Boolean       @default(true)
+  expiresAt        DateTime?     // null = never expires
+  createdByAdminId String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  usages PromoCodeUsage[]
+
+  @@map("promo_codes")
+}
+
+enum PromoCodeType {
+  FREE_PREMIUM   // Grants premium for N days (or lifetime if premiumDays=0)
+  DISCOUNT       // Percentage discount applied at Paddle checkout
+  TRIAL          // Short trial period (uses premiumDays field)
+  THEME_UNLOCK   // Unlocks a specific theme permanently
+}
+
+model PromoCodeUsage {
+  id           String   @id @default(cuid())
+  promoCodeId  String
+  userId       String
+  redeemedAt   DateTime @default(now())
+  // What was granted
+  grantedDays  Int      @default(0)    // 0 = lifetime
+  premiumUntil DateTime?               // null = lifetime
+
+  promoCode PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([promoCodeId, userId])   // one use per user per code
+  @@map("promo_code_usages")
+}
+
+// ─────────────────────────────────────────────────────────
+// REFERRAL SYSTEM
+// ─────────────────────────────────────────────────────────
+
+model Referral {
+  id           String         @id @default(cuid())
+  referrerId   String         // user who owns the referral code
+  referredId   String         @unique  // new user who signed up — 1 per person ever
+  status       ReferralStatus @default(PENDING)
+  // SENT: referrer explicitly sent an invite email
+  sentAt       DateTime?
+  sentToEmail  String?        // email the invite was sent to
+  // PENDING: referred user signed up via the link
+  signedUpAt   DateTime?
+  // ACTIVATED: referred user hit 3 logs on 3 different days → point granted
+  activatedAt  DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  referrer     User @relation("ReferrerUser", fields: [referrerId], references: [id], onDelete: Cascade)
+  referred     User @relation("ReferredUser", fields: [referredId], references: [id], onDelete: Cascade)
+
+  @@index([referrerId])
+  @@map("referrals")
+}
+
+enum ReferralStatus {
+  SENT       // invite email sent — referred user hasn't signed up yet
+  PENDING    // referred user signed up — waiting for 3-day activity rule
+  ACTIVATED  // rule met — 1 point credited to referrer
+}
+
+// ─────────────────────────────────────────────────────────
+// POINT REDEMPTIONS
+// ─────────────────────────────────────────────────────────
+
+model PointRedemption {
+  id         String          @id @default(cuid())
+  userId     String
+  type       RedemptionType
+  pointsCost Int             // 5 for PREMIUM_MONTH, 25 for THEME_UNLOCK
+  themeKey   String?         // set for THEME_UNLOCK
+  createdAt  DateTime        @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("point_redemptions")
+}
+
+enum RedemptionType {
+  PREMIUM_MONTH  // 5 points → 1 month premium
+  THEME_UNLOCK   // 25 points → permanent theme unlock
+}

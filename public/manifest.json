@@ -1,0 +1,50 @@
+{
+  "name": "Yawmiyyati — يومياتي",
+  "short_name": "Yawmiyyati",
+  "description": "Track your daily Islamic activities — prayers, Quran, dhikr and more",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1f2d",
+  "theme_color": "#0d1f2d",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["lifestyle", "health", "religion"],
+  "lang": "ar",
+  "dir": "auto",
+  "shortcuts": [
+    {
+      "name": "Today",
+      "short_name": "اليوم",
+      "url": "/today",
+      "icons": [{ "src": "/icons/shortcut-today.png", "sizes": "96x96" }]
+    }
+  ]
+}

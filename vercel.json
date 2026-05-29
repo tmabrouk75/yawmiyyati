@@ -1,0 +1,30 @@
+{
+  "crons": [
+    {
+      "path":     "/api/reminders/trigger",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path":     "/api/payments/renew",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path":     "/api/cron/referral-activate",
+      "schedule": "0 2 * * *"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/sw.js",
+      "destination": "/_next/static/sw.js"
+    }
+  ]
+}
