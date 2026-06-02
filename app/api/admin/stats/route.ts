@@ -4,6 +4,7 @@ import { requireAdmin } from '@/lib/admin/guard'
 
 // GET /api/admin/stats
 export async function GET() {
+  try {
   const { error } = await requireAdmin()
   if (error) return error
 
@@ -59,17 +60,23 @@ export async function GET() {
     orderBy: { _count: { id: 'desc' } },
   })
 
-  // Daily logs per day — last 14 days for sparkline
+  // Daily logs per day — last 14 days for sparkline (single query)
+  const day14 = new Date(now); day14.setDate(day14.getDate() - 13); day14.setHours(0,0,0,0)
+  const rawLogs = await prisma.dailyLog.findMany({
+    where:  { dateGregorian: { gte: day14 } },
+    select: { dateGregorian: true },
+  })
+  // bucket by date string
+  const logBuckets: Record<string, number> = {}
+  for (const l of rawLogs) {
+    const key = l.dateGregorian.toISOString().split('T')[0]
+    logBuckets[key] = (logBuckets[key] ?? 0) + 1
+  }
   const last14: { date: string; count: number }[] = []
   for (let i = 13; i >= 0; i--) {
-    const d = new Date(now)
-    d.setDate(d.getDate() - i)
-    d.setHours(0, 0, 0, 0)
-    const next = new Date(d); next.setDate(next.getDate() + 1)
-    const count = await prisma.dailyLog.count({
-      where: { dateGregorian: { gte: d, lt: next } },
-    })
-    last14.push({ date: d.toISOString().split('T')[0], count })
+    const d = new Date(now); d.setDate(d.getDate() - i); d.setHours(0,0,0,0)
+    const key = d.toISOString().split('T')[0]
+    last14.push({ date: key, count: logBuckets[key] ?? 0 })
   }
 
   return NextResponse.json({
@@ -108,4 +115,8 @@ export async function GET() {
       count:   g._count.id,
     })),
   })
+  } catch (err) {
+    console.error('[admin/stats]', err)
+    return NextResponse.json({ error: 'Failed to load stats', detail: String(err) }, { status: 500 })
+  }
 }
