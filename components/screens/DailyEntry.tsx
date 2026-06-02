@@ -545,26 +545,6 @@ export default function DailyEntry({
         </div>
       </div>
 
-      {/* ── PERIOD TOGGLE — female users only */}
-      {gender === 'female' && (
-        <div
-          onClick={togglePeriod}
-          className={`mx-4 mt-2 rounded-[12px] px-[14px] py-[10px] flex items-center justify-between cursor-pointer border transition-colors ${dir === 'rtl' ? 'flex-row-reverse' : ''} ${isPeriod ? 'bg-rose-50 border-rose-300' : 'bg-white border-gray-200'}`}
-        >
-          <div className={dir === 'rtl' ? 'text-right' : ''}>
-            <div className={`text-[13px] font-medium ${isPeriod ? 'text-rose-700' : 'text-gray-700'}`}>
-              🌸 {(t as any).period}
-            </div>
-            {isPeriod && (
-              <div className="text-[11px] text-rose-500 mt-[1px]">{(t as any).periodSub}</div>
-            )}
-          </div>
-          <div className={`w-[38px] h-[22px] rounded-full transition-colors flex items-center px-[3px] ${isPeriod ? 'bg-rose-400' : 'bg-gray-200'}`}>
-            <div className={`w-[16px] h-[16px] rounded-full bg-white shadow-sm transition-transform ${isPeriod ? (dir === 'rtl' ? '-translate-x-[16px]' : 'translate-x-[16px]') : 'translate-x-0'}`}/>
-          </div>
-        </div>
-      )}
-
       {/* ── SCROLLABLE CONTENT (score card lives here so breakdown doesn't squish scroll area) */}
       <div className="flex-1 overflow-y-auto pb-6">
 
@@ -868,6 +848,26 @@ export default function DailyEntry({
                 />
                 <CheckBox checked={sadaqah.gave} onChange={v => updateSadaqah('gave', v)}/>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ══ PERIOD TOGGLE — female users only, at the bottom */}
+        {gender === 'female' && (
+          <div
+            onClick={togglePeriod}
+            className={`mx-4 mt-3 rounded-[12px] px-[14px] py-[10px] flex items-center justify-between cursor-pointer border transition-colors ${dir === 'rtl' ? 'flex-row-reverse' : ''} ${isPeriod ? 'bg-rose-50 border-rose-300' : 'bg-white border-gray-200'}`}
+          >
+            <div className={dir === 'rtl' ? 'text-right' : ''}>
+              <div className={`text-[13px] font-medium ${isPeriod ? 'text-rose-700' : 'text-gray-700'}`}>
+                🌸 {(t as any).period}
+              </div>
+              {isPeriod && (
+                <div className="text-[11px] text-rose-500 mt-[1px]">{(t as any).periodSub}</div>
+              )}
+            </div>
+            <div className={`w-[38px] h-[22px] rounded-full transition-colors flex items-center px-[3px] ${isPeriod ? 'bg-rose-400' : 'bg-gray-200'}`}>
+              <div className={`w-[16px] h-[16px] rounded-full bg-white shadow-sm transition-transform ${isPeriod ? (dir === 'rtl' ? '-translate-x-[16px]' : 'translate-x-[16px]') : 'translate-x-0'}`}/>
             </div>
           </div>
         )}
