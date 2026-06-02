@@ -191,6 +191,9 @@ export default function LandingPage() {
             ))}
           </div>
 
+          {/* Bismillah */}
+          <p className="text-[20px] text-[#C9AA71]/70 mb-2" style={{ fontFamily: 'serif' }}>ابدأ بسم الله</p>
+
           {/* CTAs */}
           <div className="flex flex-col items-center gap-3 max-w-[340px] mx-auto">
             <button onClick={() => go('/register', 'register')} disabled={!!loading}
@@ -302,7 +305,10 @@ export default function LandingPage() {
             </div>
             <p className="text-[11px] font-black text-[#C9AA71]/60 uppercase tracking-widest mb-4">{t.premLabel}</p>
             <p className="text-[28px] font-black text-[#C9AA71] mb-1">{t.premPrice.split('/')[0]}</p>
-            <p className="text-[11px] text-[#C9AA71]/40 mb-5">/ {t.premPrice.split('/')[1]}</p>
+            <p className="text-[11px] text-[#C9AA71]/40 mb-1">/ {t.premPrice.split('/')[1]}</p>
+            <p className="text-[10px] font-semibold text-[#C9AA71]/60 bg-[#C9AA71]/10 border border-[#C9AA71]/20 rounded-full px-3 py-[3px] inline-block mb-4">
+              {lang === 'ar' ? '١ شهر · جميع المميزات' : '1 month · all features included'}
+            </p>
             {t.premPaid.map((item, i) => (
               <div key={i} className={cn('flex items-start gap-2 mb-2', dir === 'rtl' && 'flex-row-reverse')}>
                 <span className="text-[#C9AA71] text-[10px] mt-[2px] flex-shrink-0">✓</span>
