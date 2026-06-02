@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+﻿import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import { cookies } from 'next/headers'
 import { prisma } from '@/lib/db/prisma'
@@ -13,7 +13,7 @@ export interface JWTPayload {
   isAdmin: boolean
 }
 
-// ─── PASSWORD ─────────────────────────────────────────────
+// â”€â”€â”€ PASSWORD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12)
@@ -23,7 +23,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return bcrypt.compare(password, hash)
 }
 
-// ─── JWT ──────────────────────────────────────────────────
+// â”€â”€â”€ JWT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function signToken(payload: JWTPayload): string {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions)
@@ -37,7 +37,7 @@ export function verifyToken(token: string): JWTPayload | null {
   }
 }
 
-// ─── SESSION ──────────────────────────────────────────────
+// â”€â”€â”€ SESSION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function setAuthCookie(token: string) {
   cookies().set('yw_token', token, {
@@ -107,7 +107,7 @@ export async function checkPremium(userId: string): Promise<boolean> {
   return true
 }
 
-// ─── ADMIN ────────────────────────────────────────────────
+// â”€â”€â”€ ADMIN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export const ADMIN_EMAIL = 't.mabrouk@outlook.com'
 
@@ -119,7 +119,7 @@ export async function checkAdmin(userId: string): Promise<boolean> {
   return user?.isAdmin === true
 }
 
-// ─── VALIDATION ───────────────────────────────────────────
+// â”€â”€â”€ VALIDATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function validateEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -131,3 +131,4 @@ export function validatePassword(password: string): { valid: boolean; message?: 
   if (!/[0-9]/.test(password)) return { valid: false, message: 'Password must contain a number' }
   return { valid: true }
 }
+
