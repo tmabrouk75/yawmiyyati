@@ -64,12 +64,12 @@ export async function GET() {
     const loggedAtLeastOnce = loggedAtLeastOnceRaw.length
 
     // ── Streak health ────────────────────────────────────────────
-    // 7-day streak: users with 7+ distinct log days in last 7 days
+    // 7-day streak: users with 7+ log days in last 7 days
     const streak7Raw = await prisma.dailyLog.groupBy({
       by: ['userId'],
       where: { dateGregorian: { gte: day7 } },
-      _count: { _all: true },
-      having: { _count: { _all: { gte: 7 } } },
+      _count: { userId: true },
+      having: { userId: { _count: { gte: 7 } } },
     })
     const streak7plus = streak7Raw.length
 
@@ -77,8 +77,8 @@ export async function GET() {
     const streak30Raw = await prisma.dailyLog.groupBy({
       by: ['userId'],
       where: { dateGregorian: { gte: day30 } },
-      _count: { _all: true },
-      having: { _count: { _all: { gte: 28 } } },
+      _count: { userId: true },
+      having: { userId: { _count: { gte: 28 } } },
     })
     const streak30plus = streak30Raw.length
 
