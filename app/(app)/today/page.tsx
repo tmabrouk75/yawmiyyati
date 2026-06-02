@@ -12,16 +12,14 @@ export default async function TodayPage({
   const user = await getAuthUser()
   if (!user) redirect("/login")
 
-  // Allow browsing past days via ?date=YYYY-MM-DD; future dates clamped to today
   const todayReal = new Date()
   todayReal.setHours(0, 0, 0, 0)
 
   let today = todayReal
   if (searchParams?.date) {
-    // Parse as LOCAL date to avoid UTC timezone off-by-one shift
     const parts = searchParams.date.split('-').map(Number)
     if (parts.length === 3 && parts.every(n => !isNaN(n))) {
-      const parsed = new Date(parts[0], parts[1] - 1, parts[2]) // local midnight
+      const parsed = new Date(parts[0], parts[1] - 1, parts[2])
       if (parsed.getTime() <= todayReal.getTime()) today = parsed
     }
   }
@@ -30,43 +28,78 @@ export default async function TodayPage({
   const hijri    = toHijri(today)
   const seasonal = getSeasonalActivities(today)
 
-  const userActivities = await prisma.userActivity.findMany({
-    where: { userId: user.id, isEnabled: true },
-    include: { activityDefinition: true },
-    orderBy: { sortOrder: "asc" },
-  })
-  const enabledKeys = new Set(userActivities.map(a => a.activityDefinition.key))
+  // ── User activities — guard against broken relations
+  let userActivities: any[] = []
+  try {
+    userActivities = await prisma.userActivity.findMany({
+      where: { userId: user.id, isEnabled: true },
+      include: { activityDefinition: true },
+      orderBy: { sortOrder: "asc" },
+    })
+  } catch (e) {
+    console.error('[TodayPage] userActivity query failed:', e)
+  }
+  const enabledKeys = new Set(
+    userActivities.filter(a => a.activityDefinition).map(a => a.activityDefinition.key)
+  )
 
-  let dailyLog = await prisma.dailyLog.findUnique({
-    where: { userId_dateGregorian: { userId: user.id, dateGregorian: today } },
-    include: {
-      prayerLog: true, dhikrLog: true,
-      quranLog: { include: { surahChecks: true } },
-      fastingLog: true, sadaqahLog: true,
-    },
-  })
-
-  if (!dailyLog) {
-    dailyLog = await prisma.dailyLog.create({
-      data: {
-        userId: user.id, dateGregorian: today,
-        dateHijriYear: hijri.year, dateHijriMonth: hijri.month, dateHijriDay: hijri.day,
-      },
+  // ── Daily log — find or create
+  let dailyLog: any = null
+  try {
+    dailyLog = await prisma.dailyLog.findUnique({
+      where: { userId_dateGregorian: { userId: user.id, dateGregorian: today } },
       include: {
         prayerLog: true, dhikrLog: true,
         quranLog: { include: { surahChecks: true } },
         fastingLog: true, sadaqahLog: true,
       },
     })
+  } catch (e) {
+    console.error('[TodayPage] dailyLog findUnique failed:', e)
   }
 
-  const qadaRecord = await prisma.qadaRecord.findFirst({
-    where: { userId: user.id, ramadanYear: hijri.year },
-  })
-  const userSurahs = await prisma.userSurah.findMany({
-    where: { userId: user.id, isEnabled: true },
-    orderBy: { sortOrder: "asc" },
-  })
+  if (!dailyLog) {
+    try {
+      dailyLog = await prisma.dailyLog.create({
+        data: {
+          userId: user.id, dateGregorian: today,
+          dateHijriYear: hijri.year, dateHijriMonth: hijri.month, dateHijriDay: hijri.day,
+        },
+        include: {
+          prayerLog: true, dhikrLog: true,
+          quranLog: { include: { surahChecks: true } },
+          fastingLog: true, sadaqahLog: true,
+        },
+      })
+    } catch (e) {
+      console.error('[TodayPage] dailyLog create failed:', e)
+      // If create fails (e.g. race condition duplicate), try fetch again
+      try {
+        dailyLog = await prisma.dailyLog.findUnique({
+          where: { userId_dateGregorian: { userId: user.id, dateGregorian: today } },
+          include: {
+            prayerLog: true, dhikrLog: true,
+            quranLog: { include: { surahChecks: true } },
+            fastingLog: true, sadaqahLog: true,
+          },
+        })
+      } catch (e2) {
+        console.error('[TodayPage] dailyLog retry fetch failed:', e2)
+      }
+    }
+  }
+
+  // ── Qada + Surahs
+  let qadaRecord: any = null
+  let userSurahs: any[] = []
+  try {
+    ;[qadaRecord, userSurahs] = await Promise.all([
+      prisma.qadaRecord.findFirst({ where: { userId: user.id, ramadanYear: hijri.year } }),
+      prisma.userSurah.findMany({ where: { userId: user.id, isEnabled: true }, orderBy: { sortOrder: "asc" } }),
+    ])
+  } catch (e) {
+    console.error('[TodayPage] qada/surahs query failed:', e)
+  }
 
   const pad = (n: number) => String(n).padStart(2, '0')
   const selectedDate = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`
@@ -83,13 +116,13 @@ export default async function TodayPage({
       gender={user.gender ?? null}
       selectedDate={selectedDate}
       isToday={isToday}
-      initialIsPeriod={dailyLog.isPeriod ?? false}
+      initialIsPeriod={dailyLog?.isPeriod ?? false}
       userSurahs={userSurahs}
-      initialPrayer={dailyLog.prayerLog}
-      initialDhikr={dailyLog.dhikrLog}
-      initialQuran={dailyLog.quranLog}
-      initialFasting={dailyLog.fastingLog}
-      initialSadaqah={dailyLog.sadaqahLog}
+      initialPrayer={dailyLog?.prayerLog}
+      initialDhikr={dailyLog?.dhikrLog}
+      initialQuran={dailyLog?.quranLog}
+      initialFasting={dailyLog?.fastingLog}
+      initialSadaqah={dailyLog?.sadaqahLog}
     />
   )
 }
