@@ -45,8 +45,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           {/* On mobile: full screen. On desktop: centered phone frame */}
           <main className="flex justify-center min-h-screen md:items-center md:bg-[#0D1F2D] md:py-6">
             <div className="
-              w-full max-w-[430px] h-[100dvh] relative overflow-hidden flex flex-col
-              md:h-[calc(100vh-48px)] md:max-h-[900px]
+              w-full max-w-[430px] h-[100dvh] relative overflow-hidden flex flex-col safe-top
+              md:h-[calc(100vh-48px)] md:max-h-[900px] md:pt-0
               md:rounded-[40px] md:shadow-[0_32px_80px_rgba(0,0,0,0.5)]
               md:border md:border-white/10
             ">
