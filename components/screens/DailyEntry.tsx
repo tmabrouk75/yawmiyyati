@@ -787,7 +787,7 @@ export default function DailyEntry({
                   <NumberInput value={quran.pagesRead} onChange={v => updateQuran('pagesRead', v)} max={604}/>
                 </div>
               )}
-              {show('daily_surahs') && userSurahs.length > 0 && (
+              {show('daily_surahs') && userSurahs.length >= 3 && (
                 <>
                   <div className={`flex items-center justify-between px-[14px] py-[10px] border-b border-gray-100 cursor-pointer ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}
                     onClick={() => setSurahsOpen(!surahsOpen)}>

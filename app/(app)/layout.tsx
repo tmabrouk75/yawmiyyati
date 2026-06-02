@@ -11,7 +11,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <AppShell isAdmin={user.isAdmin ?? false} lang={lang}>
-      <div className="flex flex-col flex-1 h-full bg-gray-50 overflow-hidden">
+      <div className="flex flex-col h-full bg-gray-50 overflow-hidden">
         <div className="flex-1 overflow-y-auto scroll-area">
           {children}
         </div>
