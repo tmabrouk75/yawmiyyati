@@ -8,7 +8,7 @@ const T = {
   en: {
     title:          'Admin Dashboard',
     tier1:          'Growth & health',
-    tier2:          'Activity — last 14 days',
+    tier2:          'Activity: last 14 days',
     tier3:          'Conversion funnel',
     tier4:          'Engagement health',
     tier5:          'Acquisition channels',
