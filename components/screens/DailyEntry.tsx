@@ -689,39 +689,6 @@ export default function DailyEntry({
             )}
 
             {/* Jumu'ah is now rendered inline as the Dhuhr row on Fridays — no separate row needed */}
-
-            {/* Taraweeh — Ramadan only */}
-            {show('taraweeh') && isRamadan && (
-              <SunnahAlignedRow
-                icon="🌙" label={t.taraweeh}
-                checked={prayer.taraweehDone ?? false} onChange={v => updatePrayer('taraweehDone', v)}
-                showSunnah={show('sunnah_rawatib')} showAzkar={show('prayer_azkar')}
-                showMosque={gender === 'male'}
-                dir={dir}
-              />
-            )}
-
-            {/* Eid al-Fitr — 1 Shawwal */}
-            {show('eid_fitr') && seasonal.includes('eid_fitr') && (
-              <SunnahAlignedRow
-                icon="🎉" label={t.eidFitr}
-                checked={prayer.eidFitrDone ?? false} onChange={v => updatePrayer('eidFitrDone', v)}
-                showSunnah={show('sunnah_rawatib')} showAzkar={show('prayer_azkar')}
-                showMosque={gender === 'male'}
-                dir={dir}
-              />
-            )}
-
-            {/* Eid al-Adha — 10 Dhul Hijjah */}
-            {show('eid_adha') && seasonal.includes('eid_adha') && (
-              <SunnahAlignedRow
-                icon="🎉" label={t.eidAdha}
-                checked={prayer.eidAdhaDone ?? false} onChange={v => updatePrayer('eidAdhaDone', v)}
-                showSunnah={show('sunnah_rawatib')} showAzkar={show('prayer_azkar')}
-                showMosque={gender === 'male'}
-                dir={dir}
-              />
-            )}
           </div>
         </div>
 
@@ -901,6 +868,44 @@ export default function DailyEntry({
                 />
                 <CheckBox checked={sadaqah.gave} onChange={v => updateSadaqah('gave', v)}/>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ══ BOX 6: SPECIAL DAYS — seasonal prayers at the bottom */}
+        {((show('taraweeh') && isRamadan) || (show('eid_fitr') && seasonal.includes('eid_fitr')) || (show('eid_adha') && seasonal.includes('eid_adha'))) && (
+          <div className="mx-4 mt-3">
+            <p className={`text-[10px] font-bold uppercase tracking-[0.07em] text-gray-400 mb-[6px] px-[2px] ${dir === 'rtl' ? 'text-right tracking-normal text-[11px] normal-case' : ''}`}>
+              {lang === 'ar' ? 'أيام خاصة' : 'Special Days'}
+            </p>
+            <div className="bg-white border border-gray-200 rounded-[14px] overflow-hidden">
+              {show('taraweeh') && isRamadan && (
+                <SunnahAlignedRow
+                  icon="🌙" label={t.taraweeh}
+                  checked={prayer.taraweehDone ?? false} onChange={v => updatePrayer('taraweehDone', v)}
+                  showSunnah={show('sunnah_rawatib')} showAzkar={show('prayer_azkar')}
+                  showMosque={gender === 'male'}
+                  dir={dir}
+                />
+              )}
+              {show('eid_fitr') && seasonal.includes('eid_fitr') && (
+                <SunnahAlignedRow
+                  icon="🎉" label={t.eidFitr}
+                  checked={prayer.eidFitrDone ?? false} onChange={v => updatePrayer('eidFitrDone', v)}
+                  showSunnah={show('sunnah_rawatib')} showAzkar={show('prayer_azkar')}
+                  showMosque={gender === 'male'}
+                  dir={dir}
+                />
+              )}
+              {show('eid_adha') && seasonal.includes('eid_adha') && (
+                <SunnahAlignedRow
+                  icon="🎉" label={t.eidAdha}
+                  checked={prayer.eidAdhaDone ?? false} onChange={v => updatePrayer('eidAdhaDone', v)}
+                  showSunnah={show('sunnah_rawatib')} showAzkar={show('prayer_azkar')}
+                  showMosque={gender === 'male'}
+                  dir={dir}
+                />
+              )}
             </div>
           </div>
         )}
