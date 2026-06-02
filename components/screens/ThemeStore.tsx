@@ -21,9 +21,9 @@ const T = {
     purchasing:      'Opening checkout...',
     back:            'Back',
     applied:         'Applied ✓',
-    oneTimePurchase: 'Each theme is a one-time purchase — yours forever',
+    oneTimePurchase: 'Each theme is a one-time purchase. Yours forever.',
     paymentSuccess:  '✓ Theme unlocked! Tap Apply to use it.',
-    paymentPending:  'Payment pending — refresh in a moment.',
+    paymentPending:  'Payment pending. Refresh in a moment.',
     paymentFailed:   'Payment was not completed. Please try again.',
   },
   ar: {
@@ -38,9 +38,9 @@ const T = {
     purchasing:      'فتح الدفع...',
     back:            'رجوع',
     applied:         'مطبّق ✓',
-    oneTimePurchase: 'كل ثيم شراء لمرة واحدة — ملكك للأبد',
+    oneTimePurchase: 'كل ثيم شراء لمرة واحدة. ملكك للأبد.',
     paymentSuccess:  '✓ تم فتح الثيم! اضغط تطبيق لاستخدامه.',
-    paymentPending:  'الدفع قيد المعالجة — أعد التحميل بعد لحظة.',
+    paymentPending:  'الدفع قيد المعالجة. أعد التحميل بعد لحظة.',
     paymentFailed:   'لم تكتمل عملية الدفع. حاول مرة أخرى.',
   },
 }

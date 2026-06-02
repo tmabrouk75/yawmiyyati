@@ -24,7 +24,7 @@ const T = {
     earnedOn:    'Earned',
     recentXp:    'Recent XP',
     loading:     'Loading...',
-    noBadges:    'No badges earned yet — keep going!',
+    noBadges:    'No badges earned yet. Keep going!',
     xpReasons:   {
       fajr_done:             '+20 · Fajr',
       fajr_qadaa:            '+10 · Fajr (Qadaa)',
@@ -76,7 +76,7 @@ const T = {
     earnedOn:    'تحقق في',
     recentXp:    'آخر النقاط',
     loading:     'جارٍ التحميل...',
-    noBadges:    'لم تحقق إنجازات بعد — واصل!',
+    noBadges:    'لم تحقق إنجازات بعد. واصل!',
     xpReasons:   {
       fajr_done:             '+٢٠ · الفجر',
       fajr_qadaa:            '+١٠ · الفجر (قضاء)',

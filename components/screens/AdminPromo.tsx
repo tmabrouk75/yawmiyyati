@@ -26,7 +26,7 @@ const T = {
     labelEnPh:    'e.g. Ramadan Gift',
     labelArPh:    'مثال: هدية رمضان',
     desc:         'Admin note',
-    descPh:       'Internal note — not shown to users',
+    descPh:       'Internal note. Not shown to users.',
     maxUses:      'Max uses (0 = unlimited)',
     expires:      'Expires (leave blank = never)',
     create:       'Create Code',
@@ -80,7 +80,7 @@ const T = {
     labelEnPh:    'e.g. Ramadan Gift',
     labelArPh:    'مثال: هدية رمضان',
     desc:         'ملاحظة إدارية',
-    descPh:       'ملاحظة داخلية — لا تظهر للمستخدمين',
+    descPh:       'ملاحظة داخلية. لا تظهر للمستخدمين.',
     maxUses:      'الحد الأقصى للاستخدام (٠ = غير محدود)',
     expires:      'تاريخ الانتهاء (فارغ = لا ينتهي)',
     create:       'إنشاء الكود',
@@ -174,7 +174,7 @@ function CodeCard({
           {code.type === 'FREE_PREMIUM' || code.type === 'TRIAL'
             ? code.premiumDays === 0 ? t.lifetime : `${code.premiumDays}d premium`
             : code.type === 'THEME_UNLOCK'
-            ? `🎨 ${code.themeKey ?? '—'}`
+            ? `🎨 ${code.themeKey ?? 'N/A'}`
             : `${code.discountPct}% off`}
         </span>
         <span>{usedOf}</span>

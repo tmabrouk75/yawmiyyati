@@ -11,7 +11,7 @@ const T = {
     tagline:    'Track your daily ibadah with intention.',
     taglineSub: 'Prayers · Quran · Dhikr · and more',
     verse:      'وَاذْكُر رَّبَّكَ كَثِيرًا',
-    verseRef:   'Remember your Lord abundantly — Āl ʿImrān 41',
+    verseRef:   'Remember your Lord abundantly · Āl ʿImrān 41',
     createBtn:  'Create an account',
     loginBtn:   'Sign in',
     guestLink:  'Continue without an account',
