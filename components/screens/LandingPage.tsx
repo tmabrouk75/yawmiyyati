@@ -5,376 +5,338 @@ import { useRouter } from 'next/navigation'
 import { useLang, LangToggle } from '@/contexts/LanguageContext'
 import { cn } from '@/lib/utils'
 
-// ─── Translations ─────────────────────────────────────────
 const T = {
   en: {
     appName:     'Yawmiyyati',
     appNameAr:   'يومياتي',
-    tagline:     'Your daily Islamic companion.',
-    taglineSub:  'Track prayers, Quran, dhikr, fasting — with intention.',
+    heroTag:     'Your daily Islamic companion',
+    heroTitle1:  'Every prayer.',
+    heroTitle2:  'Every page.',
+    heroTitle3:  'Every day.',
+    heroSub:     'Track your prayers, Quran, fasting, and dhikr — with intention and consistency.',
     verse:       'وَاذْكُر رَّبَّكَ كَثِيرًا',
     verseRef:    'Remember your Lord abundantly — Āl ʿImrān 41',
-    joinNow:     'Join Now — It\'s Free',
+    joinNow:     'Start Free — Join Now',
     signIn:      'Sign In',
-    guestLink:   'Continue without an account',
-    // Value props
-    vp1Title:    'No Ads. Ever.',
-    vp1Sub:      'Your ibadah is between you and Allah. We keep it that way.',
-    vp2Title:    'Private by Design',
-    vp2Sub:      'Your data never leaves your account. No tracking, no sharing.',
-    vp3Title:    'Beautiful & Focused',
-    vp3Sub:      'Designed for daily use — fast, calm, distraction-free.',
-    // Features
-    featuresTitle: 'Everything in one place',
-    featuresSub:   'Built around how Muslims actually worship — not a generic habit tracker.',
-    feat: [
-      { icon: '🕌', title: '5 Daily Prayers',    sub: 'Fard, Sunnah, and Azkar — track what matters most.' },
-      { icon: '📖', title: 'Quran Reading',       sub: 'Daily pages and personal surah list.' },
-      { icon: '📿', title: 'Dhikr & Azkar',       sub: 'Morning, evening, istighfar, salawat.' },
-      { icon: '🌙', title: 'Fasting Tracker',     sub: 'Ramadan, Monday/Thursday, White Days, Qadaa.' },
-      { icon: '🔥', title: 'Streak System',       sub: 'Built on Salah. Keeps you accountable, not anxious.' },
-      { icon: '🎨', title: 'Beautiful Themes',    sub: 'Change the look. Keep the feel.' },
+    guestLink:   'Continue without an account →',
+    social1:     'Free forever',
+    social2:     'No ads, ever',
+    social3:     'Private by design',
+    vpTitle:     'Built for Muslims. Only for Muslims.',
+    vp: [
+      { icon: '🚫', title: 'Zero Ads. Zero Distractions.', sub: 'Your ibadah is between you and Allah. We keep it that way — no ads, no tracking, no noise.' },
+      { icon: '🔒', title: 'Your Data Stays Yours.',       sub: 'We never sell or share your data. Your worship log is private, always.' },
+      { icon: '⚡', title: 'Fast, Calm, Focused.',         sub: 'Designed for daily use in under 60 seconds. No bloat, no complexity.' },
     ],
-    // How it works
+    featuresTitle: 'Everything you need. Nothing you don\'t.',
+    featuresSub:   'Built around how Muslims actually worship — not a generic habit tracker dressed up in Islamic branding.',
+    feat: [
+      { icon: '🕌', title: '5 Daily Prayers',   sub: 'Track Fard, Sunnah rawatib, and post-prayer Azkar for each salah.',      color: '#059669' },
+      { icon: '📖', title: 'Quran Reading',      sub: 'Daily pages, personal surahs list, and Al-Kahf on Fridays.',             color: '#7c3aed' },
+      { icon: '📿', title: 'Dhikr & Azkar',     sub: 'Morning & evening azkar, istighfar, tasbih, and Salawat on the Prophet.', color: '#0d9488' },
+      { icon: '🌙', title: 'Fasting Tracker',    sub: 'Ramadan, Monday & Thursday, White Days, and Qadaa records.',             color: '#b45309' },
+      { icon: '🔥', title: 'Streak & Score',     sub: 'Daily points system. Your streak is built on Salah — nothing else.',     color: '#dc2626' },
+      { icon: '🎨', title: 'Beautiful Themes',   sub: 'Premium themes that transform the entire feel of the app.',              color: '#C9AA71' },
+    ],
     howTitle: 'Start in 60 seconds',
     steps: [
-      { n: '1', title: 'Create your account',   sub: 'Free. No credit card. Takes 30 seconds.' },
-      { n: '2', title: 'Set your preferences',  sub: 'Pick your country, language, and which activities to track.' },
-      { n: '3', title: 'Start your day right',  sub: 'Open the app each day and check off your ibadah.' },
+      { n: '01', title: 'Create your free account', sub: 'No credit card. No commitment. 30 seconds.' },
+      { n: '02', title: 'Set your preferences',     sub: 'Pick your country, language, and which activities matter to you.' },
+      { n: '03', title: 'Start your day right',     sub: 'Open the app each morning and check off your ibadah as you go.' },
     ],
-    // Premium
-    premiumTitle: 'Go deeper with Premium',
-    premiumSub:   'One small fee. Supports the project. Unlocks everything.',
-    premFree: [
-      '5 daily prayers',
-      'Quran reading log',
-      'Morning & evening azkar',
-      'Basic streak tracking',
-      '1 theme (Madinah Night)',
-    ],
-    premPaid: [
-      'Everything in Free',
-      'Unlimited themes',
-      'Advanced statistics',
-      'Priority support',
-      'Help keep the app alive',
-    ],
-    freeLabel:    'Free',
-    premLabel:    'Premium',
-    premPrice:    'from $1.99 / month',
-    // Final CTA
-    ctaTitle:     'Begin with بسم الله',
-    ctaSub:       'Join thousands of Muslims building stronger daily habits.',
-    ctaBtn:       'Create Your Free Account',
-    // Footer
-    terms:        'Terms',
-    privacy:      'Privacy',
-    support:      'Support',
+    premiumTitle: 'Free forever — or go deeper',
+    premiumSub:   'Start free. Upgrade when you\'re ready. Cancel anytime.',
+    premFree:  ['5 daily prayers tracking', 'Quran reading log', 'Morning & evening azkar', 'Fasting tracker', 'Basic streak & score'],
+    premPaid:  ['Everything in Free', 'Unlimited beautiful themes', 'Advanced reports & charts', 'Export your data (CSV)', 'Priority support'],
+    freeLabel:   'Free',
+    premLabel:   'Premium',
+    premPrice:   'from $1.99 / month',
+    ctaTitle:    'ابدأ بسم الله',
+    ctaSub:      'Join Muslims around the world building stronger daily habits, one prayer at a time.',
+    ctaBtn:      'Create Your Free Account',
+    terms: 'Terms', privacy: 'Privacy', support: 'Support',
   },
   ar: {
     appName:     'يومياتي',
     appNameAr:   'Yawmiyyati',
-    tagline:     'رفيقك الإسلامي اليومي.',
-    taglineSub:  'تابع صلواتك وقرآنك وذكرك وصيامك — بنية صادقة.',
+    heroTag:     'رفيقك الإسلامي اليومي',
+    heroTitle1:  'كل صلاة.',
+    heroTitle2:  'كل صفحة.',
+    heroTitle3:  'كل يوم.',
+    heroSub:     'تابع صلواتك وقرآنك وصيامك وأذكارك — بنية صادقة واستمرارية حقيقية.',
     verse:       'وَاذْكُر رَّبَّكَ كَثِيرًا',
     verseRef:    'آل عمران ٤١',
-    joinNow:     'انضم الآن — مجاناً',
+    joinNow:     'ابدأ مجاناً — انضم الآن',
     signIn:      'تسجيل الدخول',
-    guestLink:   'المتابعة بدون حساب',
-    vp1Title:    'بلا إعلانات. أبداً.',
-    vp1Sub:      'عبادتك بينك وبين الله. نحرص على ذلك.',
-    vp2Title:    'خصوصية تامة',
-    vp2Sub:      'بياناتك لا تغادر حسابك. لا تتبع، لا مشاركة.',
-    vp3Title:    'جميل ومركّز',
-    vp3Sub:      'مصمم للاستخدام اليومي — سريع وهادئ وخالٍ من المشتتات.',
-    featuresTitle: 'كل شيء في مكان واحد',
-    featuresSub:   'مبني حول الطريقة التي يتعبد بها المسلمون فعلاً — وليس تطبيق عادات عام.',
+    guestLink:   '← المتابعة بدون حساب',
+    social1:     'مجاني دائماً',
+    social2:     'بلا إعلانات أبداً',
+    social3:     'خصوصية تامة',
+    vpTitle:     'مبني للمسلمين. للمسلمين فقط.',
+    vp: [
+      { icon: '🚫', title: 'صفر إعلانات. صفر مشتتات.',   sub: 'عبادتك بينك وبين الله. لا إعلانات، لا تتبع، لا ضوضاء.' },
+      { icon: '🔒', title: 'بياناتك ملكك وحدك.',          sub: 'لا نبيع أو نشارك بياناتك أبداً. سجل عبادتك خاص دائماً.' },
+      { icon: '⚡', title: 'سريع وهادئ ومركّز.',           sub: 'مصمم للاستخدام اليومي في أقل من ٦٠ ثانية. بساطة بلا تعقيد.' },
+    ],
+    featuresTitle: 'كل ما تحتاجه. بلا زيادة.',
+    featuresSub:   'مبني حول الطريقة التي يتعبد بها المسلمون فعلاً — وليس تطبيق عادات عام بمظهر إسلامي.',
     feat: [
-      { icon: '🕌', title: 'الصلوات الخمس',    sub: 'الفرض والسنة والأذكار — تابع الأهم.' },
-      { icon: '📖', title: 'تلاوة القرآن',      sub: 'الصفحات اليومية وقائمة السور الشخصية.' },
-      { icon: '📿', title: 'الذكر والأذكار',    sub: 'الصباح والمساء والاستغفار والصلاة على النبي.' },
-      { icon: '🌙', title: 'متابعة الصيام',     sub: 'رمضان والاثنين والخميس والأيام البيض والقضاء.' },
-      { icon: '🔥', title: 'نظام السلسلة',      sub: 'مبني على الصلاة. يحفّزك دون أن يُقلقك.' },
-      { icon: '🎨', title: 'ثيمات جميلة',       sub: 'غيّر المظهر. احتفظ بالروح.' },
+      { icon: '🕌', title: 'الصلوات الخمس',    sub: 'الفرض والسنة الراتبة والأذكار بعد كل صلاة.',                color: '#059669' },
+      { icon: '📖', title: 'تلاوة القرآن',      sub: 'الصفحات اليومية وقائمة السور الشخصية وسورة الكهف.',         color: '#7c3aed' },
+      { icon: '📿', title: 'الذكر والأذكار',    sub: 'أذكار الصباح والمساء والاستغفار والتسبيح والصلاة على النبي.', color: '#0d9488' },
+      { icon: '🌙', title: 'متابعة الصيام',     sub: 'رمضان والاثنين والخميس والأيام البيض وسجلات القضاء.',        color: '#b45309' },
+      { icon: '🔥', title: 'السلسلة والنقاط',   sub: 'نظام نقاط يومي. سلسلتك مبنية على الصلاة وحدها.',            color: '#dc2626' },
+      { icon: '🎨', title: 'ثيمات جميلة',       sub: 'ثيمات مميزة تغيّر طابع التطبيق بالكامل.',                   color: '#C9AA71' },
     ],
     howTitle: 'ابدأ في ٦٠ ثانية',
     steps: [
-      { n: '١', title: 'أنشئ حسابك',          sub: 'مجاني. بدون بطاقة ائتمان. يستغرق ٣٠ ثانية.' },
-      { n: '٢', title: 'اضبط تفضيلاتك',       sub: 'اختر دولتك ولغتك والأنشطة التي تريد متابعتها.' },
-      { n: '٣', title: 'ابدأ يومك بخير',       sub: 'افتح التطبيق كل يوم وسجّل عباداتك.' },
+      { n: '٠١', title: 'أنشئ حسابك المجاني',      sub: 'بدون بطاقة ائتمان. بدون التزامات. ٣٠ ثانية فقط.' },
+      { n: '٠٢', title: 'اضبط تفضيلاتك',           sub: 'اختر دولتك ولغتك والأنشطة التي تهمك.' },
+      { n: '٠٣', title: 'ابدأ يومك بخير',           sub: 'افتح التطبيق كل صباح وسجّل عباداتك أولاً بأول.' },
     ],
-    premiumTitle: 'تعمّق مع بريميوم',
-    premiumSub:   'رسوم رمزية. تدعم المشروع. تفتح كل شيء.',
-    premFree: [
-      'الصلوات الخمس',
-      'سجل تلاوة القرآن',
-      'أذكار الصباح والمساء',
-      'متابعة السلسلة الأساسية',
-      'ثيم واحد (ليل المدينة)',
-    ],
-    premPaid: [
-      'كل ما في النسخة المجانية',
-      'ثيمات غير محدودة',
-      'إحصائيات متقدمة',
-      'دعم أولوية',
-      'مساعدة في إبقاء التطبيق حياً',
-    ],
-    freeLabel:    'مجاني',
-    premLabel:    'بريميوم',
-    premPrice:    'من ١.٩٩$ / شهر',
-    ctaTitle:     'ابدأ بـ بسم الله',
-    ctaSub:       'انضم إلى آلاف المسلمين الذين يبنون عادات يومية أقوى.',
-    ctaBtn:       'أنشئ حسابك المجاني',
-    terms:        'الشروط',
-    privacy:      'الخصوصية',
-    support:      'الدعم',
+    premiumTitle: 'مجاني للأبد — أو تعمّق أكثر',
+    premiumSub:   'ابدأ مجاناً. ارتقِ عندما تكون مستعداً. ألغِ في أي وقت.',
+    premFree:  ['متابعة الصلوات الخمس', 'سجل تلاوة القرآن', 'أذكار الصباح والمساء', 'متابعة الصيام', 'السلسلة والنقاط الأساسية'],
+    premPaid:  ['كل ما في النسخة المجانية', 'ثيمات جميلة غير محدودة', 'تقارير وإحصائيات متقدمة', 'تصدير البيانات (CSV)', 'دعم أولوية'],
+    freeLabel:   'مجاني',
+    premLabel:   'بريميوم',
+    premPrice:   'من ١.٩٩$ / شهر',
+    ctaTitle:    'ابدأ بسم الله',
+    ctaSub:      'انضم إلى مسلمين حول العالم يبنون عادات يومية أقوى، صلاةً بصلاة.',
+    ctaBtn:      'أنشئ حسابك المجاني',
+    terms: 'الشروط', privacy: 'الخصوصية', support: 'الدعم',
   },
 }
 
-// ─── Decorative SVG background ───────────────────────────
-function StarBg() {
-  return (
-    <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 390 844"
-      xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <radialGradient id="lg-glow" cx="50%" cy="30%" r="55%">
-        <stop offset="0%"   stopColor="#C9AA71" stopOpacity="0.13"/>
-        <stop offset="100%" stopColor="#C9AA71" stopOpacity="0"/>
-      </radialGradient>
-      <rect width="390" height="844" fill="url(#lg-glow)"/>
-      <g transform="translate(195,210)" fill="none" stroke="#C9AA71" strokeWidth="0.7" opacity="0.15">
-        <polygon points="0,-88 20,-20 88,0 20,20 0,88 -20,20 -88,0 -20,-20"/>
-        <polygon points="0,-62 14,-14 62,0 14,14 0,62 -14,14 -62,0 -14,-14"/>
-        <circle r="96"/><circle r="66"/><circle r="34"/>
-        <line x1="0" y1="-96" x2="0" y2="96"/>
-        <line x1="-96" y1="0" x2="96" y2="0"/>
-        <line x1="-68" y1="-68" x2="68" y2="68"/>
-        <line x1="68" y1="-68" x2="-68" y2="68"/>
-      </g>
-      {[[36,330],[354,280],[60,440],[328,390],[88,310],[302,340]].map(([cx,cy],i)=>(
-        <circle key={i} cx={cx} cy={cy} r={i%2===0?1.4:0.9} fill="#C9AA71" opacity={i%2===0?0.28:0.16}/>
-      ))}
-    </svg>
-  )
-}
-
-// ─── Section divider ─────────────────────────────────────
-function Divider() {
-  return <div className="w-10 h-px bg-[#C9AA71]/25 mx-auto my-6"/>
-}
-
-// ─── Main Component ───────────────────────────────────────
 export default function LandingPage() {
   const { lang, dir } = useLang()
   const t = T[lang]
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
-
-  const go = (path: string, key: string) => {
-    setLoading(key)
-    router.push(path)
-  }
+  const go = (path: string, key: string) => { setLoading(key); router.push(path) }
 
   return (
-    <div dir={dir} className="relative flex flex-col min-h-full overflow-y-auto" style={{ background: '#0D1F2D' }}>
+    /* Full-screen — breaks out of phone frame */
+    <div
+      dir={dir}
+      className="fixed inset-0 z-50 overflow-y-auto"
+      style={{ background: '#0D1F2D', fontFamily: 'system-ui, -apple-system, sans-serif' }}
+    >
 
-      {/* ── STICKY TOP NAV ── */}
-      <div className="sticky top-0 z-30 flex items-center justify-between px-5 py-3"
-        style={{ background: 'rgba(13,31,45,0.92)', backdropFilter: 'blur(12px)' }}>
-        <span className="text-[16px] font-bold text-[#C9AA71] tracking-wide">{t.appName}</span>
+      {/* ── STICKY NAV ── */}
+      <nav className="sticky top-0 z-30 flex items-center justify-between px-5 py-3 border-b border-white/[0.06]"
+           style={{ background: 'rgba(13,31,45,0.95)', backdropFilter: 'blur(16px)' }}>
+        <div className={cn('flex items-center gap-2', dir === 'rtl' && 'flex-row-reverse')}>
+          <span className="text-[18px]">🌙</span>
+          <span className="text-[17px] font-black tracking-tight"
+                style={{ background: 'linear-gradient(135deg, #E8D49E, #C9AA71)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            {t.appName}
+          </span>
+        </div>
         <div className={cn('flex items-center gap-3', dir === 'rtl' && 'flex-row-reverse')}>
           <LangToggle />
-          <button
-            onClick={() => go('/login', 'login')}
-            disabled={!!loading}
-            className="text-[12px] font-medium text-white/60 border border-white/15 rounded-[8px] px-3 py-[5px] active:bg-white/10 disabled:opacity-50"
-          >
+          <button onClick={() => go('/login', 'login')} disabled={!!loading}
+            className="text-[12px] font-semibold text-white/60 border border-white/15 rounded-[8px] px-3 py-[6px] hover:border-white/30 transition-colors disabled:opacity-50">
             {loading === 'login' ? '...' : t.signIn}
           </button>
         </div>
-      </div>
+      </nav>
 
-      {/* ══════════════════════════════════════════════════ */}
-      {/* HERO SECTION                                      */}
-      {/* ══════════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden pt-8 pb-10 px-6">
-        <StarBg />
-        <div className="relative z-10 flex flex-col items-center text-center">
+      {/* ══ HERO ══ */}
+      <section className="relative overflow-hidden" style={{ background: 'linear-gradient(160deg, #0D1F2D 0%, #132d1f 50%, #0D1F2D 100%)' }}>
 
-          {/* Lantern icon */}
-          <svg width="64" height="64" viewBox="0 0 76 76" fill="none" aria-hidden="true" className="mb-4 opacity-90">
-            <line x1="38" y1="2" x2="38" y2="11" stroke="#C9AA71" strokeWidth="1.5" strokeLinecap="round"/>
-            <path d="M24,12 Q38,7 52,12 L56,56 Q38,63 20,56 Z" stroke="#C9AA71" strokeWidth="1.3" fill="rgba(201,170,113,0.07)"/>
-            <line x1="29" y1="12" x2="26" y2="56" stroke="#C9AA71" strokeWidth="0.7" opacity="0.4"/>
-            <line x1="38" y1="10" x2="38" y2="56" stroke="#C9AA71" strokeWidth="0.7" opacity="0.4"/>
-            <line x1="47" y1="12" x2="50" y2="56" stroke="#C9AA71" strokeWidth="0.7" opacity="0.4"/>
-            <line x1="20" y1="28" x2="56" y2="28" stroke="#C9AA71" strokeWidth="0.7" opacity="0.35"/>
-            <line x1="19" y1="42" x2="57" y2="42" stroke="#C9AA71" strokeWidth="0.7" opacity="0.35"/>
-            <ellipse cx="38" cy="34" rx="8" ry="10" fill="rgba(201,170,113,0.15)"/>
-            <ellipse cx="38" cy="34" rx="3.5" ry="4.5" fill="rgba(201,170,113,0.32)"/>
-            <path d="M22,12 Q38,5 54,12" stroke="#C9AA71" strokeWidth="1.6" fill="none" strokeLinecap="round"/>
-            <path d="M20,56 Q38,63 56,56 L53,64 Q38,70 23,64 Z" stroke="#C9AA71" strokeWidth="1.1" fill="rgba(201,170,113,0.1)"/>
+        {/* Background glow + geometry */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute top-[-80px] left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full opacity-[0.12]"
+               style={{ background: 'radial-gradient(circle, #C9AA71, transparent 65%)' }}/>
+          {/* Islamic star */}
+          <svg className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[500px] opacity-[0.07]"
+               viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(250,170)" stroke="#C9AA71" strokeWidth="0.8" fill="none">
+              <polygon points="0,-120 28,-28 120,0 28,28 0,120 -28,28 -120,0 -28,-28"/>
+              <polygon points="0,-85 20,-20 85,0 20,20 0,85 -20,20 -85,0 -20,-20"/>
+              <circle r="130"/><circle r="92"/><circle r="48"/>
+              <line x1="0" y1="-130" x2="0" y2="130"/>
+              <line x1="-130" y1="0" x2="130" y2="0"/>
+              <line x1="-92" y1="-92" x2="92" y2="92"/>
+              <line x1="92" y1="-92" x2="-92" y2="92"/>
+            </g>
           </svg>
+        </div>
 
-          <h1 className="text-[30px] font-bold text-[#C9AA71] tracking-wide mb-1">{t.appName}</h1>
-          <p className="text-[12px] font-medium tracking-[0.18em] uppercase text-[#C9AA71]/45 mb-5">{t.appNameAr}</p>
+        <div className="relative z-10 max-w-[680px] mx-auto px-6 pt-16 pb-14 text-center">
+          {/* Tag */}
+          <div className="inline-flex items-center gap-2 bg-[#C9AA71]/10 border border-[#C9AA71]/25 rounded-full px-4 py-[6px] mb-8">
+            <span className="text-[11px] font-bold text-[#C9AA71] tracking-widest uppercase">{t.heroTag}</span>
+          </div>
 
-          <h2 className="text-[22px] font-semibold text-white leading-tight mb-2">{t.tagline}</h2>
-          <p className="text-[14px] text-white/55 leading-relaxed max-w-[280px]">{t.taglineSub}</p>
+          {/* Main headline */}
+          <h1 className="font-black leading-[1.05] mb-6" style={{ fontSize: 'clamp(38px, 8vw, 72px)' }}>
+            <span className="block text-white">{t.heroTitle1}</span>
+            <span className="block text-white">{t.heroTitle2}</span>
+            <span className="block"
+                  style={{ background: 'linear-gradient(135deg, #E8D49E 0%, #C9AA71 50%, #A8885A 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              {t.heroTitle3}
+            </span>
+          </h1>
 
-          <div className="w-10 h-px bg-[#C9AA71]/25 my-5"/>
+          <p className="text-[15px] text-white/55 leading-relaxed max-w-[380px] mx-auto mb-8">{t.heroSub}</p>
 
-          <p className="text-[16px] text-[#C9AA71]/75 font-light mb-1">{t.verse}</p>
-          <p className="text-[10px] text-[#C9AA71]/40">{t.verseRef}</p>
+          {/* Social proof pills */}
+          <div className="flex justify-center flex-wrap gap-2 mb-10">
+            {[t.social1, t.social2, t.social3].map((s, i) => (
+              <span key={i} className="text-[11px] font-semibold text-[#C9AA71]/70 bg-[#C9AA71]/08 border border-[#C9AA71]/20 rounded-full px-3 py-[4px]">
+                ✓ {s}
+              </span>
+            ))}
+          </div>
 
           {/* CTAs */}
-          <div className="w-full mt-8 flex flex-col gap-3">
-            <button
-              onClick={() => go('/register', 'register')}
-              disabled={!!loading}
-              className="w-full py-[15px] rounded-[14px] bg-[#C9AA71] text-[#0D1F2D] text-[15px] font-bold tracking-wide transition-opacity active:opacity-80 disabled:opacity-60"
-            >
+          <div className="flex flex-col items-center gap-3 max-w-[340px] mx-auto">
+            <button onClick={() => go('/register', 'register')} disabled={!!loading}
+              className="w-full py-[16px] rounded-[16px] text-[15px] font-black tracking-wide transition-all active:scale-[0.98] disabled:opacity-60 shadow-lg"
+              style={{ background: 'linear-gradient(135deg, #C9AA71 0%, #A8885A 100%)', color: '#0D1F2D', boxShadow: '0 8px 32px rgba(201,170,113,0.3)' }}>
               {loading === 'register' ? '...' : t.joinNow}
             </button>
-            <button
-              onClick={() => go('/today', 'guest')}
-              disabled={!!loading}
-              className="text-[12px] text-white/30 py-1 active:text-white/50"
-            >
-              <span className="border-b border-white/15">{t.guestLink}</span>
+            <button onClick={() => go('/today', 'guest')} disabled={!!loading}
+              className="text-[12px] text-white/25 hover:text-white/45 transition-colors py-1">
+              {t.guestLink}
             </button>
           </div>
-        </div>
-      </div>
 
-      {/* ══════════════════════════════════════════════════ */}
-      {/* VALUE PROPS                                       */}
-      {/* ══════════════════════════════════════════════════ */}
-      <div className="px-5 py-8" style={{ background: '#0F2233' }}>
-        <div className="flex flex-col gap-4">
-          {[
-            { icon: '🚫', title: t.vp1Title, sub: t.vp1Sub },
-            { icon: '🔒', title: t.vp2Title, sub: t.vp2Sub },
-            { icon: '✨', title: t.vp3Title, sub: t.vp3Sub },
-          ].map((vp, i) => (
-            <div key={i} className={cn('flex items-start gap-4', dir === 'rtl' && 'flex-row-reverse')}>
-              <div className="w-10 h-10 rounded-[12px] bg-[#C9AA71]/10 flex items-center justify-center text-[20px] flex-shrink-0">
-                {vp.icon}
+          {/* Quranic verse */}
+          <div className="mt-12 pt-8 border-t border-white/[0.07]">
+            <p className="text-[18px] text-[#C9AA71]/65 font-light mb-1" style={{ fontFamily: 'serif' }}>{t.verse}</p>
+            <p className="text-[11px] text-white/25">{t.verseRef}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ VALUE PROPS ══ */}
+      <section className="px-5 py-14 max-w-[680px] mx-auto">
+        <h2 className={cn('text-[22px] font-black text-white mb-8', dir === 'rtl' ? 'text-right' : 'text-center')}>{t.vpTitle}</h2>
+        <div className="grid gap-4">
+          {t.vp.map((v, i) => (
+            <div key={i} className={cn('flex items-start gap-5 bg-white/[0.04] border border-white/[0.08] rounded-[18px] p-5 hover:border-white/[0.14] transition-colors', dir === 'rtl' && 'flex-row-reverse')}>
+              <div className="w-12 h-12 rounded-[14px] bg-[#C9AA71]/10 border border-[#C9AA71]/20 flex items-center justify-center text-[22px] flex-shrink-0">
+                {v.icon}
               </div>
               <div className={dir === 'rtl' ? 'text-right' : ''}>
-                <p className="text-[14px] font-semibold text-white mb-[2px]">{vp.title}</p>
-                <p className="text-[12px] text-white/45 leading-relaxed">{vp.sub}</p>
+                <p className="text-[15px] font-bold text-white mb-1">{v.title}</p>
+                <p className="text-[13px] text-white/40 leading-relaxed">{v.sub}</p>
               </div>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* ══════════════════════════════════════════════════ */}
-      {/* FEATURES                                          */}
-      {/* ══════════════════════════════════════════════════ */}
-      <div className="px-5 py-8" style={{ background: '#0D1F2D' }}>
-        <div className={cn('text-center mb-6', dir === 'rtl' && 'text-right')}>
-          <p className="text-[18px] font-bold text-white mb-1">{t.featuresTitle}</p>
-          <p className="text-[12px] text-white/45 leading-relaxed">{t.featuresSub}</p>
+      {/* ══ FEATURES ══ */}
+      <section className="px-5 py-14 max-w-[680px] mx-auto" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className={cn('mb-10', dir === 'rtl' ? 'text-right' : 'text-center')}>
+          <h2 className="text-[22px] font-black text-white mb-2">{t.featuresTitle}</h2>
+          <p className="text-[13px] text-white/40 leading-relaxed max-w-[400px] mx-auto">{t.featuresSub}</p>
         </div>
         <div className="grid grid-cols-2 gap-3">
           {t.feat.map((f, i) => (
-            <div key={i} className="bg-white/5 border border-white/8 rounded-[14px] p-4">
-              <span className="text-[22px] block mb-2">{f.icon}</span>
-              <p className="text-[13px] font-semibold text-[#C9AA71] mb-1">{f.title}</p>
-              <p className="text-[11px] text-white/40 leading-relaxed">{f.sub}</p>
+            <div key={i} className="bg-white/[0.04] border border-white/[0.08] rounded-[18px] p-5 hover:border-white/[0.14] transition-colors">
+              <div className="w-11 h-11 rounded-[12px] flex items-center justify-center text-[22px] mb-3 flex-shrink-0"
+                   style={{ background: f.color + '18', border: `1px solid ${f.color}30` }}>
+                {f.icon}
+              </div>
+              <p className="text-[13px] font-bold text-white mb-1">{f.title}</p>
+              <p className="text-[11px] text-white/35 leading-relaxed">{f.sub}</p>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* ══════════════════════════════════════════════════ */}
-      {/* HOW IT WORKS                                      */}
-      {/* ══════════════════════════════════════════════════ */}
-      <div className="px-5 py-8" style={{ background: '#0F2233' }}>
-        <p className={cn('text-[18px] font-bold text-white mb-6', dir === 'rtl' ? 'text-right' : 'text-center')}>{t.howTitle}</p>
-        <div className="flex flex-col gap-4">
+      {/* ══ HOW IT WORKS ══ */}
+      <section className="px-5 py-14 max-w-[680px] mx-auto" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <h2 className={cn('text-[22px] font-black text-white mb-10', dir === 'rtl' ? 'text-right' : 'text-center')}>{t.howTitle}</h2>
+        <div className="flex flex-col gap-0">
           {t.steps.map((s, i) => (
-            <div key={i} className={cn('flex items-start gap-4', dir === 'rtl' && 'flex-row-reverse')}>
-              <div className="w-9 h-9 rounded-full bg-[#C9AA71] flex items-center justify-center text-[#0D1F2D] font-bold text-[14px] flex-shrink-0">
+            <div key={i} className={cn('flex items-start gap-5 relative', dir === 'rtl' && 'flex-row-reverse')}>
+              {/* Connector line */}
+              {i < t.steps.length - 1 && (
+                <div className="absolute left-[22px] top-[48px] w-[2px] h-[calc(100%-4px)] bg-gradient-to-b from-[#C9AA71]/40 to-transparent"
+                     style={{ left: dir === 'rtl' ? 'auto' : 22, right: dir === 'rtl' ? 22 : 'auto' }}/>
+              )}
+              <div className="w-11 h-11 rounded-full flex items-center justify-center font-black text-[13px] flex-shrink-0 relative z-10"
+                   style={{ background: 'linear-gradient(135deg, #C9AA71, #A8885A)', color: '#0D1F2D' }}>
                 {s.n}
               </div>
-              <div className={cn('flex-1 pt-1', dir === 'rtl' && 'text-right')}>
-                <p className="text-[14px] font-semibold text-white mb-[2px]">{s.title}</p>
-                <p className="text-[12px] text-white/45 leading-relaxed">{s.sub}</p>
+              <div className={cn('flex-1 pb-10', dir === 'rtl' && 'text-right')}>
+                <p className="text-[15px] font-bold text-white mb-1">{s.title}</p>
+                <p className="text-[13px] text-white/40 leading-relaxed">{s.sub}</p>
               </div>
-              {i < t.steps.length - 1 && (
-                <div className="absolute" style={{ display: 'none' }}/>
-              )}
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* ══════════════════════════════════════════════════ */}
-      {/* PREMIUM TEASER                                    */}
-      {/* ══════════════════════════════════════════════════ */}
-      <div className="px-5 py-8" style={{ background: '#0D1F2D' }}>
-        <div className="text-center mb-5">
-          <p className="text-[18px] font-bold text-white mb-1">{t.premiumTitle}</p>
-          <p className="text-[12px] text-white/45">{t.premiumSub}</p>
+      {/* ══ PREMIUM ══ */}
+      <section className="px-5 py-14 max-w-[680px] mx-auto" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className={cn('mb-8', dir === 'rtl' ? 'text-right' : 'text-center')}>
+          <h2 className="text-[22px] font-black text-white mb-2">{t.premiumTitle}</h2>
+          <p className="text-[13px] text-white/40">{t.premiumSub}</p>
         </div>
         <div className="grid grid-cols-2 gap-3">
           {/* Free */}
-          <div className="bg-white/5 border border-white/10 rounded-[16px] p-4">
-            <p className="text-[12px] font-bold text-white/50 uppercase tracking-wide mb-3">{t.freeLabel}</p>
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-[20px] p-5">
+            <p className="text-[11px] font-black text-white/40 uppercase tracking-widest mb-4">{t.freeLabel}</p>
+            <p className="text-[28px] font-black text-white mb-1">$0</p>
+            <p className="text-[11px] text-white/30 mb-5">forever</p>
             {t.premFree.map((item, i) => (
               <div key={i} className={cn('flex items-start gap-2 mb-2', dir === 'rtl' && 'flex-row-reverse')}>
-                <span className="text-white/40 text-[11px] mt-[1px] flex-shrink-0">✓</span>
-                <span className="text-[11px] text-white/50 leading-tight">{item}</span>
+                <span className="text-white/30 text-[10px] mt-[2px] flex-shrink-0">✓</span>
+                <span className="text-[11px] text-white/45 leading-snug">{item}</span>
               </div>
             ))}
-            <p className="text-[12px] font-bold text-white/30 mt-3">$0</p>
           </div>
           {/* Premium */}
-          <div className="bg-[#C9AA71]/10 border border-[#C9AA71]/30 rounded-[16px] p-4">
-            <p className="text-[12px] font-bold text-[#C9AA71] uppercase tracking-wide mb-3">⭐ {t.premLabel}</p>
+          <div className="rounded-[20px] p-5 relative overflow-hidden"
+               style={{ background: 'linear-gradient(145deg, rgba(201,170,113,0.12), rgba(201,170,113,0.06))', border: '1px solid rgba(201,170,113,0.35)' }}>
+            <div className="absolute top-3 right-3 bg-[#C9AA71] text-[#0D1F2D] text-[9px] font-black px-2 py-[3px] rounded-full uppercase tracking-wide"
+                 style={{ left: dir === 'rtl' ? 12 : 'auto', right: dir === 'rtl' ? 'auto' : 12 }}>
+              ⭐ {t.premLabel}
+            </div>
+            <p className="text-[11px] font-black text-[#C9AA71]/60 uppercase tracking-widest mb-4">{t.premLabel}</p>
+            <p className="text-[28px] font-black text-[#C9AA71] mb-1">{t.premPrice.split('/')[0]}</p>
+            <p className="text-[11px] text-[#C9AA71]/40 mb-5">/ {t.premPrice.split('/')[1]}</p>
             {t.premPaid.map((item, i) => (
               <div key={i} className={cn('flex items-start gap-2 mb-2', dir === 'rtl' && 'flex-row-reverse')}>
-                <span className="text-[#C9AA71] text-[11px] mt-[1px] flex-shrink-0">✓</span>
-                <span className="text-[11px] text-white/70 leading-tight">{item}</span>
+                <span className="text-[#C9AA71] text-[10px] mt-[2px] flex-shrink-0">✓</span>
+                <span className="text-[11px] text-white/65 leading-snug">{item}</span>
               </div>
             ))}
-            <p className="text-[11px] font-bold text-[#C9AA71] mt-3">{t.premPrice}</p>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* ══════════════════════════════════════════════════ */}
-      {/* FINAL CTA                                         */}
-      {/* ══════════════════════════════════════════════════ */}
-      <div className="px-5 py-10 text-center" style={{ background: '#0F2233' }}>
-        <p className="text-[22px] font-bold text-[#C9AA71] mb-2">{t.ctaTitle}</p>
-        <p className="text-[13px] text-white/50 mb-7 leading-relaxed max-w-[260px] mx-auto">{t.ctaSub}</p>
-        <button
-          onClick={() => go('/register', 'register2')}
-          disabled={!!loading}
-          className="w-full py-[16px] rounded-[14px] bg-[#C9AA71] text-[#0D1F2D] text-[15px] font-bold tracking-wide disabled:opacity-60 active:opacity-80"
-        >
+      {/* ══ FINAL CTA ══ */}
+      <section className="px-5 py-16 text-center max-w-[680px] mx-auto" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="text-[48px] mb-5">🌙</div>
+        <h2 className="text-[28px] font-black mb-3"
+            style={{ background: 'linear-gradient(135deg, #E8D49E, #C9AA71)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          {t.ctaTitle}
+        </h2>
+        <p className="text-[14px] text-white/45 mb-8 max-w-[320px] mx-auto leading-relaxed">{t.ctaSub}</p>
+        <button onClick={() => go('/register', 'register2')} disabled={!!loading}
+          className="w-full max-w-[340px] py-[17px] rounded-[16px] text-[16px] font-black tracking-wide mx-auto block transition-all active:scale-[0.98] disabled:opacity-60"
+          style={{ background: 'linear-gradient(135deg, #C9AA71 0%, #A8885A 100%)', color: '#0D1F2D', boxShadow: '0 12px 40px rgba(201,170,113,0.35)' }}>
           {loading === 'register2' ? '...' : t.ctaBtn}
         </button>
-      </div>
+      </section>
 
-      {/* ══════════════════════════════════════════════════ */}
-      {/* FOOTER                                            */}
-      {/* ══════════════════════════════════════════════════ */}
-      <div className="px-5 py-6 flex justify-center gap-6 safe-bottom" style={{ background: '#0D1F2D' }}>
-        {[
-          [t.terms,   '/terms'],
-          [t.privacy, '/privacy'],
-          [t.support, '/support'],
-        ].map(([label, href]) => (
+      {/* ══ FOOTER ══ */}
+      <footer className="px-5 py-6 flex justify-center gap-8 border-t border-white/[0.06]">
+        {[[t.terms, '/terms'], [t.privacy, '/privacy'], [t.support, '/support']].map(([label, href]) => (
           <button key={href} onClick={() => router.push(href)}
-            className="text-[11px] text-white/25 active:text-white/50">
+            className="text-[11px] text-white/20 hover:text-white/45 transition-colors">
             {label}
           </button>
         ))}
-      </div>
+      </footer>
 
     </div>
   )
