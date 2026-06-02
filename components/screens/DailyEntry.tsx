@@ -787,25 +787,39 @@ export default function DailyEntry({
                   <NumberInput value={quran.pagesRead} onChange={v => updateQuran('pagesRead', v)} max={604}/>
                 </div>
               )}
-              {show('daily_surahs') && userSurahs.length >= 3 && (
-                <>
-                  <div className={`flex items-center justify-between px-[14px] py-[10px] border-b border-gray-100 cursor-pointer ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}
-                    onClick={() => setSurahsOpen(!surahsOpen)}>
-                    <div className={`flex items-center gap-2 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
-                      <span className="text-[15px]">📚</span>
-                      <span className="text-[13px] text-gray-900">{t.surahs}</span>
-                      <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-[2px] rounded-full">{userSurahs.length}</span>
-                    </div>
-                    <span className={`text-gray-400 text-[12px] transition-transform ${surahsOpen ? 'rotate-180' : ''}`}>▾</span>
+              {show('daily_surahs') && userSurahs.length > 0 && (() => {
+                const doneCount = userSurahs.filter(s => surahChecks[s.id]).length
+                const total     = userSurahs.length
+                const surahRow  = (s: typeof userSurahs[0]) => (
+                  <div key={s.id} className={`flex items-center gap-3 pl-10 pr-[14px] py-[9px] border-b border-gray-100 last:border-b-0 ${dir === 'rtl' ? 'flex-row-reverse pl-[14px] pr-10' : ''}`}>
+                    <span className="flex-1 text-[13px] text-gray-900">{lang === 'ar' ? s.surahNameAr : s.surahNameEn}</span>
+                    <CheckBox checked={surahChecks[s.id] ?? false} onChange={v => updateSurah(s.id, v)}/>
                   </div>
-                  {surahsOpen && userSurahs.map(s => (
-                    <div key={s.id} className={`flex items-center gap-3 pl-10 pr-[14px] py-[9px] border-b border-gray-100 last:border-b-0 ${dir === 'rtl' ? 'flex-row-reverse pl-[14px] pr-10' : ''}`}>
-                      <span className="flex-1 text-[13px] text-gray-900">{lang === 'ar' ? s.surahNameAr : s.surahNameEn}</span>
-                      <CheckBox checked={surahChecks[s.id] ?? false} onChange={v => updateSurah(s.id, v)}/>
+                )
+                // 1–2 surahs: show inline, no toggle
+                if (total <= 2) {
+                  return <>{userSurahs.map(surahRow)}</>
+                }
+                // 3+ surahs: collapsible with X/Y counter
+                return (
+                  <>
+                    <div className={`flex items-center justify-between px-[14px] py-[10px] border-b border-gray-100 cursor-pointer ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}
+                      onClick={() => setSurahsOpen(!surahsOpen)}>
+                      <div className={`flex items-center gap-2 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                        <span className="text-[15px]">📚</span>
+                        <span className="text-[13px] text-gray-900">{t.surahs}</span>
+                      </div>
+                      <div className={`flex items-center gap-2 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                        <span className={`text-[11px] font-bold px-2 py-[2px] rounded-full ${doneCount === total ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                          {doneCount}/{total}
+                        </span>
+                        <span className={`text-gray-400 text-[12px] transition-transform inline-block ${surahsOpen ? 'rotate-180' : ''}`}>▾</span>
+                      </div>
                     </div>
-                  ))}
-                </>
-              )}
+                    {surahsOpen && userSurahs.map(surahRow)}
+                  </>
+                )
+              })()}
               {show('surah_kahf') && isFriday && (
                 <div className={`flex items-center px-[14px] py-[10px] border-t border-gray-100 gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
                   <span className="text-[14px] w-5 text-center flex-shrink-0">📖</span>
