@@ -71,6 +71,7 @@ model User {
   pointRedemptions  PointRedemption[]
   tasks             Task[]
   diaryEntries      DiaryEntry[]
+  userAzkars        UserAzkar[]
 
   @@map("users")
 }
@@ -294,6 +295,7 @@ model DhikrLog {
   istighfarCount    Int     @default(0)
   salawatCount      Int     @default(0)
   tasbihCount       Int     @default(0)   // 33×3 post-prayer tasbih count
+  customAzkarDone   String[]  @default([])   // UserAzkar IDs completed today
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -770,4 +772,53 @@ model DiaryEntry {
 
   @@index([userId])
   @@map("diary_entries")
+}
+
+// ─────────────────────────────────────────────────────────
+// AZKAR DEFINITIONS (admin-managed)
+// ─────────────────────────────────────────────────────────
+
+enum AzkarCategory {
+  MORNING
+  EVENING
+  CUSTOM
+}
+
+model AzkarDefinition {
+  id            String        @id @default(cuid())
+  category      AzkarCategory
+  textAr        String        @db.Text
+  translationEn String?       @db.Text
+  translationAr String?       @db.Text
+  repetitions   Int           @default(1)
+  sortOrder     Int           @default(0)
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  userAzkars UserAzkar[]
+
+  @@map("azkar_definitions")
+}
+
+// ─────────────────────────────────────────────────────────
+// USER CUSTOM AZKAR
+// ─────────────────────────────────────────────────────────
+
+model UserAzkar {
+  id                 String           @id @default(cuid())
+  userId             String
+  azkarDefinitionId  String?
+  textAr             String           @db.Text
+  translationEn      String?
+  translationAr      String?
+  repetitions        Int              @default(1)
+  sortOrder          Int              @default(0)
+  createdAt          DateTime         @default(now())
+
+  user            User             @relation(fields: [userId],             references: [id], onDelete: Cascade)
+  azkarDefinition AzkarDefinition? @relation(fields: [azkarDefinitionId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@map("user_azkars")
 }

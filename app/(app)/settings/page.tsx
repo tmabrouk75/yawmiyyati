@@ -7,7 +7,7 @@ export default async function SettingsPage() {
   const user = await getAuthUser()
   if (!user) redirect('/login')
 
-  const [userActivities, userSurahs, qadaRecords] = await Promise.all([
+  const [userActivities, userSurahs, qadaRecords, userAzkars] = await Promise.all([
     prisma.userActivity.findMany({
       where: { userId: user.id },
       include: {
@@ -27,6 +27,10 @@ export default async function SettingsPage() {
     prisma.qadaRecord.findMany({
       where: { userId: user.id },
       orderBy: { ramadanYear: 'desc' },
+    }),
+    prisma.userAzkar.findMany({
+      where: { userId: user.id },
+      orderBy: { sortOrder: 'asc' },
     }),
   ])
 
@@ -55,6 +59,13 @@ export default async function SettingsPage() {
       }))}
       userSurahs={userSurahs}
       qadaRecords={qadaRecords}
+      userAzkars={userAzkars.map(a => ({
+        id:            a.id,
+        textAr:        a.textAr,
+        translationEn: a.translationEn,
+        translationAr: a.translationAr,
+        repetitions:   a.repetitions,
+      }))}
     />
   )
 }

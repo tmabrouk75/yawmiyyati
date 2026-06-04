@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef, useMemo } from 'react'
+import { useState, useCallback, useRef, useMemo, Fragment } from 'react'
 import { useRouter } from 'next/navigation'
 import { usePullToRefresh } from '@/hooks/usePullToRefresh'
 import { CheckBox, FardCheckBox, FardState, NumberInput, ActivityGroup, ActivityRow } from '@/components/ui/ActivityComponents'
@@ -115,6 +115,97 @@ function SunnahAlignedRow({
         <div className="w-[22px] h-[22px]"/>{/* Fard placeholder */}
         <CheckBox checked={checked} onChange={onChange}/>
         {showAzkar && <div className="w-[22px] h-[22px]"/>}{/* Azkar placeholder */}
+      </div>
+
+      {/* ── Azkar Overlays ── */}
+      {showMorningAzkar && (
+        <AzkarOverlay
+          title={lang === 'ar' ? 'أذكار الصباح' : 'Morning Azkar'}
+          defs={morningAzkarDefs}
+          lang={lang}
+          dir={dir}
+          onClose={() => setShowMorningAzkar(false)}
+        />
+      )}
+      {showEveningAzkar && (
+        <AzkarOverlay
+          title={lang === 'ar' ? 'أذكار المساء' : 'Evening Azkar'}
+          defs={eveningAzkarDefs}
+          lang={lang}
+          dir={dir}
+          onClose={() => setShowEveningAzkar(false)}
+        />
+      )}
+
+    </div>
+  )
+}
+
+// ── Azkar Overlay — bottom-sheet showing azkar text ──────────────────
+function AzkarOverlay({
+  title, defs, lang, dir, onClose,
+}: {
+  title: string
+  defs: { id: string; textAr: string; translationEn: string | null; translationAr: string | null; repetitions: number }[]
+  lang: 'en' | 'ar'
+  dir: string
+  onClose: () => void
+}) {
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
+         onClick={onClose}>
+      <div className="w-full max-w-[430px] bg-white rounded-t-[24px] overflow-hidden flex flex-col"
+           style={{ maxHeight: '88vh' }}
+           dir={dir}
+           onClick={e => e.stopPropagation()}>
+        {/* Handle */}
+        <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+          <div className="w-10 h-[4px] rounded-full bg-gray-200"/>
+        </div>
+        {/* Title row */}
+        <div className={`px-4 py-3 flex items-center justify-between flex-shrink-0 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+          <h2 className="text-[17px] font-bold text-gray-900">{title}</h2>
+          <button onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 text-[18px]">
+            ×
+          </button>
+        </div>
+        {/* Content */}
+        <div className="overflow-y-auto flex-1 pb-8 px-4">
+          {defs.length === 0 ? (
+            <p className="text-center text-[13px] text-gray-400 py-10">
+              {lang === 'ar' ? 'لم تُضف أذكار بعد. أضفها من لوحة الإدارة.' : 'No azkar added yet. Add them from the Admin panel.'}
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {defs.map((def, i) => (
+                <div key={def.id} className={`bg-gray-50 rounded-[14px] p-4 ${dir === 'rtl' ? 'text-right' : ''}`}>
+                  <p className="text-[10px] font-bold text-emerald-600 mb-2">{i + 1}</p>
+                  <p className="text-[18px] leading-[1.8] text-gray-900" style={{ fontFamily: 'serif' }}>
+                    {def.textAr}
+                  </p>
+                  {(lang === 'en' ? def.translationEn : def.translationAr) && (
+                    <p className="text-[12px] text-gray-500 mt-2 leading-relaxed">
+                      {lang === 'en' ? def.translationEn : def.translationAr}
+                    </p>
+                  )}
+                  <div className={`flex items-center mt-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                    <span className="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-[3px] font-semibold">
+                      {lang === 'ar' ? `${def.repetitions} مرة` : `${def.repetitions}×`}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        {/* Done button */}
+        <div className="px-4 pb-6 pt-2 flex-shrink-0">
+          <button onClick={onClose}
+            className="w-full py-[14px] rounded-[14px] bg-emerald-600 text-white text-[15px] font-semibold active:opacity-80">
+            {lang === 'ar' ? 'تم' : 'Done'}
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -280,6 +371,17 @@ export default function DailyEntry({
   const t      = T[lang]
   const dir    = lang === 'ar' ? 'rtl' : 'ltr'
   const router = useRouter()
+
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/azkar?category=MORNING').then(r => r.json()),
+      fetch('/api/azkar?category=EVENING').then(r => r.json()),
+    ]).then(([m, e]) => {
+      setMorningAzkarDefs(m.azkar ?? [])
+      setEveningAzkarDefs(e.azkar ?? [])
+    }).catch(() => {})
+  }, [])
+
   const { scrollRef: pullRef, pullY, refreshing } = usePullToRefresh(() => {
     router.refresh()
   })
@@ -375,6 +477,10 @@ export default function DailyEntry({
 
   // ── Period state (female users only)
   const [isPeriod, setIsPeriod] = useState(initialIsPeriod)
+  const [showMorningAzkar,  setShowMorningAzkar]  = useState(false)
+  const [showEveningAzkar,  setShowEveningAzkar]  = useState(false)
+  const [morningAzkarDefs,  setMorningAzkarDefs]  = useState<{id:string;textAr:string;translationEn:string|null;translationAr:string|null;repetitions:number}[]>([])
+  const [eveningAzkarDefs,  setEveningAzkarDefs]  = useState<{id:string;textAr:string;translationEn:string|null;translationAr:string|null;repetitions:number}[]>([])
   const togglePeriod = async () => {
     const next = !isPeriod
     setIsPeriod(next)
@@ -623,6 +729,22 @@ export default function DailyEntry({
               />
             ))}
 
+            {/* Morning Azkar — after Fajr, before Duha */}
+            {show('morning_azkar') && (
+              <div className={`flex items-center px-[14px] py-[10px] border-t border-gray-100 gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                <span className="text-[14px] w-5 text-center flex-shrink-0">🌅</span>
+                <span className={`flex-1 text-[13px] text-gray-700 ${dir === 'rtl' ? 'text-right' : ''}`}>{t.morning}</span>
+                <div className={`flex items-center gap-2 flex-shrink-0 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                  <button onClick={() => setShowMorningAzkar(true)}
+                    className="h-[26px] px-2 rounded-[8px] flex items-center gap-1 text-[10px] font-medium bg-blue-50 border border-blue-200 text-blue-500 active:bg-blue-100 flex-shrink-0">
+                    <span>📖</span>
+                    <span>{lang === 'ar' ? 'اقرأ' : 'Read'}</span>
+                  </button>
+                  <CheckBox checked={dhikr.morningAzkarDone} onChange={v => updateDhikr('morningAzkarDone', v)} variant="azkar"/>
+                </div>
+              </div>
+            )}
+
             {/* 2. Duha — after Fajr, before Dhuhr */}
             {show('duha') && (
               <SunnahAlignedRow
@@ -638,25 +760,40 @@ export default function DailyEntry({
             {PRAYERS_MAIN.map(p => {
               const isJumuah = isFriday && p.key === 'dhuhr'
               return (
-                <PrayerRow
-                  key={p.key}
-                  pKey={p.key}
-                  isMale={gender === 'male'}
-                  hasBefore={!isJumuah && p.hasBefore && show('sunnah_rawatib')}
-                  hasAfter={!isJumuah && p.hasAfter && show('sunnah_rawatib')}
-                  hasAzkar={show('prayer_azkar')}
-                  rakaat={isJumuah ? 2 : p.rakaat}
-                  state={prayer}
-                  onChange={updatePrayer}
-                  onFardChange={updateFard}
-                  lang={lang}
-                  dir={dir}
-                  t={t}
-                  overrideLabel={isJumuah ? t.jumuah : undefined}
-                  overrideSub={isJumuah
-                    ? (lang === 'ar' ? 'فرض · ٢ ركعات' : 'Fard · 2 rakaat')
-                    : undefined}
-                />
+                <Fragment key={p.key}>
+                  <PrayerRow
+                    pKey={p.key}
+                    isMale={gender === 'male'}
+                    hasBefore={!isJumuah && p.hasBefore && show('sunnah_rawatib')}
+                    hasAfter={!isJumuah && p.hasAfter && show('sunnah_rawatib')}
+                    hasAzkar={show('prayer_azkar')}
+                    rakaat={isJumuah ? 2 : p.rakaat}
+                    state={prayer}
+                    onChange={updatePrayer}
+                    onFardChange={updateFard}
+                    lang={lang}
+                    dir={dir}
+                    t={t}
+                    overrideLabel={isJumuah ? t.jumuah : undefined}
+                    overrideSub={isJumuah
+                      ? (lang === 'ar' ? 'فرض · ٢ ركعات' : 'Fard · 2 rakaat')
+                      : undefined}
+                  />
+                  {p.key === 'asr' && show('evening_azkar') && (
+                    <div className={`flex items-center px-[14px] py-[10px] border-t border-gray-100 gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                      <span className="text-[14px] w-5 text-center flex-shrink-0">🌆</span>
+                      <span className={`flex-1 text-[13px] text-gray-700 ${dir === 'rtl' ? 'text-right' : ''}`}>{t.evening}</span>
+                      <div className={`flex items-center gap-2 flex-shrink-0 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                        <button onClick={() => setShowEveningAzkar(true)}
+                          className="h-[26px] px-2 rounded-[8px] flex items-center gap-1 text-[10px] font-medium bg-blue-50 border border-blue-200 text-blue-500 active:bg-blue-100 flex-shrink-0">
+                          <span>📖</span>
+                          <span>{lang === 'ar' ? 'اقرأ' : 'Read'}</span>
+                        </button>
+                        <CheckBox checked={dhikr.eveningAzkarDone} onChange={v => updateDhikr('eveningAzkarDone', v)} variant="azkar"/>
+                      </div>
+                    </div>
+                  )}
+                </Fragment>
               )
             })}
 
@@ -694,20 +831,7 @@ export default function DailyEntry({
               {t.dhikr}
             </p>
             <div className="bg-white border border-gray-200 rounded-[14px] overflow-hidden">
-              {show('morning_azkar') && (
-                <div className={`flex items-center px-[14px] py-[10px] border-b border-gray-100 gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
-                  <span className="text-[14px] w-5 text-center flex-shrink-0">🌅</span>
-                  <span className="flex-1 text-[13px] text-gray-900">{t.morning}</span>
-                  <CheckBox checked={dhikr.morningAzkarDone} onChange={v => updateDhikr('morningAzkarDone', v)}/>
-                </div>
-              )}
-              {show('evening_azkar') && (
-                <div className={`flex items-center px-[14px] py-[10px] border-b border-gray-100 gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
-                  <span className="text-[14px] w-5 text-center flex-shrink-0">🌆</span>
-                  <span className="flex-1 text-[13px] text-gray-900">{t.evening}</span>
-                  <CheckBox checked={dhikr.eveningAzkarDone} onChange={v => updateDhikr('eveningAzkarDone', v)}/>
-                </div>
-              )}
+
               {show('istighfar') && (
                 <div className={`flex items-center px-[14px] py-[10px] border-b border-gray-100 gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
                   <span className="text-[14px] w-5 text-center flex-shrink-0">🤲</span>

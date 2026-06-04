@@ -387,7 +387,15 @@ export default function AdminDashboard() {
         </button>
       </div>
       <div className="mx-4 mb-5 bg-white border border-gray-200 rounded-[14px] overflow-hidden">
-        <a href="/admin/calendar" className={cn('flex items-center gap-3 px-4 py-[13px] border-b border-gray-100 active:bg-gray-50', dir === 'rtl' && 'flex-row-reverse')}>
+        <a href="/admin/azkar" className={cn('flex items-center gap-3 px-4 py-[13px] border-b border-gray-100 active:bg-gray-50', dir === 'rtl' && 'flex-row-reverse')}>
+          <span className="text-[20px]">📿</span>
+          <div className={cn('flex-1', dir === 'rtl' && 'text-right')}>
+            <p className="text-[14px] font-medium text-gray-900">{lang === 'ar' ? 'إدارة الأذكار' : 'Azkar Manager'}</p>
+            <p className="text-[11px] text-gray-400">{lang === 'ar' ? 'أذكار الصباح والمساء والمخصصة' : 'Morning, Evening & Custom azkar'}</p>
+          </div>
+          <span className="text-gray-300">{dir === 'rtl' ? '‹' : '›'}</span>
+        </a>
+                <a href="/admin/calendar" className={cn('flex items-center gap-3 px-4 py-[13px] border-b border-gray-100 active:bg-gray-50', dir === 'rtl' && 'flex-row-reverse')}>
           <span className="text-[20px]">🌙</span>
           <div className={cn('flex-1', dir === 'rtl' && 'text-right')}>
             <p className="text-[14px] font-medium text-gray-900">{lang === 'ar' ? 'إدارة التقويم الإسلامي' : 'Islamic Calendar Manager'}</p>

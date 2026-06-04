@@ -129,6 +129,22 @@ interface UserSurah {
   sortOrder: number
 }
 
+interface UserAzkarItem {
+  id: string
+  textAr: string
+  translationEn: string | null
+  translationAr: string | null
+  repetitions: number
+}
+
+interface AzkarDefItem {
+  id: string
+  textAr: string
+  translationEn: string | null
+  translationAr: string | null
+  repetitions: number
+}
+
 interface QadaRecord {
   id: string
   ramadanYear: number
@@ -145,6 +161,7 @@ interface SettingsProps {
   userActivities: Activity[]
   userSurahs: UserSurah[]
   qadaRecords: QadaRecord[]
+  userAzkars?: UserAzkarItem[]
 }
 
 // ─── CATEGORY ICON MAP ────────────────────────────────────
@@ -298,6 +315,7 @@ export default function Settings({
   userActivities: initialActivities,
   userSurahs: initialSurahs,
   qadaRecords: initialQada,
+  userAzkars: initialAzkars = [],
 }: SettingsProps) {
   const { lang, dir } = useLang()
   const t = T[lang]
@@ -307,6 +325,14 @@ export default function Settings({
   const [user, setUser]             = useState(initialUser)
   const [activities, setActivities] = useState(initialActivities)
   const [surahs, setSurahs]         = useState(initialSurahs)
+  const [userAzkars, setUserAzkars] = useState<UserAzkarItem[]>(initialAzkars)
+  const [azkarDefs,  setAzkarDefs]  = useState<AzkarDefItem[]>([])
+  const [showAzkarPicker, setShowAzkarPicker] = useState(false)
+  const [showAzkarForm,   setShowAzkarForm]   = useState(false)
+  const [azkarFormText,   setAzkarFormText]   = useState('')
+  const [azkarFormTrans,  setAzkarFormTrans]  = useState('')
+  const [azkarFormReps,   setAzkarFormReps]   = useState(1)
+  const [savingAzkar,     setSavingAzkar]     = useState(false)
   const [qadaRecords, setQadaRecords] = useState(initialQada)
 
   // ── UI state
@@ -343,7 +369,41 @@ export default function Settings({
     })
   }, [activities])
 
-  const addSurah = useCallback(async (s: { surahNumber: number; surahNameEn: string; surahNameAr: string }) => {
+  const addAzkarFromDef = async (def: AzkarDefItem) => {
+    if (userAzkars.length >= 20) return
+    const res = await fetch('/api/azkar/user', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ azkarDefinitionId: def.id, textAr: def.textAr, translationEn: def.translationEn, translationAr: def.translationAr, repetitions: def.repetitions }),
+    })
+    const data = await res.json()
+    if (res.ok) setUserAzkars(prev => [...prev, data.azkar])
+  }
+
+  const addAzkarCustom = async () => {
+    if (!azkarFormText.trim() || savingAzkar) return
+    setSavingAzkar(true)
+    const res = await fetch('/api/azkar/user', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ textAr: azkarFormText.trim(), translationEn: azkarFormTrans.trim() || null, repetitions: azkarFormReps }),
+    })
+    const data = await res.json()
+    if (res.ok) { setUserAzkars(prev => [...prev, data.azkar]); setAzkarFormText(''); setAzkarFormTrans(''); setAzkarFormReps(1); setShowAzkarForm(false) }
+    setSavingAzkar(false)
+  }
+
+  const removeUserAzkar = async (id: string) => {
+    setUserAzkars(prev => prev.filter(a => a.id !== id))
+    await fetch('/api/azkar/user?id=' + id, { method: 'DELETE' })
+  }
+
+  const loadAzkarDefs = async () => {
+    if (azkarDefs.length > 0) return
+    const res = await fetch('/api/azkar?category=CUSTOM')
+    const data = await res.json()
+    setAzkarDefs(data.azkar ?? [])
+  }
+
+    const addSurah = useCallback(async (s: { surahNumber: number; surahNameEn: string; surahNameAr: string }) => {
     const res = await fetch('/api/settings/surahs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -631,6 +691,43 @@ export default function Settings({
             dir === 'rtl' && 'text-right'
           )}>
             {t.surahMax}
+          </div>
+        )}
+      </SettingsGroup>
+
+      {/* ══════ MY AZKAR ══════ */}
+      <SectionHeader title={(t as any).sAzkar} dir={dir}/>
+      <p className={cn('mx-4 mb-2 text-[12px] text-gray-400', dir === 'rtl' && 'text-right')}>{(t as any).azkarHint}</p>
+      <SettingsGroup>
+        {userAzkars.map((a, i) => (
+          <SettingsRow key={a.id}
+            label={a.textAr}
+            sublabel={(lang === 'en' ? a.translationEn : null) ?? undefined}
+            dir={dir}
+            isLast={i === userAzkars.length - 1 && userAzkars.length >= 20}
+            right={
+              <button onClick={() => removeUserAzkar(a.id)}
+                className="text-[12px] text-red-400 border border-red-100 rounded-[7px] px-2 py-1">
+                {(t as any).removeAzkar}
+              </button>
+            }
+          />
+        ))}
+        {userAzkars.length < 20 ? (
+          <>
+            <SettingsRow icon="📿" label={(t as any).browseAzkar} dir={dir}
+              onPress={async () => { await loadAzkarDefs(); setShowAzkarPicker(true) }}/>
+            <SettingsRow icon="✏️" label={(t as any).addCustom} dir={dir} isLast
+              onPress={() => setShowAzkarForm(true)}/>
+          </>
+        ) : (
+          <div className={cn('px-[14px] py-[10px] text-[12px] text-amber-600', dir === 'rtl' && 'text-right')}>
+            {(t as any).azkarMax}
+          </div>
+        )}
+        {userAzkars.length === 0 && (
+          <div className={cn('px-[14px] py-[10px] text-[12px] text-gray-400', dir === 'rtl' && 'text-right')}>
+            {(t as any).noAzkar}
           </div>
         )}
       </SettingsGroup>
