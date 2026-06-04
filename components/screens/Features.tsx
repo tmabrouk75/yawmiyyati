@@ -331,51 +331,6 @@ export default function Features() {
     }
   }
 
-  // ── Format change — reformat existing textarea content
-  const handleFormatChange = (fmt: 'text' | 'bullets' | 'numbered') => {
-    if (fmt === diaryFormat) return
-    const trimmed = diaryContent.trim()
-    if (trimmed) {
-      const rawLines = trimmed.split('\n').filter(l => l.trim())
-      const stripped = rawLines.map(l => l.replace(/^[•\-]\s+/, '').replace(/^\d+\.\s+/, '').trim())
-      if (fmt === 'text')          setDiaryContent(stripped.join('\n'))
-      else if (fmt === 'bullets')  setDiaryContent(stripped.map(l => `• ${l}`).join('\n'))
-      else                         setDiaryContent(stripped.map((l, i) => `${i + 1}. ${l}`).join('\n'))
-    } else {
-      if (fmt === 'bullets')       setDiaryContent('• ')
-      else if (fmt === 'numbered') setDiaryContent('1. ')
-      else                         setDiaryContent('')
-    }
-    setDiaryFormat(fmt)
-  }
-
-  // ── Auto-continue list on Enter key
-  const handleDiaryKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key !== 'Enter') return
-    const lines = diaryContent.split('\n')
-    const last  = lines[lines.length - 1]
-    if (diaryFormat === 'bullets') {
-      const m = last.match(/^[•\-]\s/)
-      if (m) {
-        e.preventDefault()
-        if (!last.replace(/^[•\-]\s+/, '').trim()) {
-          setDiaryContent(lines.slice(0, -1).join('\n'))
-        } else {
-          setDiaryContent(prev => prev + '\n• ')
-        }
-      }
-    } else if (diaryFormat === 'numbered') {
-      const m = last.match(/^(\d+)\.\s/)
-      if (m) {
-        e.preventDefault()
-        if (!last.slice(m[0].length).trim()) {
-          setDiaryContent(lines.slice(0, -1).join('\n'))
-        } else {
-          setDiaryContent(prev => prev + `\n${parseInt(m[1]) + 1}. `)
-        }
-      }
-    }
-  }
 
   return (
     <div dir={dir} className="flex flex-col h-full bg-gray-50 relative overflow-hidden">
