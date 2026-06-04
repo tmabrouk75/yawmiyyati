@@ -116,27 +116,6 @@ function SunnahAlignedRow({
         <CheckBox checked={checked} onChange={onChange}/>
         {showAzkar && <div className="w-[22px] h-[22px]"/>}{/* Azkar placeholder */}
       </div>
-
-      {/* ── Azkar Overlays ── */}
-      {showMorningAzkar && (
-        <AzkarOverlay
-          title={lang === 'ar' ? 'أذكار الصباح' : 'Morning Azkar'}
-          defs={morningAzkarDefs}
-          lang={lang}
-          dir={dir}
-          onClose={() => setShowMorningAzkar(false)}
-        />
-      )}
-      {showEveningAzkar && (
-        <AzkarOverlay
-          title={lang === 'ar' ? 'أذكار المساء' : 'Evening Azkar'}
-          defs={eveningAzkarDefs}
-          lang={lang}
-          dir={dir}
-          onClose={() => setShowEveningAzkar(false)}
-        />
-      )}
-
     </div>
   )
 }
@@ -1050,6 +1029,27 @@ export default function DailyEntry({
         )}
 
       </div>
+
+      {/* ── Azkar Overlays ── */}
+      {showMorningAzkar && (
+        <AzkarOverlay
+          title={lang === 'ar' ? 'أذكار الصباح' : 'Morning Azkar'}
+          defs={morningAzkarDefs}
+          lang={lang}
+          dir={dir}
+          onClose={() => setShowMorningAzkar(false)}
+        />
+      )}
+      {showEveningAzkar && (
+        <AzkarOverlay
+          title={lang === 'ar' ? 'أذكار المساء' : 'Evening Azkar'}
+          defs={eveningAzkarDefs}
+          lang={lang}
+          dir={dir}
+          onClose={() => setShowEveningAzkar(false)}
+        />
+      )}
+
     </div>
   )
 }
