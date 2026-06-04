@@ -5,15 +5,15 @@ import { useLang } from '@/contexts/LanguageContext'
 import { cn } from '@/lib/utils'
 
 const LABELS = {
-  en: { today: 'Today', reports: 'Reports', badges: 'Badges', groups: 'Groups', settings: 'Settings' },
-  ar: { today: 'اليوم', reports: 'التقارير', badges: 'الإنجازات', groups: 'المجموعات', settings: 'الإعدادات' },
+  en: { today: 'Today', reports: 'Reports', badges: 'Badges', features: 'My Space', settings: 'Settings' },
+  ar: { today: 'اليوم', reports: 'التقارير', badges: 'الإنجازات', features: 'مساحتي', settings: 'الإعدادات' },
 }
 
 const TABS = [
   { key: 'today',    href: '/today',       icon: '🏠' },
   { key: 'reports',  href: '/reports',      icon: '📊' },
   { key: 'badges',   href: '/gamification', icon: '🏅' },
-  { key: 'groups',   href: '/groups',       icon: '👥' },
+  { key: 'features', href: '/features',     icon: '⭐' },
   { key: 'settings', href: '/settings',     icon: '⚙️' },
 ]
 

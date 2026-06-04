@@ -69,6 +69,7 @@ model User {
   referralsSent     Referral[]       @relation("ReferrerUser")
   referralReceived  Referral?        @relation("ReferredUser")
   pointRedemptions  PointRedemption[]
+  tasks             Task[]
 
   @@map("users")
 }
@@ -732,4 +733,24 @@ model PointRedemption {
 enum RedemptionType {
   PREMIUM_MONTH  // 5 points → 1 month premium
   THEME_UNLOCK   // 25 points → permanent theme unlock
+}
+
+// ─── TASKS (Daily To-Do List) ──────────────────────────────
+
+model Task {
+  id          String    @id @default(cuid())
+  userId      String
+  title       String
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
+  sortOrder   Int       @default(0)
+  isArchived  Boolean   @default(false)
+  archivedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("tasks")
 }
