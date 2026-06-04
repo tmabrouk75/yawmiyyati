@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef, useMemo, Fragment } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo, Fragment } from 'react'
 import { useRouter } from 'next/navigation'
 import { usePullToRefresh } from '@/hooks/usePullToRefresh'
 import { CheckBox, FardCheckBox, FardState, NumberInput, ActivityGroup, ActivityRow } from '@/components/ui/ActivityComponents'
