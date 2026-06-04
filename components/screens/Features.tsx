@@ -89,37 +89,41 @@ function DiaryContent({ content, format, dir, preview }: { content: string; form
   const lines    = preview ? allLines.slice(0, 2) : allLines
   const hasMore  = preview && allLines.length > 2
 
-  if (format === 'bullets') {
-    return (
-      <div>
-        <ul className={cn('space-y-[3px] mt-1', dir === 'rtl' && 'text-right')} style={{ paddingInlineStart: 16 }}>
-          {lines.map((l, i) => (
-            <li key={i} className="text-[13px] text-gray-700 list-disc">{l.replace(/^[•\-]\s+/, '')}</li>
-          ))}
-        </ul>
-        {hasMore && <p className="text-[11px] text-gray-400 mt-1 ml-1">...</p>}
-      </div>
-    )
+  // Content-driven: each line renders based on its own prefix,
+  // so a single entry can mix paragraphs and bullet/numbered lists.
+  type Seg = { type: 'text' | 'bullets' | 'numbered'; items: string[] }
+  const segments: Seg[] = []
+  for (const line of lines) {
+    const type = /^[•\-]\s/.test(line) ? 'bullets' : /^\d+\.\s/.test(line) ? 'numbered' : 'text'
+    const last = segments[segments.length - 1]
+    if (last && last.type === type) last.items.push(line)
+    else segments.push({ type, items: [line] })
   }
-  if (format === 'numbered') {
-    return (
-      <div>
-        <ol className={cn('space-y-[3px] mt-1', dir === 'rtl' && 'text-right')} style={{ paddingInlineStart: 18 }}>
-          {lines.map((l, i) => (
-            <li key={i} className="text-[13px] text-gray-700 list-decimal">{l.replace(/^\d+\.\s+/, '')}</li>
-          ))}
-        </ol>
-        {hasMore && <p className="text-[11px] text-gray-400 mt-1">...</p>}
-      </div>
-    )
-  }
-  const displayContent = preview ? allLines.slice(0, 2).join('\n') : content
+
   return (
-    <div>
-      <p className={cn('text-[13px] text-gray-700 leading-relaxed mt-1 whitespace-pre-wrap', dir === 'rtl' && 'text-right')}>
-        {displayContent}
-      </p>
-      {hasMore && <p className="text-[11px] text-gray-400 mt-1">...</p>}
+    <div className={cn('mt-1 space-y-[3px]', dir === 'rtl' && 'text-right')}>
+      {segments.map((seg, si) => {
+        if (seg.type === 'bullets') return (
+          <ul key={si} className="space-y-[2px]" style={{ paddingInlineStart: 16 }}>
+            {seg.items.map((l, i) => (
+              <li key={i} className="text-[13px] text-gray-700 list-disc">{l.replace(/^[•\-]\s+/, '')}</li>
+            ))}
+          </ul>
+        )
+        if (seg.type === 'numbered') return (
+          <ol key={si} className="space-y-[2px]" style={{ paddingInlineStart: 18 }}>
+            {seg.items.map((l, i) => (
+              <li key={i} className="text-[13px] text-gray-700 list-decimal">{l.replace(/^\d+\.\s+/, '')}</li>
+            ))}
+          </ol>
+        )
+        return (
+          <p key={si} className="text-[13px] text-gray-700 leading-relaxed whitespace-pre-wrap">
+            {seg.items.join('\n')}
+          </p>
+        )
+      })}
+      {hasMore && <p className="text-[11px] text-gray-400">...</p>}
     </div>
   )
 }
@@ -278,6 +282,53 @@ export default function Features() {
   const deleteEntry = async (id: string) => {
     setEntries(prev => prev.filter(e => e.id !== id))
     await fetch(`/api/diary/${id}`, { method: 'DELETE' })
+  }
+
+  // ── Format change — appends a new list item, never reformats existing text
+  const handleFormatChange = (fmt: 'text' | 'bullets' | 'numbered') => {
+    if (fmt === diaryFormat) return
+    setDiaryFormat(fmt)
+    if (fmt === 'text') return
+    const c = diaryContent
+    if (!c.trim()) {
+      setDiaryContent(fmt === 'bullets' ? '• ' : '1. ')
+      return
+    }
+    const sep = c.endsWith('\n') ? '' : '\n'
+    if (fmt === 'bullets') {
+      setDiaryContent(c + sep + '• ')
+    } else {
+      const n = (c.match(/^\d+\./gm) ?? []).length + 1
+      setDiaryContent(c + sep + `${n}. `)
+    }
+  }
+
+  // ── Auto-continue list on Enter key
+  const handleDiaryKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key !== 'Enter') return
+    const lines = diaryContent.split('\n')
+    const last  = lines[lines.length - 1]
+    if (diaryFormat === 'bullets') {
+      const m = last.match(/^[•\-]\s/)
+      if (m) {
+        e.preventDefault()
+        if (!last.replace(/^[•\-]\s+/, '').trim()) {
+          setDiaryContent(lines.slice(0, -1).join('\n'))
+        } else {
+          setDiaryContent(prev => prev + '\n• ')
+        }
+      }
+    } else if (diaryFormat === 'numbered') {
+      const m = last.match(/^(\d+)\.\s/)
+      if (m) {
+        e.preventDefault()
+        if (!last.slice(m[0].length).trim()) {
+          setDiaryContent(lines.slice(0, -1).join('\n'))
+        } else {
+          setDiaryContent(prev => prev + `\n${parseInt(m[1]) + 1}. `)
+        }
+      }
+    }
   }
 
   // ── Format change — reformat existing textarea content

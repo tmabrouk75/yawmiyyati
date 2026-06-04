@@ -54,6 +54,14 @@ const T = {
     ctaTitle:    'ابدأ بسم الله',
     ctaSub:      'Join Muslims around the world building stronger daily habits, one prayer at a time.',
     ctaBtn:      'Create Your Free Account',
+    trustTitle: 'Your data is a trust.',
+    trustSub:   'We treat your personal worship log with the same care as an amana.',
+    trust: [
+      { icon: '🔐', title: 'Encrypted & Secure',      sub: 'All data is encrypted at rest and in transit. Your worship log stays private.' },
+      { icon: '🚫', title: 'Never Sold or Shared.',   sub: 'We do not sell, trade, or share your personal data with any third party. Ever.' },
+      { icon: '🗑️', title: 'Delete Anytime.',          sub: 'Your account and all data can be permanently deleted at any moment, instantly.' },
+      { icon: '👁️', title: 'Zero Tracking.',           sub: 'No behavioral profiling, no ad targeting, no third-party analytics watching you.' },
+    ],
     terms: 'Terms', privacy: 'Privacy', support: 'Support',
   },
   ar: {
@@ -104,6 +112,14 @@ const T = {
     ctaTitle:    'ابدأ بسم الله',
     ctaSub:      'انضم إلى مسلمين حول العالم يبنون عادات يومية أقوى، صلاةً بصلاة.',
     ctaBtn:      'أنشئ حسابك المجاني',
+    trustTitle: 'بياناتك أمانة.',
+    trustSub:   'نتعامل مع سجل عبادتك بنفس الأمانة التي تُوليها لعبادتك.',
+    trust: [
+      { icon: '🔐', title: 'مشفّر وآمن.',              sub: 'بياناتك مشفّرة دائماً أثناء التخزين والنقل. سجل عبادتك خاص بك.' },
+      { icon: '🚫', title: 'لا بيع. لا مشاركة أبداً.', sub: 'لا نبيع أو نتاجر أو نشارك بياناتك الشخصية مع أي طرف. أبداً.' },
+      { icon: '🗑️', title: 'احذف متى شئت.',            sub: 'يمكنك حذف حسابك وجميع بياناتك بشكل دائم في أي لحظة، فوراً.' },
+      { icon: '👁️', title: 'صفر تتبع.',                sub: 'لا ملفات سلوكية، لا استهداف إعلاني، لا تحليلات خارجية ترصدك.' },
+    ],
     terms: 'الشروط', privacy: 'الخصوصية', support: 'الدعم',
   },
 }
@@ -272,6 +288,23 @@ export default function LandingPage() {
                 <p className="text-[15px] font-bold text-white mb-1">{s.title}</p>
                 <p className="text-[13px] text-white/40 leading-relaxed">{s.sub}</p>
               </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══ TRUST / PRIVACY ══ */}
+      <section className="px-5 py-14 max-w-[680px] mx-auto" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className={cn('mb-8', dir === 'rtl' ? 'text-right' : 'text-center')}>
+          <h2 className="text-[22px] font-black text-white mb-2">{(t as any).trustTitle}</h2>
+          <p className="text-[13px] text-white/40">{(t as any).trustSub}</p>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {((t as any).trust as { icon: string; title: string; sub: string }[]).map((item, i) => (
+            <div key={i} className="bg-white/[0.04] border border-white/[0.08] rounded-[18px] p-4 hover:border-white/[0.14] transition-colors">
+              <div className="text-[28px] mb-2">{item.icon}</div>
+              <p className="text-[12px] font-bold text-white mb-1">{item.title}</p>
+              <p className="text-[11px] text-white/40 leading-relaxed">{item.sub}</p>
             </div>
           ))}
         </div>
