@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useCallback, useRef, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
+import { usePullToRefresh } from '@/hooks/usePullToRefresh'
 import { CheckBox, FardCheckBox, FardState, NumberInput, ActivityGroup, ActivityRow } from '@/components/ui/ActivityComponents'
 import DayScoreCard from '@/components/ui/DayScoreCard'
 import NextPrayerChip from '@/components/ui/NextPrayerChip'
@@ -275,8 +277,12 @@ export default function DailyEntry({
   gender = null, selectedDate, isToday = true, initialIsPeriod = false,
   userSurahs = [], initialPrayer, initialDhikr, initialQuran, initialFasting, initialSadaqah,
 }: DailyEntryProps) {
-  const t   = T[lang]
-  const dir = lang === 'ar' ? 'rtl' : 'ltr'
+  const t      = T[lang]
+  const dir    = lang === 'ar' ? 'rtl' : 'ltr'
+  const router = useRouter()
+  const { scrollRef: pullRef, pullY, refreshing } = usePullToRefresh(() => {
+    router.refresh()
+  })
 
   // Use selectedDate prop if provided; fall back to actual today.
   // IMPORTANT: parse YYYY-MM-DD as LOCAL date (not UTC) to avoid timezone off-by-one.
@@ -546,7 +552,16 @@ export default function DailyEntry({
       </div>
 
       {/* ── SCROLLABLE CONTENT (score card lives here so breakdown doesn't squish scroll area) */}
-      <div className="flex-1 overflow-y-auto pb-6">
+      <div ref={pullRef} className="flex-1 overflow-y-auto pb-6 relative">
+        {/* Pull-to-refresh indicator */}
+        {(pullY > 8 || refreshing) && (
+          <div className="absolute top-0 left-0 right-0 flex justify-center pt-1 z-10 pointer-events-none"
+               style={{ transform: `translateY(${Math.min(pullY, 52)}px)`, transition: refreshing ? 'none' : 'transform 0.1s' }}>
+            <div className={`w-8 h-8 rounded-full bg-white border border-gray-200 shadow flex items-center justify-center ${refreshing || pullY > 48 ? 'animate-spin' : ''}`}>
+              <span className="text-[14px]">↻</span>
+            </div>
+          </div>
+        )}
 
         {/* ── SCORE CARD — top of scroll area */}
         <div className="mt-2">

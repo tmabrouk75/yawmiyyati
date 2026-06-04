@@ -70,6 +70,7 @@ model User {
   referralReceived  Referral?        @relation("ReferredUser")
   pointRedemptions  PointRedemption[]
   tasks             Task[]
+  diaryEntries      DiaryEntry[]
 
   @@map("users")
 }
@@ -753,4 +754,20 @@ model Task {
 
   @@index([userId])
   @@map("tasks")
+}
+
+// ─── DIARY ENTRIES ─────────────────────────────────────────
+
+model DiaryEntry {
+  id          String   @id @default(cuid())
+  userId      String
+  customTitle String?                        // optional title suffix after date/time
+  content     String   @db.Text
+  format      String   @default("text")      // "text" | "bullets" | "numbered"
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("diary_entries")
 }
