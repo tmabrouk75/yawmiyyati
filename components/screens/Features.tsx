@@ -84,30 +84,43 @@ function formatEntryDate(iso: string, lang: string) {
 
 // ── Render diary content by format ───────────────────────
 
-function DiaryContent({ content, format, dir }: { content: string; format: string; dir: string }) {
-  const lines = content.split('\n').filter(l => l.trim())
+function DiaryContent({ content, format, dir, preview }: { content: string; format: string; dir: string; preview?: boolean }) {
+  const allLines = content.split('\n').filter(l => l.trim())
+  const lines    = preview ? allLines.slice(0, 2) : allLines
+  const hasMore  = preview && allLines.length > 2
+
   if (format === 'bullets') {
     return (
-      <ul className={cn('space-y-[3px] mt-1', dir === 'rtl' && 'text-right')} style={{ paddingInlineStart: 16 }}>
-        {lines.map((l, i) => (
-          <li key={i} className="text-[13px] text-gray-700 list-disc">{l}</li>
-        ))}
-      </ul>
+      <div>
+        <ul className={cn('space-y-[3px] mt-1', dir === 'rtl' && 'text-right')} style={{ paddingInlineStart: 16 }}>
+          {lines.map((l, i) => (
+            <li key={i} className="text-[13px] text-gray-700 list-disc">{l.replace(/^[•\-]\s+/, '')}</li>
+          ))}
+        </ul>
+        {hasMore && <p className="text-[11px] text-gray-400 mt-1 ml-1">...</p>}
+      </div>
     )
   }
   if (format === 'numbered') {
     return (
-      <ol className={cn('space-y-[3px] mt-1', dir === 'rtl' && 'text-right')} style={{ paddingInlineStart: 18 }}>
-        {lines.map((l, i) => (
-          <li key={i} className="text-[13px] text-gray-700 list-decimal">{l}</li>
-        ))}
-      </ol>
+      <div>
+        <ol className={cn('space-y-[3px] mt-1', dir === 'rtl' && 'text-right')} style={{ paddingInlineStart: 18 }}>
+          {lines.map((l, i) => (
+            <li key={i} className="text-[13px] text-gray-700 list-decimal">{l.replace(/^\d+\.\s+/, '')}</li>
+          ))}
+        </ol>
+        {hasMore && <p className="text-[11px] text-gray-400 mt-1">...</p>}
+      </div>
     )
   }
+  const displayContent = preview ? allLines.slice(0, 2).join('\n') : content
   return (
-    <p className={cn('text-[13px] text-gray-700 leading-relaxed mt-1 whitespace-pre-wrap', dir === 'rtl' && 'text-right')}>
-      {content}
-    </p>
+    <div>
+      <p className={cn('text-[13px] text-gray-700 leading-relaxed mt-1 whitespace-pre-wrap', dir === 'rtl' && 'text-right')}>
+        {displayContent}
+      </p>
+      {hasMore && <p className="text-[11px] text-gray-400 mt-1">...</p>}
+    </div>
   )
 }
 
@@ -267,6 +280,52 @@ export default function Features() {
     await fetch(`/api/diary/${id}`, { method: 'DELETE' })
   }
 
+  // ── Format change — reformat existing textarea content
+  const handleFormatChange = (fmt: 'text' | 'bullets' | 'numbered') => {
+    if (fmt === diaryFormat) return
+    const trimmed = diaryContent.trim()
+    if (trimmed) {
+      const rawLines = trimmed.split('\n').filter(l => l.trim())
+      const stripped = rawLines.map(l => l.replace(/^[•\-]\s+/, '').replace(/^\d+\.\s+/, '').trim())
+      if (fmt === 'text')          setDiaryContent(stripped.join('\n'))
+      else if (fmt === 'bullets')  setDiaryContent(stripped.map(l => `• ${l}`).join('\n'))
+      else                         setDiaryContent(stripped.map((l, i) => `${i + 1}. ${l}`).join('\n'))
+    } else {
+      if (fmt === 'bullets')       setDiaryContent('• ')
+      else if (fmt === 'numbered') setDiaryContent('1. ')
+      else                         setDiaryContent('')
+    }
+    setDiaryFormat(fmt)
+  }
+
+  // ── Auto-continue list on Enter key
+  const handleDiaryKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key !== 'Enter') return
+    const lines = diaryContent.split('\n')
+    const last  = lines[lines.length - 1]
+    if (diaryFormat === 'bullets') {
+      const m = last.match(/^[•\-]\s/)
+      if (m) {
+        e.preventDefault()
+        if (!last.replace(/^[•\-]\s+/, '').trim()) {
+          setDiaryContent(lines.slice(0, -1).join('\n'))
+        } else {
+          setDiaryContent(prev => prev + '\n• ')
+        }
+      }
+    } else if (diaryFormat === 'numbered') {
+      const m = last.match(/^(\d+)\.\s/)
+      if (m) {
+        e.preventDefault()
+        if (!last.slice(m[0].length).trim()) {
+          setDiaryContent(lines.slice(0, -1).join('\n'))
+        } else {
+          setDiaryContent(prev => prev + `\n${parseInt(m[1]) + 1}. `)
+        }
+      }
+    }
+  }
+
   return (
     <div dir={dir} className="flex flex-col h-full bg-gray-50 relative overflow-hidden">
 
@@ -378,7 +437,7 @@ export default function Features() {
               {/* Format toolbar */}
               <div className={cn('flex gap-2 mb-3', dir === 'rtl' && 'flex-row-reverse')}>
                 {(['text', 'bullets', 'numbered'] as const).map(fmt => (
-                  <button key={fmt} onClick={() => setDiaryFormat(fmt)}
+                  <button key={fmt} onClick={() => handleFormatChange(fmt)}
                     className={cn('px-3 py-[5px] rounded-[8px] text-[13px] font-bold border transition-all',
                       diaryFormat === fmt ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-gray-50 text-gray-500 border-gray-200')}>
                     {fmt === 'text' ? t.fmtText : fmt === 'bullets' ? t.fmtBullets : t.fmtNumbered}
@@ -394,6 +453,7 @@ export default function Features() {
 
               {/* Content */}
               <textarea value={diaryContent} onChange={e => setDiaryContent(e.target.value)}
+                onKeyDown={handleDiaryKeyDown}
                 placeholder={diaryFormat === 'bullets' ? `• ${t.diaryPh}` : diaryFormat === 'numbered' ? `1. ${t.diaryPh}` : t.diaryPh}
                 dir={dir} rows={4}
                 className="w-full rounded-[10px] border border-gray-200 bg-gray-50 px-3 py-2 text-[13px] focus:outline-none focus:border-emerald-400 resize-none leading-relaxed"/>
@@ -422,7 +482,7 @@ export default function Features() {
                           {formatEntryDate(entry.createdAt, lang)}
                           {entry.customTitle && <span className="text-gray-600 font-semibold"> · {entry.customTitle}</span>}
                         </p>
-                        <DiaryContent content={entry.content} format={entry.format} dir={dir}/>
+                        <DiaryContent content={entry.content} format={entry.format} dir={dir} preview={true}/>
                       </div>
                       <button onClick={() => deleteEntry(entry.id)}
                         className="text-gray-300 text-[18px] flex-shrink-0 active:text-red-400 mt-[-2px]">×</button>
