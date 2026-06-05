@@ -105,11 +105,11 @@ function SunnahAlignedRow({
   dir: 'ltr' | 'rtl'; isFirst?: boolean
 }) {
   return (
-    <div className={`flex items-center px-[14px] py-[10px] border-t border-gray-100 gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+    <div className={`flex items-center px-[14px] py-[10px] border-t border-gray-100 gap-3`}>
       <span className="text-[14px] w-5 text-center flex-shrink-0">{icon}</span>
       <span className="flex-1 text-[13px] text-gray-700">{label}</span>
       {/* Mirror the column grid of PrayerRow — keep alignment with fard rows */}
-      <div className={`flex items-center gap-[10px] flex-shrink-0 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+      <div className={`flex items-center gap-[10px] flex-shrink-0`}>
         {showMosque && <div className="w-[22px] h-[22px]"/>}{/* Mosque placeholder */}
         {showSunnah && <div className="w-[22px] h-[22px]"/>}{/* SunBef placeholder */}
         <div className="w-[22px] h-[22px]"/>{/* Fard placeholder */}
@@ -142,7 +142,7 @@ function AzkarOverlay({
           <div className="w-10 h-[4px] rounded-full bg-gray-200"/>
         </div>
         {/* Title row */}
-        <div className={`px-4 py-3 flex items-center justify-between flex-shrink-0 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+        <div className={`px-4 py-3 flex items-center justify-between flex-shrink-0`}>
           <h2 className="text-[17px] font-bold text-gray-900">{title}</h2>
           <button onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 text-[18px]">
@@ -168,7 +168,7 @@ function AzkarOverlay({
                       {lang === 'en' ? def.translationEn : def.translationAr}
                     </p>
                   )}
-                  <div className={`flex items-center mt-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                  <div className={`flex items-center mt-3`}>
                     <span className="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-[3px] font-semibold">
                       {lang === 'ar' ? `${def.repetitions} مرة` : `${def.repetitions}×`}
                     </span>
@@ -270,7 +270,7 @@ function PrayerRow({
   const mosqueChecked = (state as any)[`${pKey}Mosque`] ?? false
 
   return (
-    <div className={`flex items-center px-[14px] py-[10px] border-b border-gray-100 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+    <div className={`flex items-center px-[14px] py-[10px] border-b border-gray-100`}>
 
       {/* Prayer name */}
       <div className={`flex-1 min-w-0 ${dir === 'rtl' ? 'text-right' : ''}`}>
@@ -284,13 +284,16 @@ function PrayerRow({
       </div>
 
       {/* Checkbox columns */}
-      <div className={`flex items-center gap-[10px] flex-shrink-0 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+      <div className={`flex items-center gap-[10px] flex-shrink-0`}>
 
         {/* Mosque (Jama'ah) column — males only, leftmost */}
         {isMale && (
           <CheckBox
             checked={mosqueChecked}
-            onChange={v => onChange(`${pKey}Mosque`, v)}
+            onChange={v => {
+              onChange(`${pKey}Mosque`, v)
+              if (v) onFardChange(pKey, true, false)
+            }}
             variant="mosque"
           />
         )}
@@ -594,7 +597,7 @@ export default function DailyEntry({
     <div dir={dir} className="flex flex-col h-full bg-gray-50">
 
       {/* ── TOP BAR */}
-      <div className={`flex items-center justify-between px-4 pt-3 pb-0 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+      <div className={`flex items-center justify-between px-4 pt-3 pb-0`}>
         <div className={dir === 'rtl' ? 'text-right' : ''}>
           {userName ? (
             <>
@@ -618,7 +621,7 @@ export default function DailyEntry({
       </div>
 
       {/* ── DATE STRIP */}
-      <div className={`mx-4 mt-2 bg-white border border-gray-200 rounded-[12px] px-[14px] py-[10px] flex items-center justify-between ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+      <div className={`mx-4 mt-2 bg-white border border-gray-200 rounded-[12px] px-[14px] py-[10px] flex items-center justify-between`}>
         <div>
           <div className="text-[13px] font-medium text-gray-900">{formatDate(today, lang)}</div>
           <div className="text-[11px] text-gray-500">{formatHijri(hijri, lang)}</div>
@@ -669,9 +672,9 @@ export default function DailyEntry({
           </p>
           <div className="bg-white border border-gray-200 rounded-[14px] overflow-hidden">
             {/* Column header row — only show columns that are enabled */}
-            <div className={`flex items-center px-[14px] pt-[8px] pb-[2px] border-b border-gray-100 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+            <div className={`flex items-center px-[14px] pt-[8px] pb-[2px] border-b border-gray-100`}>
               <div className="flex-1"/>
-              <div className={`flex items-center gap-[10px] flex-shrink-0 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+              <div className={`flex items-center gap-[10px] flex-shrink-0`}>
                 {/* Mosque column header — males only */}
                 {gender === 'male' && (
                   <div className="w-[22px] text-center text-[12px] leading-none" title={lang === 'ar' ? 'في المسجد' : 'In mosque'}>🕌</div>
@@ -710,10 +713,10 @@ export default function DailyEntry({
 
             {/* Morning Azkar — after Fajr, before Duha */}
             {show('morning_azkar') && (
-              <div className={`flex items-center px-[14px] py-[10px] border-t border-gray-100 gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+              <div className={`flex items-center px-[14px] py-[10px] border-t border-gray-100 gap-3`}>
                 <span className="text-[14px] w-5 text-center flex-shrink-0">🌅</span>
                 <span className={`flex-1 text-[13px] text-gray-700 ${dir === 'rtl' ? 'text-right' : ''}`}>{t.morning}</span>
-                <div className={`flex items-center gap-2 flex-shrink-0 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                <div className={`flex items-center gap-2 flex-shrink-0`}>
                   <button onClick={() => setShowMorningAzkar(true)}
                     className="h-[26px] px-2 rounded-[8px] flex items-center gap-1 text-[10px] font-medium bg-blue-50 border border-blue-200 text-blue-500 active:bg-blue-100 flex-shrink-0">
                     <span>📖</span>
@@ -743,8 +746,8 @@ export default function DailyEntry({
                   <PrayerRow
                     pKey={p.key}
                     isMale={gender === 'male'}
-                    hasBefore={!isJumuah && p.hasBefore && show('sunnah_rawatib')}
-                    hasAfter={!isJumuah && p.hasAfter && show('sunnah_rawatib')}
+                    hasBefore={p.hasBefore && show('sunnah_rawatib')}
+                    hasAfter={p.hasAfter && show('sunnah_rawatib')}
                     hasAzkar={show('prayer_azkar')}
                     rakaat={isJumuah ? 2 : p.rakaat}
                     state={prayer}
@@ -759,10 +762,10 @@ export default function DailyEntry({
                       : undefined}
                   />
                   {p.key === 'asr' && show('evening_azkar') && (
-                    <div className={`flex items-center px-[14px] py-[10px] border-t border-gray-100 gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                    <div className={`flex items-center px-[14px] py-[10px] border-t border-gray-100 gap-3`}>
                       <span className="text-[14px] w-5 text-center flex-shrink-0">🌆</span>
                       <span className={`flex-1 text-[13px] text-gray-700 ${dir === 'rtl' ? 'text-right' : ''}`}>{t.evening}</span>
-                      <div className={`flex items-center gap-2 flex-shrink-0 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                      <div className={`flex items-center gap-2 flex-shrink-0`}>
                         <button onClick={() => setShowEveningAzkar(true)}
                           className="h-[26px] px-2 rounded-[8px] flex items-center gap-1 text-[10px] font-medium bg-blue-50 border border-blue-200 text-blue-500 active:bg-blue-100 flex-shrink-0">
                           <span>📖</span>
@@ -778,7 +781,7 @@ export default function DailyEntry({
 
             {/* 4. Qiyam al-Layl — before Witr */}
             {show('qiyam') && (
-              <div className={`flex items-center px-[14px] py-[10px] border-t border-gray-100 gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+              <div className={`flex items-center px-[14px] py-[10px] border-t border-gray-100 gap-3`}>
                 <span className="text-[14px] w-5 text-center flex-shrink-0">⭐</span>
                 <div className="flex-1">
                   <div className="text-[13px] text-gray-900">{t.qiyam}</div>
@@ -812,7 +815,7 @@ export default function DailyEntry({
             <div className="bg-white border border-gray-200 rounded-[14px] overflow-hidden">
 
               {show('istighfar') && (
-                <div className={`flex items-center px-[14px] py-[10px] border-b border-gray-100 gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                <div className={`flex items-center px-[14px] py-[10px] border-b border-gray-100 gap-3`}>
                   <span className="text-[14px] w-5 text-center flex-shrink-0">🤲</span>
                   <div className="flex-1">
                     <div className="text-[13px] text-gray-900">{t.istighfar}</div>
@@ -822,7 +825,7 @@ export default function DailyEntry({
                 </div>
               )}
               {show('salawat') && (
-                <div className={`flex items-center px-[14px] py-[10px] gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                <div className={`flex items-center px-[14px] py-[10px] gap-3`}>
                   <span className="text-[14px] w-5 text-center flex-shrink-0">💚</span>
                   <div className="flex-1">
                     <div className="text-[13px] text-gray-900">{t.salawat}</div>
@@ -843,7 +846,7 @@ export default function DailyEntry({
             </p>
             <div className="bg-white border border-gray-200 rounded-[14px] overflow-hidden">
               {show('quran_pages') && (
-                <div className={`flex items-center px-[14px] py-[10px] border-b border-gray-100 gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                <div className={`flex items-center px-[14px] py-[10px] border-b border-gray-100 gap-3`}>
                   <span className="text-[14px] w-5 text-center flex-shrink-0">📖</span>
                   <div className="flex-1">
                     <div className="text-[13px] text-gray-900">{t.pages}</div>
@@ -868,13 +871,13 @@ export default function DailyEntry({
                 // 3+ surahs: collapsible with X/Y counter
                 return (
                   <>
-                    <div className={`flex items-center justify-between px-[14px] py-[10px] border-b border-gray-100 cursor-pointer ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}
+                    <div className={`flex items-center justify-between px-[14px] py-[10px] border-b border-gray-100 cursor-pointer`}
                       onClick={() => setSurahsOpen(!surahsOpen)}>
-                      <div className={`flex items-center gap-2 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                      <div className={`flex items-center gap-2`}>
                         <span className="text-[15px]">📚</span>
                         <span className="text-[13px] text-gray-900">{t.surahs}</span>
                       </div>
-                      <div className={`flex items-center gap-2 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                      <div className={`flex items-center gap-2`}>
                         <span className={`text-[11px] font-bold px-2 py-[2px] rounded-full ${doneCount === total ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
                           {doneCount}/{total}
                         </span>
@@ -886,7 +889,7 @@ export default function DailyEntry({
                 )
               })()}
               {show('surah_kahf') && isFriday && (
-                <div className={`flex items-center px-[14px] py-[10px] border-t border-gray-100 gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                <div className={`flex items-center px-[14px] py-[10px] border-t border-gray-100 gap-3`}>
                   <span className="text-[14px] w-5 text-center flex-shrink-0">📖</span>
                   <span className="flex-1 text-[13px] text-gray-900">{lang === 'ar' ? 'سورة الكهف' : 'Surah Al-Kahf'}</span>
                   <CheckBox checked={quran.kahfDone} onChange={v => updateQuran('kahfDone', v)}/>
@@ -903,7 +906,7 @@ export default function DailyEntry({
               {t.fasting}
             </p>
             <div className="bg-white border border-gray-200 rounded-[14px] overflow-hidden">
-              <div className={`flex items-center px-[14px] py-[10px] gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+              <div className={`flex items-center px-[14px] py-[10px] gap-3`}>
                 <span className="text-[14px] w-5 text-center flex-shrink-0">🌙</span>
                 <div className="flex-1">
                   <div className="text-[13px] text-gray-900">{t.fastToday}</div>
@@ -917,7 +920,7 @@ export default function DailyEntry({
               </div>
               {/* Qada option — shown when fasting and qada remaining */}
               {fasting.isFasting && qadaRemaining > 0 && (
-                <div className={`flex items-center px-[14px] py-[9px] border-t border-gray-100 gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                <div className={`flex items-center px-[14px] py-[9px] border-t border-gray-100 gap-3`}>
                   <span className="text-[14px] w-5 text-center flex-shrink-0 opacity-0">·</span>
                   <div className="flex-1">
                     <div className="text-[12px] text-gray-600">{t.fastQada}</div>
@@ -933,7 +936,7 @@ export default function DailyEntry({
                 </div>
               )}
               {qadaRemaining > 0 && (
-                <div className={`mx-[14px] mb-[10px] mt-1 bg-gray-50 rounded-[10px] px-3 py-[9px] flex items-center justify-between border-t border-gray-100 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                <div className={`mx-[14px] mb-[10px] mt-1 bg-gray-50 rounded-[10px] px-3 py-[9px] flex items-center justify-between border-t border-gray-100`}>
                   <div>
                     <div className="text-[11px] text-gray-500">{t.qada}</div>
                     <div className="text-[12px] font-semibold text-red-500">{t.qdaRemaining(qadaRemaining)}</div>
@@ -954,7 +957,7 @@ export default function DailyEntry({
               {t.sadaqah}
             </p>
             <div className="bg-white border border-gray-200 rounded-[14px] overflow-hidden">
-              <div className={`flex items-center px-[14px] py-[10px] gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+              <div className={`flex items-center px-[14px] py-[10px] gap-3`}>
                 <span className="text-[14px] w-5 text-center flex-shrink-0">💛</span>
                 <span className="flex-1 text-[13px] text-gray-900">{t.sadaqahLabel}</span>
                 <input
@@ -974,7 +977,7 @@ export default function DailyEntry({
         {gender === 'female' && (
           <div
             onClick={togglePeriod}
-            className={`mx-4 mt-3 rounded-[12px] px-[14px] py-[10px] flex items-center justify-between cursor-pointer border transition-colors ${dir === 'rtl' ? 'flex-row-reverse' : ''} ${isPeriod ? 'bg-rose-50 border-rose-300' : 'bg-white border-gray-200'}`}
+            className={`mx-4 mt-3 rounded-[12px] px-[14px] py-[10px] flex items-center justify-between cursor-pointer border transition-colors ${isPeriod ? 'bg-rose-50 border-rose-300' : 'bg-white border-gray-200'}`}
           >
             <div className={dir === 'rtl' ? 'text-right' : ''}>
               <div className={`text-[13px] font-medium ${isPeriod ? 'text-rose-700' : 'text-gray-700'}`}>
