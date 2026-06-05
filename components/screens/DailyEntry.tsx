@@ -156,22 +156,33 @@ function AzkarOverlay({
               {lang === 'ar' ? 'لم تُضف أذكار بعد. أضفها من لوحة الإدارة.' : 'No azkar added yet. Add them from the Admin panel.'}
             </p>
           ) : (
-            <div className="space-y-4">
+            <div className="divide-y divide-gray-100">
               {defs.map((def, i) => (
-                <div key={def.id} className={`bg-gray-50 rounded-[14px] p-4 ${dir === 'rtl' ? 'text-right' : ''}`}>
-                  <p className="text-[10px] font-bold text-emerald-600 mb-2">{i + 1}</p>
-                  <p className="text-[18px] leading-[1.8] text-gray-900" style={{ fontFamily: 'serif' }}>
-                    {def.textAr}
-                  </p>
-                  {(lang === 'en' ? def.translationEn : def.translationAr) && (
-                    <p className="text-[12px] text-gray-500 mt-2 leading-relaxed">
-                      {lang === 'en' ? def.translationEn : def.translationAr}
-                    </p>
-                  )}
-                  <div className={`flex items-center mt-3`}>
-                    <span className="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-[3px] font-semibold">
-                      {lang === 'ar' ? `${def.repetitions} مرة` : `${def.repetitions}×`}
-                    </span>
+                <div key={def.id} className="py-5">
+                  <div className="flex items-start gap-3">
+                    {/* Numbered circle */}
+                    <div className="w-7 h-7 rounded-full bg-emerald-600 text-white text-[12px] font-bold flex items-center justify-center flex-shrink-0 mt-1">
+                      {i + 1}
+                    </div>
+                    <div className={`flex-1 min-w-0 ${dir === 'rtl' ? 'text-right' : ''}`}>
+                      {/* Arabic text — whitespace-pre-wrap handles multi-line entries */}
+                      <p className="text-[17px] leading-[2] text-gray-900 whitespace-pre-wrap"
+                         style={{ fontFamily: 'serif' }}>
+                        {def.textAr}
+                      </p>
+                      {/* Translation */}
+                      {(lang === 'en' ? def.translationEn : def.translationAr) && (
+                        <p className="text-[12px] text-gray-400 mt-2 leading-relaxed italic">
+                          {lang === 'en' ? def.translationEn : def.translationAr}
+                        </p>
+                      )}
+                      {/* Repetitions */}
+                      <div className="mt-2">
+                        <span className="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-[2px] font-semibold">
+                          {lang === 'ar' ? `${def.repetitions} مرة` : `× ${def.repetitions}`}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}

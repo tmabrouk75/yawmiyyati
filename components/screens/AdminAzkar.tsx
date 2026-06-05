@@ -238,10 +238,10 @@ export default function AdminAzkar() {
             <div>
               <p className="text-[11px] text-gray-400 mb-1">{lang === 'ar' ? 'نص الذكر (عربي) *' : 'Arabic text *'}</p>
               <textarea value={form.textAr} onChange={e => setForm(f => ({ ...f, textAr: e.target.value }))}
-                dir="rtl" rows={3}
+                dir="rtl" rows={6}
                 placeholder="اللهم..."
-                className="w-full rounded-[10px] border border-gray-200 bg-gray-50 px-3 py-2 text-[15px] focus:outline-none focus:border-emerald-400 resize-none leading-relaxed"
-                style={{ fontFamily: 'serif' }}/>
+                className="w-full rounded-[10px] border border-gray-200 bg-gray-50 px-3 py-2 text-[15px] focus:outline-none focus:border-emerald-400 leading-relaxed"
+                style={{ fontFamily: 'serif', minHeight: '120px', resize: 'vertical' }}/>
             </div>
 
             {/* Translation EN */}
