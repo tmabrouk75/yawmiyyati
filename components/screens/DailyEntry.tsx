@@ -131,10 +131,10 @@ function AzkarOverlay({
   onClose: () => void
 }) {
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
+    <div className="fixed inset-0 z-[200] bg-black/50 flex items-end justify-center"
          onClick={onClose}>
       <div className="w-full max-w-[430px] bg-white rounded-t-[24px] overflow-hidden flex flex-col"
-           style={{ maxHeight: '88vh' }}
+           style={{ maxHeight: '82vh', marginBottom: '58px' }}
            dir={dir}
            onClick={e => e.stopPropagation()}>
         {/* Handle */}
@@ -687,7 +687,7 @@ export default function DailyEntry({
               <div className="flex-1"/>
               <div className={`flex items-center gap-[10px] flex-shrink-0`}>
                 {/* Mosque column header — males only */}
-                {gender === 'male' && (
+                {gender && (
                   <div className="w-[22px] text-center text-[12px] leading-none" title={lang === 'ar' ? 'في المسجد' : 'In mosque'}>🕌</div>
                 )}
                 {show('sunnah_rawatib') && (
@@ -708,7 +708,7 @@ export default function DailyEntry({
               <PrayerRow
                 key={p.key}
                 pKey={p.key}
-                isMale={gender === 'male'}
+                isMale={!!gender}
                 hasBefore={p.hasBefore && show('sunnah_rawatib')}
                 hasAfter={p.hasAfter && show('sunnah_rawatib')}
                 hasAzkar={show('prayer_azkar')}
@@ -744,7 +744,7 @@ export default function DailyEntry({
                 icon="☀️" label={t.duha}
                 checked={prayer.duhaDone} onChange={v => updatePrayer('duhaDone', v)}
                 showSunnah={show('sunnah_rawatib')} showAzkar={show('prayer_azkar')}
-                showMosque={gender === 'male'}
+                showMosque={!!gender}
                 dir={dir}
               />
             )}
@@ -756,7 +756,7 @@ export default function DailyEntry({
                 <Fragment key={p.key}>
                   <PrayerRow
                     pKey={p.key}
-                    isMale={gender === 'male'}
+                    isMale={!!gender}
                     hasBefore={p.hasBefore && show('sunnah_rawatib')}
                     hasAfter={p.hasAfter && show('sunnah_rawatib')}
                     hasAzkar={show('prayer_azkar')}
@@ -808,7 +808,7 @@ export default function DailyEntry({
                 icon="🌙" label={t.witr}
                 checked={prayer.witrDone} onChange={v => updatePrayer('witrDone', v)}
                 showSunnah={show('sunnah_rawatib')} showAzkar={show('prayer_azkar')}
-                showMosque={gender === 'male'}
+                showMosque={!!gender}
                 dir={dir}
               />
             )}
@@ -870,7 +870,7 @@ export default function DailyEntry({
                 const doneCount = userSurahs.filter(s => surahChecks[s.id]).length
                 const total     = userSurahs.length
                 const surahRow  = (s: typeof userSurahs[0]) => (
-                  <div key={s.id} className={`flex items-center gap-3 pl-10 pr-[14px] py-[9px] border-b border-gray-100 last:border-b-0 ${dir === 'rtl' ? 'flex-row-reverse pl-[14px] pr-10' : ''}`}>
+                  <div key={s.id} className="flex items-center gap-3 py-[9px] border-b border-gray-100 last:border-b-0" style={{ paddingInlineStart: '40px', paddingInlineEnd: '14px' }}>
                     <span className="flex-1 text-[13px] text-gray-900">{lang === 'ar' ? s.surahNameAr : s.surahNameEn}</span>
                     <CheckBox checked={surahChecks[s.id] ?? false} onChange={v => updateSurah(s.id, v)}/>
                   </div>
@@ -1016,7 +1016,7 @@ export default function DailyEntry({
                   icon="🌙" label={t.taraweeh}
                   checked={prayer.taraweehDone ?? false} onChange={v => updatePrayer('taraweehDone', v)}
                   showSunnah={show('sunnah_rawatib')} showAzkar={show('prayer_azkar')}
-                  showMosque={gender === 'male'}
+                  showMosque={!!gender}
                   dir={dir}
                 />
               )}
@@ -1025,7 +1025,7 @@ export default function DailyEntry({
                   icon="🎉" label={t.eidFitr}
                   checked={prayer.eidFitrDone ?? false} onChange={v => updatePrayer('eidFitrDone', v)}
                   showSunnah={show('sunnah_rawatib')} showAzkar={show('prayer_azkar')}
-                  showMosque={gender === 'male'}
+                  showMosque={!!gender}
                   dir={dir}
                 />
               )}
@@ -1034,7 +1034,7 @@ export default function DailyEntry({
                   icon="🎉" label={t.eidAdha}
                   checked={prayer.eidAdhaDone ?? false} onChange={v => updatePrayer('eidAdhaDone', v)}
                   showSunnah={show('sunnah_rawatib')} showAzkar={show('prayer_azkar')}
-                  showMosque={gender === 'male'}
+                  showMosque={!!gender}
                   dir={dir}
                 />
               )}
