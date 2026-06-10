@@ -268,20 +268,32 @@ export default function Features() {
   const saveDiary = async () => {
     if (!diaryContent.trim() || savingDiary) return
     setSavingDiary(true)
-    const res  = await fetch('/api/diary', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: diaryContent.trim(), customTitle: diaryTitle.trim() || null, format: diaryFormat }),
-    })
-    const data = await res.json()
-    setEntries(prev => [data.entry, ...prev])
-    setDiaryContent(''); setDiaryTitle(''); setDiaryFormat('text'); setShowForm(false)
-    setSavingDiary(false)
+    try {
+      const res  = await fetch('/api/diary', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: diaryContent.trim(), customTitle: diaryTitle.trim() || null, format: diaryFormat }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.entry) throw new Error(data.error ?? 'save failed')
+      setEntries(prev => [data.entry, ...prev])
+      setDiaryContent(''); setDiaryTitle(''); setDiaryFormat('text'); setShowForm(false)
+    } catch {
+      // Keep the typed text so nothing is lost
+      alert(lang === 'ar' ? 'تعذر حفظ اليومية، حاول مرة أخرى' : 'Could not save your entry, please try again')
+    } finally {
+      setSavingDiary(false)
+    }
   }
 
   // ── Delete diary entry
   const deleteEntry = async (id: string) => {
+    const before = entries
     setEntries(prev => prev.filter(e => e.id !== id))
-    await fetch(`/api/diary/${id}`, { method: 'DELETE' })
+    const res = await fetch(`/api/diary/${id}`, { method: 'DELETE' }).catch(() => null)
+    if (!res || !res.ok) {
+      setEntries(before) // restore — delete failed
+      alert(lang === 'ar' ? 'تعذر الحذف، حاول مرة أخرى' : 'Could not delete, please try again')
+    }
   }
 
   // ── Format change — appends a new list item, never reformats existing text

@@ -51,7 +51,7 @@ export default function AzkarOverlay({
                     <div className={`flex-1 min-w-0 ${dir === 'rtl' ? 'text-right' : ''}`}>
                       {/* Arabic text — whitespace-pre-wrap handles multi-line entries */}
                       <p className="text-[17px] leading-[2] text-gray-900 whitespace-pre-wrap"
-                         style={{ fontFamily: 'serif' }}>
+                         style={{ fontFamily: "var(--font-quran), 'Amiri', 'Scheherazade New', 'Traditional Arabic', serif" }}>
                         {def.textAr}
                       </p>
                       {/* Translation */}

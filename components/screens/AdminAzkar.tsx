@@ -204,7 +204,7 @@ export default function AdminAzkar() {
                   item.isActive ? 'border-gray-200' : 'border-gray-100 opacity-60')}>
                 <div className={cn('flex items-start justify-between gap-2')}>
                   <div className={cn('flex-1', dir === 'rtl' && 'text-right')}>
-                    <p className="text-[16px] leading-relaxed text-gray-900 mb-1" style={{ fontFamily: 'serif' }}>
+                    <p className="text-[16px] leading-relaxed text-gray-900 mb-1" style={{ fontFamily: "var(--font-quran), 'Amiri', 'Scheherazade New', 'Traditional Arabic', serif" }}>
                       {item.textAr}
                     </p>
                     {item.translationEn && (
@@ -283,7 +283,7 @@ export default function AdminAzkar() {
                 dir="rtl" rows={6}
                 placeholder="اللهم..."
                 className="w-full rounded-[10px] border border-gray-200 bg-gray-50 px-3 py-2 text-[15px] focus:outline-none focus:border-emerald-400 leading-relaxed"
-                style={{ fontFamily: 'serif', minHeight: '120px', resize: 'vertical' }}/>
+                style={{ fontFamily: "var(--font-quran), 'Amiri', 'Scheherazade New', 'Traditional Arabic', serif", minHeight: '120px', resize: 'vertical' }}/>
             </div>
 
             {/* Translation EN */}

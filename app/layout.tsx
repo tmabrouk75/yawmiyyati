@@ -1,8 +1,13 @@
 import type { Metadata, Viewport } from 'next'
+import { Amiri } from 'next/font/google'
 import { cookies } from 'next/headers'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import { getAuthUser } from '@/lib/auth'
 import './globals.css'
+
+// Proper Arabic typesetting font for Quran/azkar text — generic 'serif'
+// renders some Arabic glyph clusters below the baseline on many devices.
+const amiri = Amiri({ subsets: ['arabic'], weight: ['400', '700'], variable: '--font-quran', display: 'swap' })
 
 export const metadata: Metadata = {
   title: 'Yawmiyyati — يومياتي',
@@ -34,7 +39,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const initialLang = (user?.language?.toLowerCase() ?? cookieLang ?? 'en') as 'en' | 'ar'
 
   return (
-    <html lang={initialLang} dir={initialLang === 'ar' ? 'rtl' : 'ltr'}>
+    <html lang={initialLang} dir={initialLang === 'ar' ? 'rtl' : 'ltr'} className={amiri.variable}>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

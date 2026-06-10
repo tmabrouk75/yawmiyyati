@@ -208,7 +208,7 @@ export default function LandingPage() {
           </div>
 
           {/* Bismillah */}
-          <p className="text-[20px] text-[#C9AA71]/70 mb-2" style={{ fontFamily: 'serif' }}>ابدأ بسم الله</p>
+          <p className="text-[20px] text-[#C9AA71]/70 mb-2" style={{ fontFamily: "var(--font-quran), 'Amiri', 'Scheherazade New', 'Traditional Arabic', serif" }}>ابدأ بسم الله</p>
 
           {/* CTAs */}
           <div className="flex flex-col items-center gap-3 max-w-[340px] mx-auto">
@@ -225,7 +225,7 @@ export default function LandingPage() {
 
           {/* Quranic verse */}
           <div className="mt-12 pt-8 border-t border-white/[0.07]">
-            <p className="text-[18px] text-[#C9AA71]/65 font-light mb-1" style={{ fontFamily: 'serif' }}>{t.verse}</p>
+            <p className="text-[18px] text-[#C9AA71]/65 font-light mb-1" style={{ fontFamily: "var(--font-quran), 'Amiri', 'Scheherazade New', 'Traditional Arabic', serif" }}>{t.verse}</p>
             <p className="text-[11px] text-white/25">{t.verseRef}</p>
           </div>
         </div>

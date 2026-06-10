@@ -357,7 +357,7 @@ export default function Onboarding() {
           <div className="relative">
             <div className="text-[60px] mb-6">🕌</div>
             <h1 className="text-[32px] font-black mb-3 leading-tight"
-                style={{ fontFamily: 'serif', background: 'linear-gradient(135deg, #E8D49E, #C9AA71)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                style={{ fontFamily: "var(--font-quran), 'Amiri', 'Scheherazade New', 'Traditional Arabic', serif", background: 'linear-gradient(135deg, #E8D49E, #C9AA71)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               {t.step3Title}
             </h1>
             <p className="text-[15px] text-white/60 mb-4 leading-relaxed">{t.step3Sub}</p>
