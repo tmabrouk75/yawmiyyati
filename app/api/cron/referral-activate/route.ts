@@ -1,18 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
+import { isAuthorizedCron } from '@/lib/auth/cron'
 
 /**
- * POST /api/cron/referral-activate
+ * GET|POST /api/cron/referral-activate
  *
  * Scans all PENDING referrals and activates any where the referred user
  * has daily logs on at least 3 different calendar days.
  *
- * Run daily via Vercel Cron or external scheduler.
+ * Run daily via Vercel Cron (which sends GET with Authorization: Bearer).
  * Protected by CRON_SECRET.
  */
+export async function GET(req: NextRequest) {
+  return handle(req)
+}
+
 export async function POST(req: NextRequest) {
-  const secret = req.headers.get('x-cron-secret')
-  if (secret !== process.env.CRON_SECRET) {
+  return handle(req)
+}
+
+async function handle(req: NextRequest) {
+  if (!isAuthorizedCron(req)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
@@ -57,12 +65,4 @@ export async function POST(req: NextRequest) {
           where: { id: ref.referrerId },
           data:  { referralPoints: { increment: 1 } },
         }),
-      ])
-      activated++
-    } else {
-      skipped++
-    }
-  }
-
-  return NextResponse.json({ ok: true, activated, skipped, total: pending.length })
-}
+ 

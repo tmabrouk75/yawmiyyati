@@ -2,9 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
 import { hashPassword, signToken, setAuthCookie, validateEmail, validatePassword } from '@/lib/auth'
 import { generateReferralCode, PREMIUM_DAYS_PER_REDEMPTION } from '@/lib/referral'
+import { rateLimit, getClientIp, tooManyRequests } from '@/lib/rate-limit'
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 5 registrations / hour per IP
+    const byIp = rateLimit(`register:ip:${getClientIp(req)}`, 5, 60 * 60 * 1000)
+    if (!byIp.ok) return tooManyRequests(byIp.retryAfterSec, 'Too many attempts. Try again later.')
+
     const body = await req.json()
     const { name, email, password, language = 'EN', refCode } = body
 

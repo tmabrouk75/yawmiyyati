@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
 import { sendEmail } from '@/lib/email/send'
 import { createHmac, randomBytes } from 'crypto'
+import { rateLimit, getClientIp, tooManyRequests } from '@/lib/rate-limit'
 
 // POST /api/auth/forgot-password
 // Body: { email }
@@ -11,6 +12,12 @@ export async function POST(req: NextRequest) {
     if (!email?.trim()) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 })
     }
+
+    // Rate limit: 5 / hour per IP, 3 / hour per target email (stops mail flooding)
+    const byIp    = rateLimit(`forgot:ip:${getClientIp(req)}`, 5, 60 * 60 * 1000)
+    const byEmail = rateLimit(`forgot:email:${email.toLowerCase().trim()}`, 3, 60 * 60 * 1000)
+    if (!byIp.ok)    return tooManyRequests(byIp.retryAfterSec, 'Too many requests. Try again later.')
+    if (!byEmail.ok) return NextResponse.json({ success: true }) // silent, same as unknown email
 
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase().trim() },
