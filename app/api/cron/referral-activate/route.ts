@@ -65,4 +65,12 @@ async function handle(req: NextRequest) {
           where: { id: ref.referrerId },
           data:  { referralPoints: { increment: 1 } },
         }),
- 
+      ])
+      activated++
+    } else {
+      skipped++
+    }
+  }
+
+  return NextResponse.json({ ok: true, activated, skipped, total: pending.length })
+}
