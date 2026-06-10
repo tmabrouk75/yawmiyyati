@@ -182,7 +182,7 @@ export default function PrayerNotifications() {
     <div dir={dir} className="flex flex-col min-h-full bg-gray-50 pb-10">
 
       {/* TOP BAR */}
-      <div className={cn('flex items-center gap-3 px-4 pt-4 pb-2', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex items-center gap-3 px-4 pt-4 pb-2')}>
         <button onClick={() => router.back()} className="text-[13px] text-gray-400">
           {dir === 'rtl' ? '›' : '‹'} {t.back}
         </button>
@@ -201,7 +201,7 @@ export default function PrayerNotifications() {
         ) : locError ? (
           <p className={cn('text-[13px] text-red-500', dir === 'rtl' && 'text-right')}>{t.noLocation}</p>
         ) : coords ? (
-          <div className={cn('flex items-center justify-between', dir === 'rtl' && 'flex-row-reverse')}>
+          <div className={cn('flex items-center justify-between')}>
             <div className={dir === 'rtl' ? 'text-right' : ''}>
               <p className="text-[12px] font-semibold text-emerald-700">📍 {t.location}</p>
               <p className="text-[11px] text-gray-400">{coords.lat.toFixed(4)}°, {coords.lng.toFixed(4)}°</p>
@@ -233,7 +233,6 @@ export default function PrayerNotifications() {
               <div key={name} className={cn(
                 'flex items-center px-4 py-[10px] gap-3',
                 i < PRAYERS_ORDER.length - 1 && 'border-b border-gray-100',
-                dir === 'rtl' && 'flex-row-reverse'
               )}>
                 <span className="text-[16px] w-6 text-center">{PRAYER_ICONS[name]}</span>
                 <span className={cn('flex-1 text-[13px] text-gray-800', dir === 'rtl' && 'text-right')}>
@@ -270,7 +269,7 @@ export default function PrayerNotifications() {
         {t.notifications}
       </p>
       <div className="mx-4 mb-4 bg-white border border-gray-200 rounded-[14px] overflow-hidden">
-        <div className={cn('px-4 py-[12px] border-b border-gray-100 flex items-center justify-between', dir === 'rtl' && 'flex-row-reverse')}>
+        <div className={cn('px-4 py-[12px] border-b border-gray-100 flex items-center justify-between')}>
           <div className={dir === 'rtl' ? 'text-right' : ''}>
             <p className="text-[13px] text-gray-800">
               {notifPerm === 'granted' ? t.notifGranted : notifPerm === 'denied' ? t.notifDenied : t.notifDefault}
@@ -293,7 +292,7 @@ export default function PrayerNotifications() {
         </div>
 
         {/* Reminder timing */}
-        <div className={cn('px-4 py-[12px] flex items-center gap-3', dir === 'rtl' && 'flex-row-reverse')}>
+        <div className={cn('px-4 py-[12px] flex items-center gap-3')}>
           <span className={cn('flex-1 text-[13px] text-gray-700', dir === 'rtl' && 'text-right')}>
             {t.reminderBefore}
           </span>

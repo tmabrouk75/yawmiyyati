@@ -338,7 +338,7 @@ export default function Features() {
       <RefreshIndicator pullY={pullY} refreshing={refreshing}/>
 
       {/* Header */}
-      <div className={cn('px-4 pt-4 pb-2 flex items-center justify-between flex-shrink-0', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('px-4 pt-4 pb-2 flex items-center justify-between flex-shrink-0')}>
         <h1 className="text-[19px] font-bold text-gray-900">{t.title}</h1>
         {tab === 'diary' && (
           <button onClick={() => setShowForm(s => !s)}
@@ -350,7 +350,7 @@ export default function Features() {
       </div>
 
       {/* Tab pills */}
-      <div className={cn('flex gap-2 px-4 mb-2 flex-shrink-0', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex gap-2 px-4 mb-2 flex-shrink-0')}>
         {(['tasks', 'diary', 'groups'] as const).map(tabKey => (
           <button key={tabKey} onClick={() => { setTab(tabKey); if (tabKey !== 'diary') setShowForm(false) }}
             className={cn('px-4 py-[7px] rounded-full text-[12px] font-semibold border transition-all',
@@ -363,7 +363,7 @@ export default function Features() {
       {/* ── TASKS ── */}
       {tab === 'tasks' && (
         <div ref={scrollRef} className="flex-1 overflow-y-auto pb-6">
-          <div className={cn('mx-4 mb-3 flex gap-2 pt-1', dir === 'rtl' && 'flex-row-reverse')}>
+          <div className={cn('mx-4 mb-3 flex gap-2 pt-1')}>
             <input value={taskInput} onChange={e => setTaskInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && addTask()}
               placeholder={t.addTaskPh} dir={dir}
@@ -391,7 +391,7 @@ export default function Features() {
                             idx < pendingTasks.length - 1 && 'border-b border-gray-100',
                             dragging === task.id && 'opacity-40 bg-emerald-50',
                             dragOver  === task.id && 'border-t-2 border-emerald-400',
-                            dir === 'rtl' && 'flex-row-reverse')}>
+                            )}>
                           <div className="text-gray-300 text-[16px] cursor-grab touch-none flex-shrink-0 px-1">⠿</div>
                           <button onClick={() => toggleComplete(task)}
                             className="w-[22px] h-[22px] rounded-full border-2 border-gray-300 flex items-center justify-center flex-shrink-0"/>
@@ -413,7 +413,7 @@ export default function Features() {
                         <div key={task.id}
                           className={cn('flex items-center gap-3 px-3 py-[13px]',
                             idx < completedTasks.length - 1 && 'border-b border-gray-100',
-                            dir === 'rtl' && 'flex-row-reverse')}>
+                            )}>
                           <div className="w-[24px] flex-shrink-0"/>
                           <button onClick={() => toggleComplete(task)}
                             className="w-[22px] h-[22px] rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">
@@ -441,7 +441,7 @@ export default function Features() {
           {showForm && (
             <div className="mx-4 mb-3 bg-white border border-gray-200 rounded-[14px] p-4 flex-shrink-0">
               {/* Format toolbar */}
-              <div className={cn('flex gap-2 mb-3', dir === 'rtl' && 'flex-row-reverse')}>
+              <div className={cn('flex gap-2 mb-3')}>
                 {(['text', 'bullets', 'numbered'] as const).map(fmt => (
                   <button key={fmt} onClick={() => handleFormatChange(fmt)}
                     className={cn('px-3 py-[5px] rounded-[8px] text-[13px] font-bold border transition-all',
@@ -482,7 +482,7 @@ export default function Features() {
               <div className="space-y-3">
                 {entries.map(entry => (
                   <div key={entry.id} className="bg-white border border-gray-200 rounded-[14px] p-4">
-                    <div className={cn('flex items-start justify-between gap-2', dir === 'rtl' && 'flex-row-reverse')}>
+                    <div className={cn('flex items-start justify-between gap-2')}>
                       <div className={cn('flex-1', dir === 'rtl' && 'text-right')}>
                         <p className="text-[11px] text-gray-400 font-medium">
                           {formatEntryDate(entry.createdAt, lang)}

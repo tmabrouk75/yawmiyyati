@@ -85,7 +85,7 @@ function Field({
             'w-full h-[48px] rounded-[12px] border bg-gray-50 px-4 text-[15px] text-gray-900',
             'focus:outline-none focus:border-emerald-500 focus:bg-white transition-all',
             error ? 'border-red-400' : 'border-gray-200',
-            dir === 'rtl' ? 'text-right pr-4 pl-10' : 'pr-10',
+            'pe-10', // logical: reserves space for the eye icon on the end side in both LTR and RTL
           ].join(' ')}
           autoCapitalize={type === 'email' ? 'none' : undefined}
           autoCorrect="off"
@@ -95,7 +95,7 @@ function Field({
           <button
             type="button"
             onClick={() => setShow(s => !s)}
-            className={`absolute top-1/2 -translate-y-1/2 ${dir === 'rtl' ? 'left-3' : 'right-3'} text-gray-400 text-[13px] select-none`}
+            className={`absolute top-1/2 -translate-y-1/2 end-3 text-gray-400 text-[13px] select-none`}
           >
             {show ? '🙈' : '👁'}
           </button>

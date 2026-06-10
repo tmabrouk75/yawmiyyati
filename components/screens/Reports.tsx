@@ -136,7 +136,6 @@ export default function Reports() {
       {/* ── TOP BAR ── */}
       <div className={cn(
         'flex items-center justify-between px-4 pt-4 pb-2',
-        isRtl && 'flex-row-reverse'
       )}>
         <h1 className="text-[20px] font-semibold text-gray-900">{t.title}</h1>
       </div>

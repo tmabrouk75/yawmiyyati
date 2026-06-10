@@ -172,7 +172,7 @@ function FunnelRow({ label, count, total, color, dir }: {
   const pct = total > 0 ? Math.round((count / total) * 100) : 0
   return (
     <div className="mb-3">
-      <div className={cn('flex justify-between text-[12px] mb-[5px]', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex justify-between text-[12px] mb-[5px]')}>
         <span className="text-gray-600">{label}</span>
         <span className="text-gray-400">{count.toLocaleString()} <span className="text-gray-300">({pct}%)</span></span>
       </div>
@@ -245,7 +245,7 @@ export default function AdminDashboard() {
   return (
     <div dir={dir} className="flex flex-col min-h-full bg-gray-50 pb-10">
 
-      <div className={cn('flex items-center justify-between px-4 pt-5 pb-3', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex items-center justify-between px-4 pt-5 pb-3')}>
         <h1 className="text-[20px] font-bold text-gray-900">{t.title}</h1>
         <span className="text-[11px] bg-red-100 text-red-700 font-semibold px-2 py-1 rounded-full">Admin</span>
       </div>
@@ -272,7 +272,7 @@ export default function AdminDashboard() {
           {/* TIER 2: SPARKLINE */}
           <SectionLabel label={t.tier2} dir={dir}/>
           <div className="mx-4 bg-white border border-gray-200 rounded-[14px] p-4">
-            <div className={cn('flex justify-between text-[11px] text-gray-400 mb-3', dir === 'rtl' && 'flex-row-reverse')}>
+            <div className={cn('flex justify-between text-[11px] text-gray-400 mb-3')}>
               <span>{stats.chart?.[0]?.date}</span>
               <span className="text-emerald-600 font-semibold">
                 {stats.chart?.reduce((s: number, d: any) => s + d.count, 0).toLocaleString()} logs
@@ -304,16 +304,16 @@ export default function AdminDashboard() {
                 {lang === 'ar' ? 'السلاسل' : 'Streaks'}
               </p>
               <div className="flex flex-col gap-[10px]">
-                <div className={cn('flex items-center justify-between', dir === 'rtl' && 'flex-row-reverse')}>
+                <div className={cn('flex items-center justify-between')}>
                   <span className="text-[12px] text-gray-500">🔥 {t.streak7}</span>
                   <span className="text-[12px] font-bold text-emerald-700 bg-emerald-50 px-2 py-[2px] rounded-full">{stats.health?.streak7plus ?? 0}</span>
                 </div>
-                <div className={cn('flex items-center justify-between', dir === 'rtl' && 'flex-row-reverse')}>
+                <div className={cn('flex items-center justify-between')}>
                   <span className="text-[12px] text-gray-500">⭐ {t.streak30}</span>
                   <span className="text-[12px] font-bold text-emerald-700 bg-emerald-50 px-2 py-[2px] rounded-full">{stats.health?.streak30plus ?? 0}</span>
                 </div>
                 <div className="h-px bg-gray-100"/>
-                <div className={cn('flex items-center justify-between', dir === 'rtl' && 'flex-row-reverse')}>
+                <div className={cn('flex items-center justify-between')}>
                   <div className={dir === 'rtl' ? 'text-right' : ''}>
                     <p className="text-[12px] text-gray-500">⚠️ {t.atRisk}</p>
                     <p className="text-[10px] text-gray-300">{t.atRiskSub}</p>
@@ -326,16 +326,16 @@ export default function AdminDashboard() {
             <div className="bg-white border border-gray-200 rounded-[14px] p-4">
               <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-3">{t.refPipeline}</p>
               <div className="flex flex-col gap-[10px]">
-                <div className={cn('flex items-center justify-between', dir === 'rtl' && 'flex-row-reverse')}>
+                <div className={cn('flex items-center justify-between')}>
                   <span className="text-[12px] text-gray-500">{t.refSent}</span>
                   <span className="text-[12px] font-bold text-gray-700">{stats.referrals?.sent ?? 0}</span>
                 </div>
-                <div className={cn('flex items-center justify-between', dir === 'rtl' && 'flex-row-reverse')}>
+                <div className={cn('flex items-center justify-between')}>
                   <span className="text-[12px] text-gray-500">{t.refActivated}</span>
                   <span className="text-[12px] font-bold text-emerald-700">{stats.referrals?.activated ?? 0}</span>
                 </div>
                 <div className="h-px bg-gray-100"/>
-                <div className={cn('flex items-center justify-between', dir === 'rtl' && 'flex-row-reverse')}>
+                <div className={cn('flex items-center justify-between')}>
                   <span className="text-[12px] text-gray-500">{t.refRate}</span>
                   <span className="text-[12px] font-bold text-blue-700 bg-blue-50 px-2 py-[2px] rounded-full">{stats.referrals?.activationRate ?? 0}%</span>
                 </div>
@@ -357,7 +357,7 @@ export default function AdminDashboard() {
                       const label = CHANNEL_LABELS[row.channel] ?? (row.channel === 'unknown' ? `💬 ${t.acqUnknown}` : row.channel)
                       return (
                         <div key={row.channel}>
-                          <div className={cn('flex justify-between text-[12px] mb-[4px]', dir === 'rtl' && 'flex-row-reverse')}>
+                          <div className={cn('flex justify-between text-[12px] mb-[4px]')}>
                             <span className="text-gray-600">{label}</span>
                             <span className="text-gray-400">{row.count} <span className="text-gray-300">({pct}%)</span></span>
                           </div>
@@ -387,7 +387,7 @@ export default function AdminDashboard() {
         </button>
       </div>
       <div className="mx-4 mb-5 bg-white border border-gray-200 rounded-[14px] overflow-hidden">
-        <a href="/admin/azkar" className={cn('flex items-center gap-3 px-4 py-[13px] border-b border-gray-100 active:bg-gray-50', dir === 'rtl' && 'flex-row-reverse')}>
+        <a href="/admin/azkar" className={cn('flex items-center gap-3 px-4 py-[13px] border-b border-gray-100 active:bg-gray-50')}>
           <span className="text-[20px]">📿</span>
           <div className={cn('flex-1', dir === 'rtl' && 'text-right')}>
             <p className="text-[14px] font-medium text-gray-900">{lang === 'ar' ? 'إدارة الأذكار' : 'Azkar Manager'}</p>
@@ -395,7 +395,7 @@ export default function AdminDashboard() {
           </div>
           <span className="text-gray-300">{dir === 'rtl' ? '‹' : '›'}</span>
         </a>
-                <a href="/admin/calendar" className={cn('flex items-center gap-3 px-4 py-[13px] border-b border-gray-100 active:bg-gray-50', dir === 'rtl' && 'flex-row-reverse')}>
+                <a href="/admin/calendar" className={cn('flex items-center gap-3 px-4 py-[13px] border-b border-gray-100 active:bg-gray-50')}>
           <span className="text-[20px]">🌙</span>
           <div className={cn('flex-1', dir === 'rtl' && 'text-right')}>
             <p className="text-[14px] font-medium text-gray-900">{lang === 'ar' ? 'إدارة التقويم الإسلامي' : 'Islamic Calendar Manager'}</p>
@@ -403,7 +403,7 @@ export default function AdminDashboard() {
           </div>
           <span className="text-gray-300">{dir === 'rtl' ? '‹' : '›'}</span>
         </a>
-        <a href="/admin/promo" className={cn('flex items-center gap-3 px-4 py-[13px] border-b border-gray-100 active:bg-gray-50', dir === 'rtl' && 'flex-row-reverse')}>
+        <a href="/admin/promo" className={cn('flex items-center gap-3 px-4 py-[13px] border-b border-gray-100 active:bg-gray-50')}>
           <span className="text-[20px]">🎁</span>
           <div className={cn('flex-1', dir === 'rtl' && 'text-right')}>
             <p className="text-[14px] font-medium text-gray-900">{lang === 'ar' ? 'أكواد الترقية والمنح' : 'Promo Codes & Grants'}</p>
@@ -411,7 +411,7 @@ export default function AdminDashboard() {
           </div>
           <span className="text-gray-300">{dir === 'rtl' ? '‹' : '›'}</span>
         </a>
-        <button onClick={previewOnboarding} className={cn('w-full flex items-center gap-3 px-4 py-[13px] active:bg-gray-50 text-left', dir === 'rtl' && 'flex-row-reverse text-right')}>
+        <button onClick={previewOnboarding} className={cn('w-full flex items-center gap-3 px-4 py-[13px] active:bg-gray-50 text-left')}>
           <span className="text-[20px]">👁️</span>
           <div className={cn('flex-1', dir === 'rtl' && 'text-right')}>
             <p className="text-[14px] font-medium text-gray-900">{lang === 'ar' ? 'معاينة الإعداد الأولي' : 'Preview Onboarding'}</p>
@@ -427,7 +427,7 @@ export default function AdminDashboard() {
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t.search} dir={dir}
           className="w-full h-[40px] rounded-[10px] border border-gray-200 bg-white px-3 text-[13px] focus:outline-none focus:border-emerald-400"/>
       </div>
-      <div className={cn('flex gap-2 px-4 mb-3', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex gap-2 px-4 mb-3')}>
         {(['all', 'premium', 'free'] as const).map(f => (
           <button key={f} onClick={() => setFilter(f)}
             className={cn('px-3 py-[5px] rounded-full text-[11px] font-medium border transition-all',
@@ -444,24 +444,24 @@ export default function AdminDashboard() {
           <div className="py-10 text-center text-[13px] text-gray-400">{t.noUsers}</div>
         ) : users.map((u, i) => (
           <div key={u.id} className={cn('px-4 py-3 flex flex-col gap-1', i < users.length - 1 && 'border-b border-gray-100')}>
-            <div className={cn('flex items-center justify-between', dir === 'rtl' && 'flex-row-reverse')}>
+            <div className={cn('flex items-center justify-between')}>
               <div className={dir === 'rtl' ? 'text-right' : ''}>
                 <p className="text-[13px] font-semibold text-gray-900">{u.name}</p>
                 <p className="text-[11px] text-gray-400">{u.email}</p>
               </div>
-              <div className={cn('flex items-center gap-2', dir === 'rtl' && 'flex-row-reverse')}>
+              <div className={cn('flex items-center gap-2')}>
                 {u.isPremium && <span className="text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200 px-2 py-[2px] rounded-full">⭐ {t.premium}</span>}
                 {u.isAdmin  && <span className="text-[9px] font-bold bg-red-50 text-red-700 border border-red-200 px-2 py-[2px] rounded-full">Admin</span>}
               </div>
             </div>
-            <div className={cn('flex items-center gap-3 text-[10px] text-gray-400', dir === 'rtl' && 'flex-row-reverse')}>
+            <div className={cn('flex items-center gap-3 text-[10px] text-gray-400')}>
               <span>{t.joined} {new Date(u.createdAt).toLocaleDateString()}</span>
               <span>·</span>
               <span>{u._count?.dailyLogs ?? 0} {t.logs}</span>
               {u.isPremium && u.premiumExpiresAt  && <><span>·</span><span className="text-amber-600">{t.expires} {new Date(u.premiumExpiresAt).toLocaleDateString()}</span></>}
               {u.isPremium && !u.premiumExpiresAt && <><span>·</span><span className="text-emerald-600">{t.lifetime}</span></>}
             </div>
-            <div className={cn('flex gap-2 mt-1', dir === 'rtl' && 'flex-row-reverse')}>
+            <div className={cn('flex gap-2 mt-1')}>
               {u.isPremium ? (
                 <button onClick={() => setPremium(u.id, false)} disabled={updatingUser === u.id}
                   className="text-[11px] text-red-500 border border-red-100 rounded-full px-3 py-[4px] active:bg-red-50 disabled:opacity-50">
@@ -479,7 +479,7 @@ export default function AdminDashboard() {
       </div>
 
       {pagination.pages > 1 && (
-        <div className={cn('flex items-center justify-between px-4 pb-4', dir === 'rtl' && 'flex-row-reverse')}>
+        <div className={cn('flex items-center justify-between px-4 pb-4')}>
           <button onClick={() => loadUsers(pagination.page - 1)} disabled={pagination.page <= 1}
             className="text-[12px] text-gray-500 border border-gray-200 rounded-[8px] px-3 py-[6px] disabled:opacity-30">
             {t.prev}

@@ -329,7 +329,7 @@ export default function ThemeStore({
     <div dir={dir} className="flex flex-col min-h-full bg-gray-50 pb-8">
 
       {/* Top bar */}
-      <div className={cn('flex items-center px-4 pt-4 pb-1', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex items-center px-4 pt-4 pb-1')}>
         <button onClick={() => router.back()} className="text-[13px] text-gray-400 flex items-center gap-1">
           {dir === 'rtl' ? '›' : '‹'} {t.back}
         </button>

@@ -148,7 +148,7 @@ export default function Premium({ isPremium }: { isPremium: boolean }) {
     <div dir={dir} className="flex flex-col min-h-full bg-gray-50 pb-10">
 
       {/* Top bar */}
-      <div className={cn('flex items-center px-4 pt-4 pb-2', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex items-center px-4 pt-4 pb-2')}>
         <button
           onClick={() => router.back()}
           className="text-[13px] text-gray-400 flex items-center gap-1"
@@ -201,7 +201,7 @@ export default function Premium({ isPremium }: { isPremium: boolean }) {
       {/* Price card */}
       {!isPremium && (
         <div className="mx-4 mb-5 bg-white border-2 border-emerald-500 rounded-[16px] px-5 py-5">
-          <div className={cn('flex items-end gap-1', dir === 'rtl' && 'flex-row-reverse')}>
+          <div className={cn('flex items-end gap-1')}>
             <span className="text-[32px] font-bold text-gray-900">
               {billing === 'monthly'
                 ? DISPLAY_PRICES.monthly.egp
@@ -227,12 +227,11 @@ export default function Premium({ isPremium }: { isPremium: boolean }) {
             className={cn(
               'flex items-center gap-3 px-4 py-[11px]',
               i < t.features.length - 1 && 'border-b border-gray-100',
-              dir === 'rtl' && 'flex-row-reverse'
             )}
           >
             <span className="text-[18px] flex-shrink-0">{f.icon}</span>
             <span className="text-[13px] text-gray-700">{f.text}</span>
-            <span className="text-emerald-500 ml-auto text-[14px]">✓</span>
+            <span className="text-emerald-500 ms-auto text-[14px]">✓</span>
           </div>
         ))}
       </div>
@@ -258,7 +257,7 @@ export default function Premium({ isPremium }: { isPremium: boolean }) {
             <p className={cn('text-[12px] text-gray-500 mb-2', dir === 'rtl' && 'text-right')}>
               {t.promoLabel}
             </p>
-            <div className={cn('flex gap-2', dir === 'rtl' && 'flex-row-reverse')}>
+            <div className={cn('flex gap-2')}>
               <input
                 value={promoCode}
                 onChange={e => setPromoCode(e.target.value.toUpperCase())}

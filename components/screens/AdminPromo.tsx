@@ -154,8 +154,8 @@ function CodeCard({
       code.isActive ? 'border-gray-200' : 'border-gray-100 opacity-60'
     )}>
       {/* Row 1 — code + type */}
-      <div className={cn('flex items-start justify-between mb-2', dir === 'rtl' && 'flex-row-reverse')}>
-        <div className={cn('flex items-center gap-2', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex items-start justify-between mb-2')}>
+        <div className={cn('flex items-center gap-2')}>
           <span className="text-[16px] font-bold text-gray-900 font-mono tracking-wide">
             {code.code}
           </span>
@@ -169,7 +169,7 @@ function CodeCard({
       </div>
 
       {/* Row 2 — details */}
-      <div className={cn('flex flex-wrap gap-x-4 gap-y-1 mb-2 text-[11px] text-gray-500', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex flex-wrap gap-x-4 gap-y-1 mb-2 text-[11px] text-gray-500')}>
         <span>
           {code.type === 'FREE_PREMIUM' || code.type === 'TRIAL'
             ? code.premiumDays === 0 ? t.lifetime : `${code.premiumDays}d premium`
@@ -191,7 +191,7 @@ function CodeCard({
         <div className="mb-3">
           <p className={cn('text-[10px] font-semibold text-gray-400 mb-1', dir === 'rtl' && 'text-right')}>{t.usages}</p>
           {code.usages.slice(0, 3).map((u: any) => (
-            <div key={u.id} className={cn('flex items-center gap-2 text-[11px] text-gray-500', dir === 'rtl' && 'flex-row-reverse')}>
+            <div key={u.id} className={cn('flex items-center gap-2 text-[11px] text-gray-500')}>
               <span className="text-emerald-500">✓</span>
               <span>{u.user.name}</span>
               <span className="text-gray-300">·</span>
@@ -204,7 +204,7 @@ function CodeCard({
       )}
 
       {/* Actions */}
-      <div className={cn('flex gap-2', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex gap-2')}>
         <button
           onClick={() => onToggle(code.id, !code.isActive)}
           className={cn(

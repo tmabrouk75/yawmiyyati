@@ -142,7 +142,7 @@ function GroupCard({
         isComplete ? 'border-emerald-200' : 'border-gray-200'
       )}
     >
-      <div className={cn('flex items-start justify-between mb-2', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex items-start justify-between mb-2')}>
         <div className={dir === 'rtl' ? 'text-right' : ''}>
           <p className="text-[14px] font-semibold text-gray-900">
             {lang === 'ar' ? group.nameAr : group.nameEn}
@@ -163,7 +163,7 @@ function GroupCard({
 
       <ProgressBar pct={group.progressPct}/>
 
-      <div className={cn('flex items-center justify-between mt-2', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex items-center justify-between mt-2')}>
         <span className="text-[11px] text-gray-400">
           {group.totalProgress.toLocaleString()} / {group.goalTarget.toLocaleString()} {group.goalUnit}
         </span>
@@ -304,7 +304,7 @@ export default function Groups({ isPremium }: { isPremium: boolean }) {
 
   return (
     <div dir={dir} className="flex flex-col min-h-full bg-gray-50 pb-8">
-      <div className={cn('flex items-center justify-between px-4 pt-4 pb-3', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex items-center justify-between px-4 pt-4 pb-3')}>
         <h1 className="text-[20px] font-semibold text-gray-900">{t.title}</h1>
         {isPremium && (
           <button

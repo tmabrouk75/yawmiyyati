@@ -99,7 +99,7 @@ export default function ExportScreen({ isPremium }: { isPremium: boolean }) {
     <div dir={dir} className="flex flex-col min-h-full bg-gray-50 pb-10">
 
       {/* TOP BAR */}
-      <div className={cn('flex items-center gap-3 px-4 pt-4 pb-2', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex items-center gap-3 px-4 pt-4 pb-2')}>
         <button onClick={() => router.back()} className="text-[13px] text-gray-400">
           {dir === 'rtl' ? '›' : '‹'} {t.back}
         </button>

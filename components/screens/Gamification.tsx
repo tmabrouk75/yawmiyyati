@@ -248,7 +248,6 @@ function RecentXpLog({
             className={cn(
               'flex items-center px-4 py-[8px]',
               i < 7 && 'border-b border-gray-100',
-              dir === 'rtl' && 'flex-row-reverse'
             )}
           >
             <span className="flex-1 text-[12px] text-gray-700">{label}</span>
@@ -297,7 +296,6 @@ function BadgeGallery({
       {/* Header */}
       <div className={cn(
         'flex items-center justify-between mb-2',
-        dir === 'rtl' && 'flex-row-reverse'
       )}>
         <p className={cn(
           'text-[10px] font-bold uppercase tracking-[0.07em] text-gray-400',
@@ -400,7 +398,6 @@ export default function Gamification() {
       {/* TOP BAR */}
       <div className={cn(
         'flex items-center px-4 pt-4 pb-3',
-        dir === 'rtl' && 'flex-row-reverse'
       )}>
         <h1 className="text-[20px] font-semibold text-gray-900">{t.title}</h1>
       </div>

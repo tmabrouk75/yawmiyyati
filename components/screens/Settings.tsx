@@ -236,7 +236,6 @@ function SurahPicker({
               onClick={() => { onAdd({ surahNumber: s.number, surahNameEn: s.nameEn, surahNameAr: s.nameAr }); onClose() }}
               className={cn(
                 'flex items-center w-full py-[11px] border-b border-gray-100 gap-3',
-                dir === 'rtl' && 'flex-row-reverse'
               )}
             >
               <span className="text-[12px] text-gray-400 w-7 text-center flex-shrink-0">
@@ -526,9 +525,8 @@ export default function Settings({
       {/* ── TOP BAR */}
       <div className={cn(
         'flex items-center justify-between px-4 pt-4 pb-2',
-        dir === 'rtl' && 'flex-row-reverse'
       )}>
-        <div className={cn('flex items-center gap-2', dir === 'rtl' && 'flex-row-reverse')}>
+        <div className={cn('flex items-center gap-2')}>
           <button
             onClick={() => router.push('/today')}
             className={cn(
@@ -548,7 +546,6 @@ export default function Settings({
       <SettingsGroup>
         <div className={cn(
           'flex items-center gap-4 px-[14px] py-[14px] border-b border-gray-100',
-          dir === 'rtl' && 'flex-row-reverse'
         )}>
           <Avatar name={user.name} size={48}/>
           <div className={cn('flex-1', dir === 'rtl' && 'text-right')}>
@@ -565,11 +562,11 @@ export default function Settings({
         />
         {/* Gender selector */}
         <div className={cn('px-[14px] py-[12px] border-b border-gray-100', dir === 'rtl' && 'text-right')}>
-          <div className={cn('flex items-center justify-between mb-[8px]', dir === 'rtl' && 'flex-row-reverse')}>
+          <div className={cn('flex items-center justify-between mb-[8px]')}>
             <span className="text-[13px] font-medium text-gray-900">⚧ {(t as any).gender}</span>
           </div>
           <p className="text-[11px] text-gray-400 mb-[8px]">{(t as any).genderHint}</p>
-          <div className={cn('flex gap-2', dir === 'rtl' && 'flex-row-reverse')}>
+          <div className={cn('flex gap-2')}>
             {(['male', 'female'] as const).map(g => (
               <button
                 key={g}
@@ -750,7 +747,6 @@ export default function Settings({
               className={cn(
                 'px-[14px] py-[12px] flex items-center gap-3',
                 i < qadaYears.length - 1 && 'border-b border-gray-100',
-                dir === 'rtl' && 'flex-row-reverse'
               )}
             >
               <div className={cn('flex-1', dir === 'rtl' && 'text-right')}>

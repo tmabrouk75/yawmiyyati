@@ -228,7 +228,7 @@ export default function Onboarding() {
       </div>
 
       {/* ── Header: back + dots + skip ── */}
-      <div className={cn('relative z-10 flex items-center justify-between px-5 pt-12 pb-4', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('relative z-10 flex items-center justify-between px-5 pt-12 pb-4')}>
         {step > 1 && step !== 3 ? (
           <button onClick={() => setStep(s => s - 1)}
             className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/60 text-[16px]">
@@ -328,7 +328,6 @@ export default function Onboarding() {
                   countryCode === c.code
                     ? 'bg-[#C9AA71]/15 border border-[#C9AA71]/50'
                     : 'bg-white/[0.04] border border-transparent hover:border-white/10',
-                  dir === 'rtl' && 'flex-row-reverse text-right'
                 )}
               >
                 <span className="text-[22px] flex-shrink-0">{flagEmoji(c.code)}</span>
@@ -448,7 +447,6 @@ export default function Onboarding() {
                   key={opt.key}
                   onClick={() => setSelectedChannel(opt.key)}
                   className={cn('flex items-center gap-4 px-4 py-[13px] transition-all', card(active),
-                    dir === 'rtl' && 'flex-row-reverse'
                   )}
                 >
                   <span className="text-[22px] flex-shrink-0">{opt.icon}</span>
@@ -478,7 +476,7 @@ export default function Onboarding() {
           <div className="flex flex-col gap-3">
             {t.features.map((f, i) => (
               <div key={i} className={cn('flex items-center gap-4 bg-white/[0.06] border border-white/10 rounded-[16px] p-4',
-                dir === 'rtl' && 'flex-row-reverse')}>
+                )}>
                 <div className="w-[46px] h-[46px] rounded-[12px] flex items-center justify-center flex-shrink-0 text-[22px]"
                      style={{ background: f.color + '22', border: `1px solid ${f.color}44` }}>
                   {f.icon}

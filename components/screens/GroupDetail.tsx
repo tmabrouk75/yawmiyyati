@@ -173,7 +173,7 @@ export default function GroupDetail({ groupId, isPremium }: { groupId: string; i
     <div dir={dir} className="flex flex-col min-h-full bg-gray-50 pb-10">
 
       {/* TOP BAR */}
-      <div className={cn('flex items-center gap-3 px-4 pt-4 pb-2', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex items-center gap-3 px-4 pt-4 pb-2')}>
         <button onClick={() => router.back()} className="text-[13px] text-gray-400">
           {dir === 'rtl' ? '›' : '‹'} {t.back}
         </button>
@@ -214,7 +214,7 @@ export default function GroupDetail({ groupId, isPremium }: { groupId: string; i
           <p className={cn('text-[12px] font-semibold text-gray-700 mb-3', dir === 'rtl' && 'text-right')}>
             {t.addContrib}
           </p>
-          <div className={cn('flex gap-2', dir === 'rtl' && 'flex-row-reverse')}>
+          <div className={cn('flex gap-2')}>
             <input
               type="number"
               value={amount}
@@ -249,7 +249,7 @@ export default function GroupDetail({ groupId, isPremium }: { groupId: string; i
             const isOwner = member.userId === group.owner?.id
             return (
               <div key={member.userId}
-                className={cn('px-4 py-[10px] flex items-center gap-3', i > 0 && 'border-t border-gray-100', dir === 'rtl' && 'flex-row-reverse')}>
+                className={cn('px-4 py-[10px] flex items-center gap-3', i > 0 && 'border-t border-gray-100')}>
                 {/* Rank */}
                 <span className="text-[13px] font-bold text-gray-300 w-5 text-center flex-shrink-0">{i + 1}</span>
                 {/* Name */}
@@ -282,7 +282,7 @@ export default function GroupDetail({ groupId, isPremium }: { groupId: string; i
           <p className={cn('text-[12px] font-semibold text-gray-700 mb-3', dir === 'rtl' && 'text-right')}>
             {t.addMember}
           </p>
-          <div className={cn('flex gap-2', dir === 'rtl' && 'flex-row-reverse')}>
+          <div className={cn('flex gap-2')}>
             <input
               type="email"
               value={email}

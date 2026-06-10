@@ -230,7 +230,7 @@ export default function ReferralScreen() {
     <div dir={dir} className="flex flex-col min-h-full bg-gray-50 pb-10">
 
       {/* â”€â”€ TOP BAR â”€â”€ */}
-      <div className={cn('flex items-center justify-between px-4 pt-5 pb-3', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex items-center justify-between px-4 pt-5 pb-3')}>
         <button onClick={() => router.back()} className="text-[13px] text-gray-400">{t.back}</button>
         <h1 className="text-[17px] font-bold text-gray-900">{t.title}</h1>
         <div className="w-10" />
@@ -261,7 +261,7 @@ export default function ReferralScreen() {
         <p className={cn('text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-3', dir === 'rtl' && 'text-right')}>
           {lang === 'ar' ? 'Ø±Ø§Ø¨Ø· Ø§Ù„Ø¥Ø­Ø§Ù„Ø© Ø§Ù„Ø®Ø§Øµ Ø¨Ùƒ' : 'Your Referral Link'}
         </p>
-        <div className={cn('flex items-center gap-2 bg-gray-50 rounded-[10px] px-3 py-2 mb-3', dir === 'rtl' && 'flex-row-reverse')}>
+        <div className={cn('flex items-center gap-2 bg-gray-50 rounded-[10px] px-3 py-2 mb-3')}>
           <p className="flex-1 text-[12px] text-gray-600 font-mono truncate" dir="ltr">{referralLink}</p>
           <button
             onClick={copyLink}
@@ -285,7 +285,7 @@ export default function ReferralScreen() {
       {/* â”€â”€ INVITE BY EMAIL â”€â”€ */}
       <div className="mx-4 mb-4 bg-white border border-gray-200 rounded-[14px] p-4">
         <p className={cn('text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-3', dir === 'rtl' && 'text-right')}>{t.inviteTitle}</p>
-        <div className={cn('flex gap-2', dir === 'rtl' && 'flex-row-reverse')}>
+        <div className={cn('flex gap-2')}>
           <input
             type="email"
             value={inviteEmail}
@@ -317,7 +317,7 @@ export default function ReferralScreen() {
         <div className="flex flex-col gap-2">
 
           {/* Premium month */}
-          <div className={cn('flex items-center justify-between bg-amber-50 border border-amber-200 rounded-[12px] px-4 py-3', dir === 'rtl' && 'flex-row-reverse')}>
+          <div className={cn('flex items-center justify-between bg-amber-50 border border-amber-200 rounded-[12px] px-4 py-3')}>
             <div className={dir === 'rtl' ? 'text-right' : ''}>
               <p className="text-[14px] font-semibold text-amber-900">â­ {t.redeemPrem}</p>
               <p className="text-[11px] text-amber-600">{t.premCost}</p>
@@ -338,7 +338,7 @@ export default function ReferralScreen() {
           </div>
 
           {/* Theme unlock */}
-          <div className={cn('flex items-center justify-between bg-purple-50 border border-purple-200 rounded-[12px] px-4 py-3', dir === 'rtl' && 'flex-row-reverse')}>
+          <div className={cn('flex items-center justify-between bg-purple-50 border border-purple-200 rounded-[12px] px-4 py-3')}>
             <div className={dir === 'rtl' ? 'text-right' : ''}>
               <p className="text-[14px] font-semibold text-purple-900">ðŸŽ¨ {t.redeemTheme}</p>
               <p className="text-[11px] text-purple-600">{t.themeCost}</p>
@@ -397,7 +397,7 @@ export default function ReferralScreen() {
                 key={ref.id}
                 className={cn('px-4 py-3', i < data.referrals.length - 1 && 'border-b border-gray-100')}
               >
-                <div className={cn('flex items-center justify-between', dir === 'rtl' && 'flex-row-reverse')}>
+                <div className={cn('flex items-center justify-between')}>
                   <div className={dir === 'rtl' ? 'text-right' : ''}>
                     <p className="text-[13px] font-semibold text-gray-900">
                       {ref.referred?.name ?? ref.sentToEmail ?? 'â€”'}
@@ -426,7 +426,7 @@ export default function ReferralScreen() {
         <p className={cn('text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-3', dir === 'rtl' && 'text-right')}>{t.rulesTitle}</p>
         <ol className={cn('flex flex-col gap-2', dir === 'rtl' && 'text-right')}>
           {REFERRAL_RULES[lang].map((rule, i) => (
-            <li key={i} className={cn('flex gap-3 text-[12px] text-gray-600 leading-relaxed', dir === 'rtl' && 'flex-row-reverse')}>
+            <li key={i} className={cn('flex gap-3 text-[12px] text-gray-600 leading-relaxed')}>
               <span className="text-[#C9AA71] font-bold flex-shrink-0">{i + 1}.</span>
               <span>{rule}</span>
             </li>
@@ -440,7 +440,7 @@ export default function ReferralScreen() {
           <p className={cn('text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2', dir === 'rtl' && 'text-right tracking-normal')}>{t.historyTitle}</p>
           <div className="bg-white border border-gray-200 rounded-[14px] overflow-hidden">
             {data!.redemptions.map((r, i) => (
-              <div key={r.id} className={cn('flex items-center justify-between px-4 py-3', dir === 'rtl' && 'flex-row-reverse', i < data!.redemptions.length - 1 && 'border-b border-gray-100')}>
+              <div key={r.id} className={cn('flex items-center justify-between px-4 py-3', i < data!.redemptions.length - 1 && 'border-b border-gray-100')}>
                 <div className={dir === 'rtl' ? 'text-right' : ''}>
                   <p className="text-[13px] font-medium text-gray-800">
                     {r.type === 'PREMIUM_MONTH' ? 'â­ ' + t.redeemPrem : 'ðŸŽ¨ ' + (r.themeKey ?? t.redeemTheme)}

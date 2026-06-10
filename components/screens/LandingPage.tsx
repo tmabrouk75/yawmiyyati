@@ -142,14 +142,14 @@ export default function LandingPage() {
       {/* ── STICKY NAV ── */}
       <nav className="sticky top-0 z-30 flex items-center justify-between px-5 py-3 border-b border-white/[0.06]"
            style={{ background: 'rgba(13,31,45,0.95)', backdropFilter: 'blur(16px)' }}>
-        <div className={cn('flex items-center gap-2', dir === 'rtl' && 'flex-row-reverse')}>
+        <div className={cn('flex items-center gap-2')}>
           <span className="text-[18px]">🌙</span>
           <span className="text-[17px] font-black tracking-tight"
                 style={{ background: 'linear-gradient(135deg, #E8D49E, #C9AA71)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             {t.appName}
           </span>
         </div>
-        <div className={cn('flex items-center gap-3', dir === 'rtl' && 'flex-row-reverse')}>
+        <div className={cn('flex items-center gap-3')}>
           <LangToggle />
           <button onClick={() => go('/login', 'login')} disabled={!!loading}
             className="text-[12px] font-semibold text-white/60 border border-white/15 rounded-[8px] px-3 py-[6px] hover:border-white/30 transition-colors disabled:opacity-50">
@@ -236,7 +236,7 @@ export default function LandingPage() {
         <h2 className={cn('text-[22px] font-black text-white mb-8', dir === 'rtl' ? 'text-right' : 'text-center')}>{t.vpTitle}</h2>
         <div className="grid gap-4">
           {t.vp.map((v, i) => (
-            <div key={i} className={cn('flex items-start gap-5 bg-white/[0.04] border border-white/[0.08] rounded-[18px] p-5 hover:border-white/[0.14] transition-colors', dir === 'rtl' && 'flex-row-reverse')}>
+            <div key={i} className={cn('flex items-start gap-5 bg-white/[0.04] border border-white/[0.08] rounded-[18px] p-5 hover:border-white/[0.14] transition-colors')}>
               <div className="w-12 h-12 rounded-[14px] bg-[#C9AA71]/10 border border-[#C9AA71]/20 flex items-center justify-center text-[22px] flex-shrink-0">
                 {v.icon}
               </div>
@@ -274,7 +274,7 @@ export default function LandingPage() {
         <h2 className={cn('text-[22px] font-black text-white mb-10', dir === 'rtl' ? 'text-right' : 'text-center')}>{t.howTitle}</h2>
         <div className="flex flex-col gap-0">
           {t.steps.map((s, i) => (
-            <div key={i} className={cn('flex items-start gap-5 relative', dir === 'rtl' && 'flex-row-reverse')}>
+            <div key={i} className={cn('flex items-start gap-5 relative')}>
               {/* Connector line */}
               {i < t.steps.length - 1 && (
                 <div className="absolute left-[22px] top-[48px] w-[2px] h-[calc(100%-4px)] bg-gradient-to-b from-[#C9AA71]/40 to-transparent"
@@ -323,7 +323,7 @@ export default function LandingPage() {
             <p className="text-[28px] font-black text-white mb-1">$0</p>
             <p className="text-[11px] text-white/30 mb-5">forever</p>
             {t.premFree.map((item, i) => (
-              <div key={i} className={cn('flex items-start gap-2 mb-2', dir === 'rtl' && 'flex-row-reverse')}>
+              <div key={i} className={cn('flex items-start gap-2 mb-2')}>
                 <span className="text-white/30 text-[10px] mt-[2px] flex-shrink-0">✓</span>
                 <span className="text-[11px] text-white/45 leading-snug">{item}</span>
               </div>
@@ -343,7 +343,7 @@ export default function LandingPage() {
               {lang === 'ar' ? '١ شهر · جميع المميزات' : '1 month · all features included'}
             </p>
             {t.premPaid.map((item, i) => (
-              <div key={i} className={cn('flex items-start gap-2 mb-2', dir === 'rtl' && 'flex-row-reverse')}>
+              <div key={i} className={cn('flex items-start gap-2 mb-2')}>
                 <span className="text-[#C9AA71] text-[10px] mt-[2px] flex-shrink-0">✓</span>
                 <span className="text-[11px] text-white/65 leading-snug">{item}</span>
               </div>

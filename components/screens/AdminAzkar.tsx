@@ -39,13 +39,21 @@ export default function AdminAzkar() {
   const [editItem,   setEditItem]   = useState<AzkarDef | null>(null)
   const [form,       setForm]       = useState({ ...EMPTY_FORM })
   const [saving,     setSaving]     = useState(false)
+  const [loadError,  setLoadError]  = useState(false)
+  const [actionError, setActionError] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/admin/azkar')
-      .then(r => r.json())
+      .then(r => { if (!r.ok) throw new Error('load failed'); return r.json() })
       .then(d => { setAzkar(d.azkar ?? []); setLoading(false) })
-      .catch(() => setLoading(false))
+      .catch(() => { setLoadError(true); setLoading(false) })
   }, [])
+
+  const showError = (msg: string) => {
+    setActionError(msg)
+    setTimeout(() => setActionError(null), 4000)
+  }
+  const FAIL_MSG = lang === 'ar' ? 'فشلت العملية، حاول مرة أخرى' : 'Action failed, please try again'
 
   const tabItems = azkar.filter(a => a.category === activeTab)
 
@@ -78,45 +86,69 @@ export default function AdminAzkar() {
       repetitions:   form.repetitions,
     }
 
-    if (editItem) {
-      const res = await fetch('/api/admin/azkar', {
-        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: editItem.id, ...body }),
-      })
-      const data = await res.json()
-      setAzkar(prev => prev.map(a => a.id === editItem.id ? data.azkar : a))
-    } else {
-      const res = await fetch('/api/admin/azkar', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      })
-      const data = await res.json()
-      setAzkar(prev => [...prev, data.azkar])
+    try {
+      if (editItem) {
+        const res = await fetch('/api/admin/azkar', {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: editItem.id, ...body }),
+        })
+        const data = await res.json()
+        if (!res.ok || !data.azkar) throw new Error(data.error ?? 'save failed')
+        setAzkar(prev => prev.map(a => a.id === editItem.id ? data.azkar : a))
+      } else {
+        const res = await fetch('/api/admin/azkar', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        })
+        const data = await res.json()
+        if (!res.ok || !data.azkar) throw new Error(data.error ?? 'save failed')
+        setAzkar(prev => [...prev, data.azkar])
+      }
+      setShowForm(false)
+    } catch {
+      showError(FAIL_MSG)
+    } finally {
+      setSaving(false)
     }
-    setSaving(false)
-    setShowForm(false)
   }
 
   const remove = async (id: string) => {
     if (!confirm(lang === 'ar' ? 'هل تريد الحذف؟' : 'Delete this azkar?')) return
-    await fetch(`/api/admin/azkar?id=${id}`, { method: 'DELETE' })
-    setAzkar(prev => prev.filter(a => a.id !== id))
+    try {
+      const res = await fetch(`/api/admin/azkar?id=${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('delete failed')
+      setAzkar(prev => prev.filter(a => a.id !== id))
+    } catch {
+      showError(FAIL_MSG)
+    }
   }
 
   const toggleActive = async (item: AzkarDef) => {
-    const res = await fetch('/api/admin/azkar', {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: item.id, isActive: !item.isActive }),
-    })
-    const data = await res.json()
-    setAzkar(prev => prev.map(a => a.id === item.id ? data.azkar : a))
+    try {
+      const res = await fetch('/api/admin/azkar', {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: item.id, isActive: !item.isActive }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.azkar) throw new Error(data.error ?? 'toggle failed')
+      setAzkar(prev => prev.map(a => a.id === item.id ? data.azkar : a))
+    } catch {
+      showError(FAIL_MSG)
+    }
   }
 
   return (
     <div dir={dir} className="flex flex-col min-h-full bg-gray-50 pb-10">
 
+      {/* Action error toast */}
+      {actionError && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[60] bg-red-600 text-white text-[13px] font-medium px-4 py-2 rounded-full shadow-lg">
+          {actionError}
+        </div>
+      )}
+
       {/* Header */}
-      <div className={cn('flex items-center gap-3 px-4 pt-5 pb-3', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex items-center gap-3 px-4 pt-5 pb-3')}>
         <button onClick={() => router.push('/admin')}
           className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200 text-gray-500 text-[18px]">
           {dir === 'rtl' ? '›' : '‹'}
@@ -124,11 +156,11 @@ export default function AdminAzkar() {
         <h1 className="text-[20px] font-bold text-gray-900">
           {lang === 'ar' ? 'إدارة الأذكار' : 'Azkar Manager'}
         </h1>
-        <span className="text-[11px] bg-red-100 text-red-700 font-semibold px-2 py-1 rounded-full ml-auto">Admin</span>
+        <span className="text-[11px] bg-red-100 text-red-700 font-semibold px-2 py-1 rounded-full ms-auto">Admin</span>
       </div>
 
       {/* Category tabs */}
-      <div className={cn('flex gap-2 px-4 mb-4', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex gap-2 px-4 mb-4')}>
         {CATS.map(cat => (
           <button key={cat} onClick={() => setActiveTab(cat)}
             className={cn('flex-1 py-[8px] rounded-[10px] text-[12px] font-semibold border transition-all',
@@ -143,6 +175,16 @@ export default function AdminAzkar() {
         {loading ? (
           <div className="space-y-2">
             {[1,2,3].map(i => <div key={i} className="h-[80px] bg-gray-100 rounded-[14px] animate-pulse"/>)}
+          </div>
+        ) : loadError ? (
+          <div className="bg-white border border-red-200 rounded-[14px] p-8 text-center">
+            <p className="text-[14px] font-medium text-red-600 mb-3">
+              {lang === 'ar' ? 'تعذر تحميل الأذكار' : 'Could not load azkar'}
+            </p>
+            <button onClick={() => location.reload()}
+              className="text-[12px] text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-4 py-[6px] font-semibold">
+              {lang === 'ar' ? 'إعادة المحاولة' : 'Retry'}
+            </button>
           </div>
         ) : tabItems.length === 0 ? (
           <div className="bg-white border border-gray-200 rounded-[14px] p-8 text-center">
@@ -160,7 +202,7 @@ export default function AdminAzkar() {
               <div key={item.id}
                 className={cn('bg-white border rounded-[14px] p-4',
                   item.isActive ? 'border-gray-200' : 'border-gray-100 opacity-60')}>
-                <div className={cn('flex items-start justify-between gap-2', dir === 'rtl' && 'flex-row-reverse')}>
+                <div className={cn('flex items-start justify-between gap-2')}>
                   <div className={cn('flex-1', dir === 'rtl' && 'text-right')}>
                     <p className="text-[16px] leading-relaxed text-gray-900 mb-1" style={{ fontFamily: 'serif' }}>
                       {item.textAr}
@@ -175,7 +217,7 @@ export default function AdminAzkar() {
                       {lang === 'ar' ? `× ${item.repetitions}` : `× ${item.repetitions}`}
                     </span>
                   </div>
-                  <div className={cn('flex items-center gap-2 flex-shrink-0', dir === 'rtl' && 'flex-row-reverse')}>
+                  <div className={cn('flex items-center gap-2 flex-shrink-0')}>
                     <button onClick={() => toggleActive(item)}
                       className={cn('text-[10px] px-2 py-[4px] rounded-full border font-medium',
                         item.isActive ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-50 text-gray-400 border-gray-200')}>
@@ -223,7 +265,7 @@ export default function AdminAzkar() {
             {/* Category selector */}
             <div>
               <p className="text-[11px] text-gray-400 mb-2">{lang === 'ar' ? 'الفئة' : 'Category'}</p>
-              <div className={cn('flex gap-2', dir === 'rtl' && 'flex-row-reverse')}>
+              <div className={cn('flex gap-2')}>
                 {CATS.map(cat => (
                   <button key={cat} onClick={() => setForm(f => ({ ...f, category: cat }))}
                     className={cn('flex-1 py-[7px] rounded-[8px] text-[11px] font-medium border transition-all',
@@ -263,7 +305,7 @@ export default function AdminAzkar() {
             {/* Repetitions */}
             <div>
               <p className="text-[11px] text-gray-400 mb-1">{lang === 'ar' ? 'عدد التكرار' : 'Repetitions'}</p>
-              <div className={cn('flex items-center gap-3', dir === 'rtl' && 'flex-row-reverse')}>
+              <div className={cn('flex items-center gap-3')}>
                 <button onClick={() => setForm(f => ({ ...f, repetitions: Math.max(1, f.repetitions - 1) }))}
                   className="w-9 h-9 rounded-[8px] border border-gray-200 text-[18px] flex items-center justify-center active:bg-gray-50">−</button>
                 <span className="text-[18px] font-bold text-gray-900 w-8 text-center">{form.repetitions}</span>
@@ -272,7 +314,7 @@ export default function AdminAzkar() {
               </div>
             </div>
 
-            <div className={cn('flex gap-3 mt-2', dir === 'rtl' && 'flex-row-reverse')}>
+            <div className={cn('flex gap-3 mt-2')}>
               <button onClick={() => setShowForm(false)}
                 className="flex-1 py-[12px] rounded-[12px] border border-gray-200 text-[14px] text-gray-500">
                 {lang === 'ar' ? 'إلغاء' : 'Cancel'}

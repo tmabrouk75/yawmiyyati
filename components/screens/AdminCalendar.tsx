@@ -248,7 +248,6 @@ function EventPanel({
       {/* Header */}
       <div className={cn(
         'px-4 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between',
-        dir === 'rtl' && 'flex-row-reverse'
       )}>
         <div className={dir === 'rtl' ? 'text-right' : ''}>
           <p className="text-[13px] font-semibold text-gray-900">{eventLabel}</p>
@@ -309,7 +308,6 @@ function EventPanel({
                   key={ov.countryCode}
                   className={cn(
                     'flex items-center gap-2 bg-gray-50 rounded-[8px] px-3 py-2',
-                    dir === 'rtl' && 'flex-row-reverse'
                   )}
                 >
                   {/* Flag emoji via country code */}
@@ -397,7 +395,7 @@ export default function AdminCalendar() {
       </div>
 
       {/* Year selector */}
-      <div className={cn('flex items-center gap-3 px-4 mb-4', dir === 'rtl' && 'flex-row-reverse')}>
+      <div className={cn('flex items-center gap-3 px-4 mb-4')}>
         <p className="text-[12px] font-semibold text-gray-600">{t.year}:</p>
         <div className="flex gap-2">
           {[1446, 1447, 1448].map(y => (
