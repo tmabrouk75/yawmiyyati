@@ -105,8 +105,9 @@ export default function AdminAzkar() {
         setAzkar(prev => [...prev, data.azkar])
       }
       setShowForm(false)
-    } catch {
-      showError(FAIL_MSG)
+    } catch (err) {
+      const reason = err instanceof Error && err.message !== 'save failed' ? ` (${err.message})` : ''
+      showError(FAIL_MSG + reason)
     } finally {
       setSaving(false)
     }

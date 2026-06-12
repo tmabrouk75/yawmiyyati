@@ -5,7 +5,7 @@ import { getAuthUser } from '@/lib/auth'
 const CATEGORIES = ['MORNING', 'EVENING', 'CUSTOM'] as const
 type Category = (typeof CATEGORIES)[number]
 
-const MAX_TEXT = 5000
+const MAX_TEXT = 20000  // generous: diacritics (tashkeel) count as characters
 
 async function requireAdmin() {
   const user = await getAuthUser()
