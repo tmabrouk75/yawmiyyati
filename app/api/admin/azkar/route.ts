@@ -5,6 +5,9 @@ import { getAuthUser } from '@/lib/auth'
 const CATEGORIES = ['MORNING', 'EVENING', 'CUSTOM'] as const
 type Category = (typeof CATEGORIES)[number]
 
+const LANGUAGES = ['EN', 'AR'] as const
+type AzkarLang = (typeof LANGUAGES)[number]
+
 const MAX_TEXT = 20000  // generous: diacritics (tashkeel) count as characters
 
 async function requireAdmin() {
@@ -16,6 +19,7 @@ function sanitize(body: Record<string, unknown>) {
   // Whitelist: only these fields may be written, never anything else from the client
   const out: {
     category?: Category
+    language?: AzkarLang
     textAr?: string
     translationEn?: string | null
     translationAr?: string | null
@@ -27,6 +31,10 @@ function sanitize(body: Record<string, unknown>) {
   if (body.category !== undefined) {
     if (!CATEGORIES.includes(body.category as Category)) return { error: 'Invalid category' }
     out.category = body.category as Category
+  }
+  if (body.language !== undefined) {
+    if (!LANGUAGES.includes(body.language as AzkarLang)) return { error: 'Invalid language' }
+    out.language = body.language as AzkarLang
   }
   if (body.textAr !== undefined) {
     const t = String(body.textAr).trim()
@@ -56,7 +64,7 @@ function sanitize(body: Record<string, unknown>) {
 export async function GET() {
   try {
     if (!await requireAdmin()) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    const azkar = await prisma.azkarDefinition.findMany({ orderBy: [{ category: 'asc' }, { sortOrder: 'asc' }] })
+    const azkar = await prisma.azkarDefinition.findMany({ orderBy: [{ language: 'asc' }, { category: 'asc' }, { sortOrder: 'asc' }] })
     return NextResponse.json({ azkar })
   } catch (error) {
     console.error('[ADMIN AZKAR GET]', error)
@@ -74,10 +82,12 @@ export async function POST(req: NextRequest) {
     if (!data.category || !data.textAr)
       return NextResponse.json({ error: 'category and textAr are required' }, { status: 400 })
 
-    const count = await prisma.azkarDefinition.count({ where: { category: data.category } })
+    const language = data.language ?? 'AR'
+    const count = await prisma.azkarDefinition.count({ where: { category: data.category, language } })
     const azkar = await prisma.azkarDefinition.create({
       data: {
         category:      data.category,
+        language,
         textAr:        data.textAr,
         translationEn: data.translationEn ?? null,
         translationAr: data.translationAr ?? null,

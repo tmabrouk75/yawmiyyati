@@ -4,6 +4,7 @@
 // Components render; this hook owns the data and talks to /api/activities/*.
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { useLang } from '@/contexts/LanguageContext'
 import type { PrayerState, AzkarDef } from '@/components/screens/daily/translations'
 
 // Format a Date as local YYYY-MM-DD (not toISOString, which shifts to UTC)
@@ -29,6 +30,8 @@ export function useDailyEntryState(today: Date, init: DailyEntryInitial) {
     initialPrayer, initialDhikr, initialQuran, initialFasting, initialSadaqah,
     initialQada = 0, initialIsPeriod = false,
   } = init
+
+  const { lang } = useLang()
 
   // ── Prayer state — unified structure
   const [prayer, setPrayer] = useState<PrayerState>({
@@ -97,14 +100,15 @@ export function useDailyEntryState(today: Date, init: DailyEntryInitial) {
   const [eveningAzkarDefs, setEveningAzkarDefs] = useState<AzkarDef[]>([])
 
   useEffect(() => {
+    const L = lang === 'ar' ? 'AR' : 'EN'
     Promise.all([
-      fetch('/api/azkar?category=MORNING').then(r => r.json()),
-      fetch('/api/azkar?category=EVENING').then(r => r.json()),
+      fetch(`/api/azkar?category=MORNING&language=${L}`).then(r => r.json()),
+      fetch(`/api/azkar?category=EVENING&language=${L}`).then(r => r.json()),
     ]).then(([m, e]) => {
       setMorningAzkarDefs(m.azkar ?? [])
       setEveningAzkarDefs(e.azkar ?? [])
     }).catch(() => {})
-  }, [])
+  }, [lang])
 
   // ── Save status
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')

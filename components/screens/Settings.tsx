@@ -397,7 +397,7 @@ export default function Settings({
 
   const loadAzkarDefs = async () => {
     if (azkarDefs.length > 0) return
-    const res = await fetch('/api/azkar?category=CUSTOM')
+    const res = await fetch(`/api/azkar?category=CUSTOM&language=${lang === 'ar' ? 'AR' : 'EN'}`)
     const data = await res.json()
     setAzkarDefs(data.azkar ?? [])
   }

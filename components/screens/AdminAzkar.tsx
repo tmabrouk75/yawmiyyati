@@ -6,10 +6,12 @@ import { useLang } from '@/contexts/LanguageContext'
 import { cn } from '@/lib/utils'
 
 type AzkarCategory = 'MORNING' | 'EVENING' | 'CUSTOM'
+type AzkarLang = 'EN' | 'AR'
 
 interface AzkarDef {
   id: string
   category: AzkarCategory
+  language: AzkarLang
   textAr: string
   translationEn: string | null
   translationAr: string | null
@@ -26,7 +28,13 @@ const CAT_LABELS: Record<AzkarCategory, { en: string; ar: string; icon: string }
 
 const CATS: AzkarCategory[] = ['MORNING', 'EVENING', 'CUSTOM']
 
-const EMPTY_FORM = { category: 'MORNING' as AzkarCategory, textAr: '', translationEn: '', translationAr: '', repetitions: 1 }
+const LANGS: AzkarLang[] = ['AR', 'EN']
+const LANG_LABELS: Record<AzkarLang, { en: string; ar: string }> = {
+  AR: { en: 'Arabic',  ar: 'العربية' },
+  EN: { en: 'English', ar: 'الإنجليزية' },
+}
+
+const EMPTY_FORM = { category: 'MORNING' as AzkarCategory, language: 'AR' as AzkarLang, textAr: '', translationEn: '', translationAr: '', repetitions: 1 }
 
 export default function AdminAzkar() {
   const { lang, dir } = useLang()
@@ -34,6 +42,7 @@ export default function AdminAzkar() {
 
   const [azkar,      setAzkar]      = useState<AzkarDef[]>([])
   const [loading,    setLoading]    = useState(true)
+  const [activeLang, setActiveLang] = useState<AzkarLang>('AR')
   const [activeTab,  setActiveTab]  = useState<AzkarCategory>('MORNING')
   const [showForm,   setShowForm]   = useState(false)
   const [editItem,   setEditItem]   = useState<AzkarDef | null>(null)
@@ -55,11 +64,11 @@ export default function AdminAzkar() {
   }
   const FAIL_MSG = lang === 'ar' ? 'فشلت العملية، حاول مرة أخرى' : 'Action failed, please try again'
 
-  const tabItems = azkar.filter(a => a.category === activeTab)
+  const tabItems = azkar.filter(a => a.category === activeTab && a.language === activeLang)
 
   const openAdd = () => {
     setEditItem(null)
-    setForm({ ...EMPTY_FORM, category: activeTab })
+    setForm({ ...EMPTY_FORM, category: activeTab, language: activeLang })
     setShowForm(true)
   }
 
@@ -67,6 +76,7 @@ export default function AdminAzkar() {
     setEditItem(item)
     setForm({
       category:      item.category,
+      language:      item.language,
       textAr:        item.textAr,
       translationEn: item.translationEn ?? '',
       translationAr: item.translationAr ?? '',
@@ -80,6 +90,7 @@ export default function AdminAzkar() {
     setSaving(true)
     const body = {
       category:      form.category,
+      language:      form.language,
       textAr:        form.textAr.trim(),
       translationEn: form.translationEn.trim() || null,
       translationAr: form.translationAr.trim() || null,
@@ -158,6 +169,20 @@ export default function AdminAzkar() {
           {lang === 'ar' ? 'إدارة الأذكار' : 'Azkar Manager'}
         </h1>
         <span className="text-[11px] bg-red-100 text-red-700 font-semibold px-2 py-1 rounded-full ms-auto">Admin</span>
+      </div>
+
+      {/* Language tabs */}
+      <div className="px-4 mb-3">
+        <p className="text-[11px] font-medium text-gray-400 mb-1">{lang === 'ar' ? 'لغة الأذكار' : 'Azkar Language'}</p>
+        <div className={cn('flex gap-2')}>
+          {LANGS.map(lng => (
+            <button key={lng} onClick={() => setActiveLang(lng)}
+              className={cn('flex-1 py-[8px] rounded-[10px] text-[12px] font-semibold border transition-all',
+                activeLang === lng ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200')}>
+              {lang === 'ar' ? LANG_LABELS[lng].ar : LANG_LABELS[lng].en}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Category tabs */}
@@ -261,6 +286,9 @@ export default function AdminAzkar() {
             </div>
             <p className="text-[17px] font-bold text-gray-900 mb-1">
               {editItem ? (lang === 'ar' ? 'تعديل الذكر' : 'Edit Azkar') : (lang === 'ar' ? 'إضافة ذكر' : 'Add Azkar')}
+              <span className="ms-2 align-middle text-[11px] font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-full px-2 py-[2px]">
+                {lang === 'ar' ? LANG_LABELS[form.language].ar : LANG_LABELS[form.language].en}
+              </span>
             </p>
 
             {/* Category selector */}

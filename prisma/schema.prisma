@@ -787,6 +787,7 @@ enum AzkarCategory {
 model AzkarDefinition {
   id            String        @id @default(cuid())
   category      AzkarCategory
+  language      Language      @default(AR)
   textAr        String        @db.Text
   translationEn String?       @db.Text
   translationAr String?       @db.Text
@@ -798,6 +799,7 @@ model AzkarDefinition {
 
   userAzkars UserAzkar[]
 
+  @@index([language, category, isActive, sortOrder])
   @@map("azkar_definitions")
 }
 
