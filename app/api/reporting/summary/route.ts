@@ -160,10 +160,10 @@ export async function GET(req: NextRequest) {
       }
     })
 
-    // ── Overall streak (perfect days)
+    // ── Overall streak (days the configured streak goal was met)
     let overallCurrent = 0; let overallBest = 0; let overallRunning = 0; let overallCounting = true
     allLogs.forEach(log => {
-      const isPerfect = log.completionPct >= 100
+      const isPerfect = log.streakGoalMet || log.isPeriod
       if (isPerfect) {
         overallRunning++
         if (overallCounting) overallCurrent++

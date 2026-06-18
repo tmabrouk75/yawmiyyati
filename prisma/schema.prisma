@@ -35,6 +35,7 @@ model User {
   remindersEnabled  Boolean   @default(true)
   emailReminders    Boolean   @default(true)
   gender            String?   // 'male' | 'female' — controls period toggle visibility
+  streakGoals       String[]  @default(["fard"]) // components the user requires for a streak day
   // Onboarding personalisation (collected during onboarding flow)
   ageRange           String?    // e.g. "21-25", "26-30"
   acquisitionChannel String?    // e.g. "INSTAGRAM", "FRIENDS", "GOOGLE"
@@ -201,6 +202,7 @@ model DailyLog {
   dateHijriDay   Int
   completionPct  Float    @default(0)   // overall % across all enabled activities
   salahPerfect   Boolean  @default(false) // true when all fard + enabled sunnah/witr/qiyam done
+  streakGoalMet  Boolean  @default(false) // true when the user's configured streak goal was met that day
   totalXpEarned  Int      @default(0)
   isPeriod       Boolean  @default(false) // female users: period day — prayers exempt from streak break
   createdAt      DateTime @default(now())

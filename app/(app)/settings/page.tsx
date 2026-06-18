@@ -46,6 +46,7 @@ export default async function SettingsPage() {
         remindersEnabled: user.remindersEnabled,
         emailReminders:   user.emailReminders,
         gender:           user.gender ?? null,
+        streakGoals:      user.streakGoals ?? ['fard'],
       }}
       userActivities={userActivities.map(a => ({
         id:         a.id,

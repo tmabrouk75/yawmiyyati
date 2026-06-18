@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
 import { getAuthUser } from '@/lib/auth'
-import { processDhikrXp, checkAndAwardBadges } from '@/lib/xp/engine'
+import { processDhikrXp, checkAndAwardBadges, checkAndAwardStreaks, recomputeStreakGoal } from '@/lib/xp/engine'
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,10 +28,12 @@ export async function POST(req: NextRequest) {
     })
 
     await prisma.xpLog.deleteMany({
-      where: { userId: user.id, dateGregorian: dateObj, reason: { in: ['morning_azkar', 'evening_azkar'] } },
+      where: { userId: user.id, dateGregorian: dateObj, reason: { in: ['morning_azkar', 'evening_azkar', 'daily_streak_bonus'] } },
     })
 
     const xpEarned = await processDhikrXp(user.id, dhikrLog, dateObj)
+    await recomputeStreakGoal(user.id, dateObj)
+    await checkAndAwardStreaks(user.id, dateObj)
     await checkAndAwardBadges(user.id)
 
     return NextResponse.json({ dhikrLog, xpEarned })

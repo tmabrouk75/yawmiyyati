@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
 import { getAuthUser } from '@/lib/auth'
-import { processQuranXp, checkAndAwardBadges } from '@/lib/xp/engine'
+import { processQuranXp, checkAndAwardBadges, checkAndAwardStreaks, recomputeStreakGoal } from '@/lib/xp/engine'
 
 // POST /api/activities/quran
 export async function POST(req: NextRequest) {
@@ -39,10 +39,12 @@ export async function POST(req: NextRequest) {
 
     // Recalculate XP
     await prisma.xpLog.deleteMany({
-      where: { userId: user.id, dateGregorian: dateObj, reason: { in: ['quran_pages', 'kahf_friday'] } },
+      where: { userId: user.id, dateGregorian: dateObj, reason: { in: ['quran_pages', 'kahf_friday', 'daily_streak_bonus'] } },
     })
 
     const xpEarned = await processQuranXp(user.id, quranLog, dateObj)
+    await recomputeStreakGoal(user.id, dateObj)
+    await checkAndAwardStreaks(user.id, dateObj)
     await checkAndAwardBadges(user.id)
 
     return NextResponse.json({ quranLog, xpEarned })

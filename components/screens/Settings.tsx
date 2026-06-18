@@ -32,6 +32,16 @@ const T = {
     // Activities
     sActivities:   'My Activities',
     activitiesHint:'Choose what appears on your home screen',
+    // Streak goal
+    sStreak:        'Streak goal',
+    streakHint:     'Pick what a day must include to keep your streak. Changes apply from today onward; past days stay as they were.',
+    streakFard:     'Fard prayers',
+    streakSunnah:   'Sunnah rawatib',
+    streakZikr:     'Post-prayer azkar',
+    streakMosque:   'Prayers in the mosque',
+    streakQiyamWitr:'Qiyam and Witr',
+    streakMornEve:  'Morning and Evening azkar',
+    streakQuran:    'Quran reading',
     // Surahs
     sSurahs:       'Daily Surahs',
     surahsHint:    'Add Surahs to check off daily',
@@ -72,6 +82,16 @@ const T = {
     genderMale:    'ذكر',
     genderFemale:  'أنثى',
     genderHint:    'يُستخدم لإظهار متابعة أيام الظروف الخاصة في الشاشة الرئيسية',
+    // Streak goal
+    sStreak:        'هدف السلسلة',
+    streakHint:     'اختر ما يجب إكماله في اليوم للحفاظ على سلسلتك. التغيير يسري من اليوم فصاعدًا، والأيام السابقة تبقى كما هي.',
+    streakFard:     'الفرائض',
+    streakSunnah:   'السنن الرواتب',
+    streakZikr:     'أذكار بعد الصلاة',
+    streakMosque:   'الصلاة في المسجد',
+    streakQiyamWitr:'قيام الليل والوتر',
+    streakMornEve:  'أذكار الصباح والمساء',
+    streakQuran:    'تلاوة القرآن',
     premium:       'بريميوم',
     free:          'مجاني',
     upgradePremium:'الترقية إلى بريميوم',
@@ -156,7 +176,7 @@ interface SettingsProps {
   user: {
     name: string; email: string; language: string; theme: string
     isPremium: boolean; remindersEnabled: boolean; emailReminders: boolean
-    isAdmin?: boolean; gender?: string | null
+    isAdmin?: boolean; gender?: string | null; streakGoals?: string[]
   }
   userActivities: Activity[]
   userSurahs: UserSurah[]
@@ -322,6 +342,7 @@ export default function Settings({
 
   // ── State
   const [user, setUser]             = useState(initialUser)
+  const [streakGoals, setStreakGoals] = useState<string[]>(initialUser.streakGoals ?? ['fard'])
   const [activities, setActivities] = useState(initialActivities)
   const [surahs, setSurahs]         = useState(initialSurahs)
   const [userAzkars, setUserAzkars] = useState<UserAzkarItem[]>(initialAzkars)
@@ -367,6 +388,14 @@ export default function Settings({
       body: JSON.stringify({ updates: [{ id, isEnabled: !current }] }),
     })
   }, [activities])
+
+  const toggleStreakGoal = useCallback((key: string) => {
+    setStreakGoals(prev => {
+      const next = prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+      patchUser({ streakGoals: next })
+      return next
+    })
+  }, [patchUser])
 
   const addAzkarFromDef = async (def: AzkarDefItem) => {
     if (userAzkars.length >= 20) return
@@ -784,6 +813,26 @@ export default function Settings({
             </div>
           )
         })}
+      </SettingsGroup>
+
+      {/* ══════ STREAK GOAL ══════ */}
+      <SectionHeader title={(t as any).sStreak} dir={dir}/>
+      <p className="text-[11px] text-gray-400 mb-2 px-1">{(t as any).streakHint}</p>
+      <SettingsGroup>
+        <SettingsRow icon="🕌" label={(t as any).streakFard} dir={dir}
+          right={<Toggle value={streakGoals.includes('fard')} onChange={() => toggleStreakGoal('fard')} />} />
+        <SettingsRow icon="🌙" label={(t as any).streakSunnah} dir={dir}
+          right={<Toggle value={streakGoals.includes('sunnah')} onChange={() => toggleStreakGoal('sunnah')} />} />
+        <SettingsRow icon="📿" label={(t as any).streakZikr} dir={dir}
+          right={<Toggle value={streakGoals.includes('zikr')} onChange={() => toggleStreakGoal('zikr')} />} />
+        <SettingsRow icon="🕋" label={(t as any).streakMosque} dir={dir}
+          right={<Toggle value={streakGoals.includes('mosque')} onChange={() => toggleStreakGoal('mosque')} />} />
+        <SettingsRow icon="🌌" label={(t as any).streakQiyamWitr} dir={dir}
+          right={<Toggle value={streakGoals.includes('qiyam_witr')} onChange={() => toggleStreakGoal('qiyam_witr')} />} />
+        <SettingsRow icon="🌅" label={(t as any).streakMornEve} dir={dir}
+          right={<Toggle value={streakGoals.includes('morning_evening_azkar')} onChange={() => toggleStreakGoal('morning_evening_azkar')} />} />
+        <SettingsRow icon="📖" label={(t as any).streakQuran} dir={dir} isLast
+          right={<Toggle value={streakGoals.includes('quran')} onChange={() => toggleStreakGoal('quran')} />} />
       </SettingsGroup>
 
       {/* ══════ 5. REMINDERS ══════ */}

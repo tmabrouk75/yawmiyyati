@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
 import { getAuthUser } from '@/lib/auth'
+import { recomputeStreakGoal } from '@/lib/xp/engine'
 
 // GET /api/settings — return full user settings
 export async function GET() {
@@ -33,6 +34,7 @@ export async function GET() {
         isPremium:        user.isPremium,
         remindersEnabled: user.remindersEnabled,
         emailReminders:   user.emailReminders,
+        streakGoals:      user.streakGoals ?? ['fard'],
       },
       userActivities: userActivities.map(a => ({
         id:          a.id,
@@ -59,7 +61,7 @@ export async function PATCH(req: NextRequest) {
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const body = await req.json()
-    const { language, theme, remindersEnabled, emailReminders, name, country, gender } = body
+    const { language, theme, remindersEnabled, emailReminders, name, country, gender, streakGoals } = body
 
     const updateData: any = {}
     if (language)         updateData.language         = language
@@ -69,12 +71,27 @@ export async function PATCH(req: NextRequest) {
     if (gender !== undefined) updateData.gender       = gender
     if (remindersEnabled !== undefined) updateData.remindersEnabled = remindersEnabled
     if (emailReminders   !== undefined) updateData.emailReminders   = emailReminders
+    if (Array.isArray(streakGoals)) {
+      const allowed = ['fard', 'sunnah', 'zikr', 'mosque', 'qiyam_witr', 'morning_evening_azkar', 'quran']
+      updateData.streakGoals = streakGoals.filter((g: unknown): g is string => typeof g === 'string' && allowed.includes(g))
+    }
 
     const updated = await prisma.user.update({
       where: { id: user.id },
       data: updateData,
       select: { language: true, theme: true, remindersEnabled: true, emailReminders: true, name: true },
     })
+
+    // If the streak goal changed, refresh only TODAY's flag so the change takes
+    // effect immediately. Earlier days are never touched, so history stays frozen.
+    if (updateData.streakGoals) {
+      const today = new Date(); today.setHours(0, 0, 0, 0)
+      const todayLog = await prisma.dailyLog.findUnique({
+        where: { userId_dateGregorian: { userId: user.id, dateGregorian: today } },
+        select: { id: true },
+      })
+      if (todayLog) await recomputeStreakGoal(user.id, today)
+    }
 
     return NextResponse.json({ success: true, user: updated })
   } catch (error) {

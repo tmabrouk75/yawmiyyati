@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db/prisma'
+import { computeStreakGoalMet } from '@/lib/scoring/streakGoal'
 
 // ─── XP RULES ────────────────────────────────────────────
 
@@ -246,10 +247,28 @@ export async function processSadaqahXp(
   return SCORE.sadaqah
 }
 
+// ─── RECOMPUTE STREAK GOAL ────────────────────────────────
+// Recomputes the per-day "streak goal met" flag from the user's configured
+// streakGoals and the day's logs, then stores it. Called on every relevant
+// save. Past days are never touched unless that day is itself re-saved, so
+// changing the goal only affects days from here forward.
+export async function recomputeStreakGoal(userId: string, date: Date) {
+  const dailyLog = await prisma.dailyLog.findUnique({
+    where: { userId_dateGregorian: { userId, dateGregorian: date } },
+    include: { prayerLog: true, dhikrLog: true, quranLog: true },
+  })
+  if (!dailyLog) return
+  const u = await prisma.user.findUnique({ where: { id: userId }, select: { streakGoals: true } })
+  const met = computeStreakGoalMet(u?.streakGoals ?? ['fard'], {
+    prayer: dailyLog.prayerLog, dhikr: dailyLog.dhikrLog, quran: dailyLog.quranLog,
+  })
+  await prisma.dailyLog.update({ where: { id: dailyLog.id }, data: { streakGoalMet: met } })
+}
+
 // ─── DAILY STREAK BONUS ───────────────────────────────────
 //
-// Streak is based ONLY on salah: all Fard + enabled Sunnah + Witr + Qiyam.
-// Quran, Dhikr, Fasting, Sadaqah do NOT affect the streak.
+// Streak counts days where the user's configured streak goal was met
+// (DailyLog.streakGoalMet), or period days. The goal is set in Settings.
 //
 // Bonuses stack daily and reset to 0 the moment any streak day is missed:
 //   Day 2+:  +25 / day
@@ -257,19 +276,19 @@ export async function processSadaqahXp(
 //   Day 31+: +25 + 50 + 100 = +175 / day
 
 export async function checkAndAwardStreaks(userId: string, date: Date) {
-  // Use salahPerfect — set by the prayer save API
-  // Period days (isPeriod = true) count as streak-valid even without salahPerfect
+  // Use streakGoalMet, set by recomputeStreakGoal on each relevant save.
+  // Period days (isPeriod = true) count as streak-valid even without the goal.
   const logs = await prisma.dailyLog.findMany({
     where: { userId },
     orderBy: { dateGregorian: 'desc' },
     take: 60,
-    select: { salahPerfect: true, isPeriod: true, dateGregorian: true },
+    select: { streakGoalMet: true, isPeriod: true, dateGregorian: true },
   })
 
-  // Count consecutive days where salahPerfect = true OR isPeriod = true
+  // Count consecutive days where streakGoalMet = true OR isPeriod = true
   let streak = 0
   for (const log of logs) {
-    if (log.salahPerfect || log.isPeriod) streak++
+    if (log.streakGoalMet || log.isPeriod) streak++
     else break
   }
 

@@ -270,6 +270,9 @@ export default function DailyEntry({
           defs={s.morningAzkarDefs}
           lang={lang}
           dir={dir}
+          dateKey={toLocalIso(today)}
+          category="MORNING"
+          onAllComplete={() => s.updateDhikr('morningAzkarDone', true)}
           onClose={() => setShowMorningAzkar(false)}
         />
       )}
@@ -279,6 +282,9 @@ export default function DailyEntry({
           defs={s.eveningAzkarDefs}
           lang={lang}
           dir={dir}
+          dateKey={toLocalIso(today)}
+          category="EVENING"
+          onAllComplete={() => s.updateDhikr('eveningAzkarDone', true)}
           onClose={() => setShowEveningAzkar(false)}
         />
       )}

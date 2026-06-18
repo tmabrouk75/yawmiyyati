@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
 import { getAuthUser } from '@/lib/auth'
-import { processPrayerXp, checkAndAwardBadges, checkAndAwardStreaks } from '@/lib/xp/engine'
+import { processPrayerXp, checkAndAwardBadges, checkAndAwardStreaks, recomputeStreakGoal } from '@/lib/xp/engine'
 
 // POST /api/activities/prayer
 export async function POST(req: NextRequest) {
@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
 
     const xpEarned = await processPrayerXp(user.id, prayerLog, dateObj)
     await updateCompletionPct(user.id, dailyLog.id, dateObj, prayerLog)
+    await recomputeStreakGoal(user.id, dateObj)
     await checkAndAwardStreaks(user.id, dateObj)
     await checkAndAwardBadges(user.id)
 
