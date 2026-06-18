@@ -337,7 +337,15 @@ export default function AdminAzkar() {
               <div className={cn('flex items-center gap-3')}>
                 <button onClick={() => setForm(f => ({ ...f, repetitions: Math.max(1, f.repetitions - 1) }))}
                   className="w-9 h-9 rounded-[8px] border border-gray-200 text-[18px] flex items-center justify-center active:bg-gray-50">−</button>
-                <span className="text-[18px] font-bold text-gray-900 w-8 text-center">{form.repetitions}</span>
+                <input
+                  type="number" inputMode="numeric" min={1} max={1000}
+                  value={form.repetitions}
+                  onChange={e => {
+                    const n = parseInt(e.target.value, 10)
+                    setForm(f => ({ ...f, repetitions: Number.isNaN(n) ? 1 : Math.min(1000, Math.max(1, n)) }))
+                  }}
+                  className="w-20 h-9 rounded-[8px] border border-gray-200 text-center text-[18px] font-bold text-gray-900 focus:outline-none focus:border-emerald-400"
+                />
                 <button onClick={() => setForm(f => ({ ...f, repetitions: f.repetitions + 1 }))}
                   className="w-9 h-9 rounded-[8px] border border-gray-200 text-[18px] flex items-center justify-center active:bg-gray-50">+</button>
               </div>
