@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLang } from '@/contexts/LanguageContext'
 import { cn } from '@/lib/utils'
@@ -52,6 +52,12 @@ export default function AdminAzkar() {
   const [saving,     setSaving]     = useState(false)
   const [loadError,  setLoadError]  = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
+
+  // Drag-to-reorder state (works with mouse cursor and touch via Pointer Events)
+  const [dragId, setDragId] = useState<string | null>(null)
+  const [overId, setOverId] = useState<string | null>(null)
+  const dragRef = useRef<string | null>(null)
+  const reorderTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   useEffect(() => {
     fetch('/api/admin/azkar')
@@ -153,24 +159,54 @@ export default function AdminAzkar() {
     }
   }
 
-  // Reorder within the current tab by swapping sortOrder with the neighbour.
-  const move = async (item: AzkarDef, direction: 'up' | 'down') => {
-    const list = tabItems
-    const idx = list.findIndex(a => a.id === item.id)
-    const swapIdx = direction === 'up' ? idx - 1 : idx + 1
-    if (swapIdx < 0 || swapIdx >= list.length) return
-    const other = list[swapIdx]
-    const a = { ...item,  sortOrder: other.sortOrder }
-    const b = { ...other, sortOrder: item.sortOrder }
-    setAzkar(prev => prev.map(x => x.id === a.id ? a : x.id === b.id ? b : x))
-    try {
-      await Promise.all([
-        fetch('/api/admin/azkar', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: a.id, sortOrder: a.sortOrder }) }),
-        fetch('/api/admin/azkar', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.id, sortOrder: b.sortOrder }) }),
-      ])
-    } catch {
-      showError(FAIL_MSG)
+  // Drag-to-reorder within the current tab+language group. Persists the new
+  // order (debounced) to /api/admin/azkar/reorder, which writes sortOrder.
+  const saveOrder = (ids: string[]) => {
+    if (reorderTimer.current) clearTimeout(reorderTimer.current)
+    reorderTimer.current = setTimeout(() => {
+      fetch('/api/admin/azkar/reorder', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: ids }),
+      }).then(r => { if (!r.ok) throw new Error() }).catch(() => showError(FAIL_MSG))
+    }, 500)
+  }
+
+  const onDragStart = (e: React.PointerEvent, id: string) => {
+    dragRef.current = id
+    setDragId(id)
+    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch {}
+  }
+
+  const onDragMove = (e: React.PointerEvent) => {
+    if (!dragRef.current) return
+    const el = document.elementFromPoint(e.clientX, e.clientY)
+    const row = el?.closest('[data-azkar-id]') as HTMLElement | null
+    const oid = row?.getAttribute('data-azkar-id')
+    if (oid && oid !== dragRef.current) setOverId(oid)
+  }
+
+  const onDragEnd = () => {
+    const from = dragRef.current
+    const to = overId
+    if (from && to && from !== to) {
+      setAzkar(prev => {
+        const group = prev
+          .filter(a => a.category === activeTab && a.language === activeLang)
+          .sort((a, b) => a.sortOrder - b.sortOrder)
+        const fi = group.findIndex(a => a.id === from)
+        const ti = group.findIndex(a => a.id === to)
+        if (fi === -1 || ti === -1) return prev
+        const reordered = [...group]
+        const [moved] = reordered.splice(fi, 1)
+        reordered.splice(ti, 0, moved)
+        const orderMap = new Map(reordered.map((a, i) => [a.id, i]))
+        saveOrder(reordered.map(a => a.id))
+        return prev.map(a => orderMap.has(a.id) ? { ...a, sortOrder: orderMap.get(a.id)! } : a)
+      })
     }
+    setDragId(null)
+    setOverId(null)
+    dragRef.current = null
   }
 
   return (
@@ -248,15 +284,31 @@ export default function AdminAzkar() {
           </div>
         ) : (
           <div className="space-y-2">
-            {tabItems.map((item, i) => (
-              <div key={item.id}
-                className={cn('bg-white border rounded-[14px] p-4',
-                  item.isActive ? 'border-gray-200' : 'border-gray-100 opacity-60')}>
+            {tabItems.map((item) => (
+              <div key={item.id} data-azkar-id={item.id}
+                className={cn('bg-white border rounded-[14px] p-4 transition-all',
+                  item.isActive ? 'border-gray-200' : 'border-gray-100 opacity-60',
+                  dragId === item.id && 'opacity-40 ring-2 ring-emerald-400',
+                  overId === item.id && dragId !== item.id && 'ring-2 ring-emerald-300 bg-emerald-50/40')}>
                 <div className={cn('flex items-start justify-between gap-2')}>
+                  {/* Drag handle: press and drag with the cursor (or finger) to reorder */}
+                  <div
+                    onPointerDown={(e) => onDragStart(e, item.id)}
+                    onPointerMove={onDragMove}
+                    onPointerUp={onDragEnd}
+                    onPointerCancel={onDragEnd}
+                    role="button"
+                    aria-label={lang === 'ar' ? 'اسحب لإعادة الترتيب' : 'Drag to reorder'}
+                    className="flex-shrink-0 self-center text-gray-300 hover:text-gray-500 text-[18px] leading-none cursor-grab active:cursor-grabbing touch-none select-none px-1">
+                    ⠿
+                  </div>
                   <div className={cn('flex-1', dir === 'rtl' && 'text-right')}>
                     <p className="text-[16px] leading-relaxed text-gray-900 mb-1" style={{ fontFamily: "var(--font-quran), 'Amiri', 'Scheherazade New', 'Traditional Arabic', serif" }}>
                       {item.textAr}
                     </p>
+                    {item.transliteration && (
+                      <p className="text-[11px] text-emerald-700/80 mb-[2px]">{item.transliteration}</p>
+                    )}
                     {item.translationEn && (
                       <p className="text-[11px] text-gray-400 mb-[2px]">{item.translationEn}</p>
                     )}
@@ -273,10 +325,6 @@ export default function AdminAzkar() {
                         item.isActive ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-50 text-gray-400 border-gray-200')}>
                       {item.isActive ? (lang === 'ar' ? 'نشط' : 'Active') : (lang === 'ar' ? 'مخفي' : 'Hidden')}
                     </button>
-                    <button onClick={() => move(item, 'up')} aria-label="Move up"
-                      className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 text-[14px]">↑</button>
-                    <button onClick={() => move(item, 'down')} aria-label="Move down"
-                      className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 text-[14px]">↓</button>
                     <button onClick={() => openEdit(item)}
                       className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 text-[14px]">
                       ✏️

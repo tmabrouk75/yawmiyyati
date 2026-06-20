@@ -11,7 +11,11 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "node prisma/seed.js",
-    "db:backfill": "node scripts/backfill-salah-perfect.js"
+    "db:backfill": "node scripts/backfill-salah-perfect.js",
+    "db:repair-azkar": "node prisma/repair-azkar.js",
+    "db:recompute-streaks": "node prisma/recompute-streaks.js",
+    "db:inspect-azkar": "node prisma/inspect-azkar.js",
+    "db:sync-azkar-en": "node prisma/sync-azkar-en.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

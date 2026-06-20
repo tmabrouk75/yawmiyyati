@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
 import { getAuthUser } from '@/lib/auth'
-import { recomputeStreakGoal } from '@/lib/xp/engine'
+import { recomputeStreakGoalRange } from '@/lib/xp/engine'
 
 // GET /api/settings — return full user settings
 export async function GET() {
@@ -82,15 +82,11 @@ export async function PATCH(req: NextRequest) {
       select: { language: true, theme: true, remindersEnabled: true, emailReminders: true, name: true },
     })
 
-    // If the streak goal changed, refresh only TODAY's flag so the change takes
-    // effect immediately. Earlier days are never touched, so history stays frozen.
+    // If the streak goal changed, re-evaluate the streak flag across recent
+    // history against the new selection so the streak reflects the chosen goals
+    // immediately, instead of staying on the previous configuration.
     if (updateData.streakGoals) {
-      const today = new Date(); today.setHours(0, 0, 0, 0)
-      const todayLog = await prisma.dailyLog.findUnique({
-        where: { userId_dateGregorian: { userId: user.id, dateGregorian: today } },
-        select: { id: true },
-      })
-      if (todayLog) await recomputeStreakGoal(user.id, today)
+      await recomputeStreakGoalRange(user.id)
     }
 
     return NextResponse.json({ success: true, user: updated })

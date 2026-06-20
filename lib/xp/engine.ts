@@ -265,6 +265,41 @@ export async function recomputeStreakGoal(userId: string, date: Date) {
   await prisma.dailyLog.update({ where: { id: dailyLog.id }, data: { streakGoalMet: met } })
 }
 
+// ─── RECOMPUTE STREAK GOAL OVER A RANGE ───────────────────
+// Re-evaluates streakGoalMet for every existing DailyLog in a trailing window
+// against the user's CURRENT streakGoals. Call this when the goal selection
+// changes so the streak reflects the new choice across visible history,
+// instead of staying frozen on whatever config produced the old flags.
+// Window covers the streak count (60 days) and the yearly report view.
+export async function recomputeStreakGoalRange(userId: string, sinceDays = 400) {
+  const u = await prisma.user.findUnique({ where: { id: userId }, select: { streakGoals: true } })
+  const goals = u?.streakGoals ?? ['fard']
+
+  const since = new Date()
+  since.setHours(0, 0, 0, 0)
+  since.setDate(since.getDate() - sinceDays)
+
+  const logs = await prisma.dailyLog.findMany({
+    where: { userId, dateGregorian: { gte: since } },
+    include: { prayerLog: true, dhikrLog: true, quranLog: true },
+  })
+
+  const updates = logs
+    .map(log => {
+      const met = computeStreakGoalMet(goals, {
+        prayer: log.prayerLog, dhikr: log.dhikrLog, quran: log.quranLog,
+      })
+      // Only touch rows whose flag actually changed.
+      return met === log.streakGoalMet
+        ? null
+        : prisma.dailyLog.update({ where: { id: log.id }, data: { streakGoalMet: met } })
+    })
+    .filter((p): p is ReturnType<typeof prisma.dailyLog.update> => p !== null)
+
+  await Promise.all(updates)
+  return updates.length
+}
+
 // ─── DAILY STREAK BONUS ───────────────────────────────────
 //
 // Streak counts days where the user's configured streak goal was met
