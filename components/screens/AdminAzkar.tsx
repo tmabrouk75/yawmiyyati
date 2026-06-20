@@ -66,7 +66,7 @@ export default function AdminAzkar() {
   }
   const FAIL_MSG = lang === 'ar' ? 'فشلت العملية، حاول مرة أخرى' : 'Action failed, please try again'
 
-  const tabItems = azkar.filter(a => a.category === activeTab && a.language === activeLang)
+  const tabItems = azkar.filter(a => a.category === activeTab && a.language === activeLang).sort((a, b) => a.sortOrder - b.sortOrder)
 
   const openAdd = () => {
     setEditItem(null)
@@ -148,6 +148,26 @@ export default function AdminAzkar() {
       const data = await res.json()
       if (!res.ok || !data.azkar) throw new Error(data.error ?? 'toggle failed')
       setAzkar(prev => prev.map(a => a.id === item.id ? data.azkar : a))
+    } catch {
+      showError(FAIL_MSG)
+    }
+  }
+
+  // Reorder within the current tab by swapping sortOrder with the neighbour.
+  const move = async (item: AzkarDef, direction: 'up' | 'down') => {
+    const list = tabItems
+    const idx = list.findIndex(a => a.id === item.id)
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+    if (swapIdx < 0 || swapIdx >= list.length) return
+    const other = list[swapIdx]
+    const a = { ...item,  sortOrder: other.sortOrder }
+    const b = { ...other, sortOrder: item.sortOrder }
+    setAzkar(prev => prev.map(x => x.id === a.id ? a : x.id === b.id ? b : x))
+    try {
+      await Promise.all([
+        fetch('/api/admin/azkar', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: a.id, sortOrder: a.sortOrder }) }),
+        fetch('/api/admin/azkar', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.id, sortOrder: b.sortOrder }) }),
+      ])
     } catch {
       showError(FAIL_MSG)
     }
@@ -253,6 +273,10 @@ export default function AdminAzkar() {
                         item.isActive ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-50 text-gray-400 border-gray-200')}>
                       {item.isActive ? (lang === 'ar' ? 'نشط' : 'Active') : (lang === 'ar' ? 'مخفي' : 'Hidden')}
                     </button>
+                    <button onClick={() => move(item, 'up')} aria-label="Move up"
+                      className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 text-[14px]">↑</button>
+                    <button onClick={() => move(item, 'down')} aria-label="Move down"
+                      className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 text-[14px]">↓</button>
                     <button onClick={() => openEdit(item)}
                       className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 text-[14px]">
                       ✏️

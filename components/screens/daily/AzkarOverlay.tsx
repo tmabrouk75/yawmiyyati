@@ -83,26 +83,7 @@ export default function AzkarOverlay({
                 const done = rem <= 0
                 return (
                   <div key={def.id} className="py-5">
-                    <div className={dir === 'rtl' ? 'text-right' : ''}>
-                      {/* Arabic recitation text (always shown) */}
-                      <p className="text-[17px] leading-[2] text-gray-900 whitespace-pre-wrap"
-                         style={{ fontFamily: "var(--font-quran), 'Amiri', 'Scheherazade New', 'Traditional Arabic', serif" }}>
-                        {def.textAr}
-                      </p>
-                      {/* Transliteration (English view) */}
-                      {lang === 'en' && def.transliteration && (
-                        <p className="text-[12px] text-emerald-700/80 mt-2 leading-relaxed">
-                          {def.transliteration}
-                        </p>
-                      )}
-                      {/* Translation in the active language */}
-                      {(lang === 'en' ? def.translationEn : def.translationAr) && (
-                        <p className="text-[12px] text-gray-400 mt-2 leading-relaxed italic">
-                          {lang === 'en' ? def.translationEn : def.translationAr}
-                        </p>
-                      )}
-                    </div>
-                    {/* Full-width counter, reachable by either thumb */}
+                    {/* Tappable box: Arabic text with the counter centered below it. Turns green when done. */}
                     <button
                       onClick={() => handleTap(def)}
                       aria-label={done
@@ -111,23 +92,40 @@ export default function AzkarOverlay({
                             ? `اضغط للعدّ، المتبقي ${toArabicDigits(rem)} من ${toArabicDigits(def.repetitions)}`
                             : `Tap to count, ${rem} of ${def.repetitions} remaining`)}
                       className={[
-                        'w-full h-14 mt-3 rounded-2xl border-2 flex items-center justify-center gap-2 select-none transition-all active:scale-[0.99]',
-                        done ? 'border-emerald-500 bg-emerald-50' : 'border-emerald-500 bg-white',
-                        flashId === def.id ? 'bg-emerald-100' : '',
+                        'w-full rounded-2xl border-2 p-4 select-none transition-all active:scale-[0.99]',
+                        done ? 'border-emerald-500 bg-emerald-100' : 'border-emerald-500 bg-white',
+                        flashId === def.id ? 'scale-[1.02]' : '',
                       ].join(' ')}
                     >
-                      {done ? (
-                        <span className="flex items-center gap-2 text-emerald-700 text-[15px] font-semibold">
-                          <span>✓ {lang === 'ar' ? 'تم' : 'Done'}</span>
-                          <span className="text-[12px] font-normal text-emerald-600">↻ {lang === 'ar' ? 'إعادة' : 'Reset'}</span>
-                        </span>
-                      ) : (
-                        <span className="flex items-baseline gap-2 text-emerald-700">
-                          <span className="text-[22px] font-bold leading-none">{fmt(rem)}</span>
-                          <span className="text-[12px] font-normal text-gray-400">{lang === 'ar' ? `من ${toArabicDigits(def.repetitions)}` : `of ${def.repetitions}`}</span>
-                        </span>
-                      )}
+                      <p className={`text-[18px] leading-[2] text-gray-900 whitespace-pre-wrap ${dir === 'rtl' ? 'text-right' : ''}`}
+                         style={{ fontFamily: "var(--font-quran), 'Amiri', 'Scheherazade New', 'Traditional Arabic', serif" }}>
+                        {def.textAr}
+                      </p>
+                      <div className="flex justify-center mt-3">
+                        {done ? (
+                          <span className="flex items-center gap-2 text-emerald-700 text-[15px] font-semibold">
+                            <span>✓ {lang === 'ar' ? 'تم' : 'Done'}</span>
+                            <span className="text-[12px] font-normal text-emerald-600">↻ {lang === 'ar' ? 'إعادة' : 'Reset'}</span>
+                          </span>
+                        ) : (
+                          <span className="flex items-baseline gap-2 text-emerald-700">
+                            <span className="text-[24px] font-bold leading-none">{fmt(rem)}</span>
+                            <span className="text-[12px] font-normal text-gray-400">{lang === 'ar' ? `من ${toArabicDigits(def.repetitions)}` : `of ${def.repetitions}`}</span>
+                          </span>
+                        )}
+                      </div>
                     </button>
+                    {/* Transliteration and translation below the box (English view) */}
+                    {lang === 'en' && def.transliteration && (
+                      <p className="text-[12px] text-emerald-700/80 mt-2 leading-relaxed px-1">
+                        {def.transliteration}
+                      </p>
+                    )}
+                    {(lang === 'en' ? def.translationEn : def.translationAr) && (
+                      <p className="text-[12px] text-gray-400 mt-1 leading-relaxed italic px-1">
+                        {lang === 'en' ? def.translationEn : def.translationAr}
+                      </p>
+                    )}
                   </div>
                 )
               })}

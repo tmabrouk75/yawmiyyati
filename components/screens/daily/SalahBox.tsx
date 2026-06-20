@@ -78,21 +78,6 @@ export default function SalahBox({
           />
         ))}
 
-        {/* After-salah Azkar — read/count overlay; per-prayer checkboxes stay in the rows above */}
-        {show('prayer_azkar') && (
-          <div className={`flex items-center px-[14px] py-[10px] border-t border-gray-100 gap-3`}>
-            <span className="text-[14px] w-5 text-center flex-shrink-0">🤲</span>
-            <span className={`flex-1 text-[13px] text-gray-700 ${dir === 'rtl' ? 'text-right' : ''}`}>{lang === 'ar' ? 'أذكار بعد الصلاة' : 'After-salah azkar'}</span>
-            <div className={`flex items-center gap-2 flex-shrink-0`}>
-              <button onClick={onOpenAfterSalahAzkar}
-                className="h-[26px] px-2 rounded-[8px] flex items-center gap-1 text-[10px] font-medium bg-blue-50 border border-blue-200 text-blue-500 active:bg-blue-100 flex-shrink-0">
-                <span>📖</span>
-                <span>{lang === 'ar' ? 'اقرأ' : 'Read'}</span>
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Morning Azkar — after Fajr, before Duha */}
         {show('morning_azkar') && (
           <div className={`flex items-center px-[14px] py-[10px] border-t border-gray-100 gap-3`}>
@@ -182,6 +167,21 @@ export default function SalahBox({
             showMosque={!!gender}
             dir={dir}
           />
+        )}
+
+        {/* After-salah Azkar — placed after Isha and the night prayers; per-prayer checkboxes stay in the rows above */}
+        {show('prayer_azkar') && (
+          <div className={`flex items-center px-[14px] py-[10px] border-t border-gray-100 gap-3`}>
+            <span className="text-[14px] w-5 text-center flex-shrink-0">🤲</span>
+            <span className={`flex-1 text-[13px] text-gray-700 ${dir === 'rtl' ? 'text-right' : ''}`}>{lang === 'ar' ? 'أذكار بعد الصلاة' : 'After-salah azkar'}</span>
+            <div className={`flex items-center gap-2 flex-shrink-0`}>
+              <button onClick={onOpenAfterSalahAzkar}
+                className="h-[26px] px-2 rounded-[8px] flex items-center gap-1 text-[10px] font-medium bg-blue-50 border border-blue-200 text-blue-500 active:bg-blue-100 flex-shrink-0">
+                <span>📖</span>
+                <span>{lang === 'ar' ? 'اقرأ' : 'Read'}</span>
+              </button>
+            </div>
+          </div>
         )}
 
         {/* Jumu'ah is rendered inline as the Dhuhr row on Fridays — no separate row needed */}
