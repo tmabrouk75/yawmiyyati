@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useLang } from '@/contexts/LanguageContext'
 import { cn } from '@/lib/utils'
 
-type AzkarCategory = 'MORNING' | 'EVENING' | 'CUSTOM'
+type AzkarCategory = 'MORNING' | 'EVENING' | 'AFTER_SALAH' | 'CUSTOM'
 type AzkarLang = 'EN' | 'AR'
 
 interface AzkarDef {
@@ -13,6 +13,7 @@ interface AzkarDef {
   category: AzkarCategory
   language: AzkarLang
   textAr: string
+  transliteration: string | null
   translationEn: string | null
   translationAr: string | null
   repetitions: number
@@ -21,12 +22,13 @@ interface AzkarDef {
 }
 
 const CAT_LABELS: Record<AzkarCategory, { en: string; ar: string; icon: string }> = {
-  MORNING: { en: 'Morning Azkar',  ar: 'أذكار الصباح',  icon: '🌅' },
-  EVENING: { en: 'Evening Azkar',  ar: 'أذكار المساء',  icon: '🌆' },
-  CUSTOM:  { en: 'Custom / Other', ar: 'أذكار مخصصة', icon: '📿' },
+  MORNING:     { en: 'Morning Azkar',  ar: 'أذكار الصباح',     icon: '🌅' },
+  EVENING:     { en: 'Evening Azkar',  ar: 'أذكار المساء',     icon: '🌆' },
+  AFTER_SALAH: { en: 'After Salah',    ar: 'أذكار بعد الصلاة', icon: '🤲' },
+  CUSTOM:      { en: 'Custom / Other', ar: 'أذكار مخصصة',      icon: '📿' },
 }
 
-const CATS: AzkarCategory[] = ['MORNING', 'EVENING', 'CUSTOM']
+const CATS: AzkarCategory[] = ['MORNING', 'EVENING', 'AFTER_SALAH', 'CUSTOM']
 
 const LANGS: AzkarLang[] = ['AR', 'EN']
 const LANG_LABELS: Record<AzkarLang, { en: string; ar: string }> = {
@@ -34,7 +36,7 @@ const LANG_LABELS: Record<AzkarLang, { en: string; ar: string }> = {
   EN: { en: 'English', ar: 'الإنجليزية' },
 }
 
-const EMPTY_FORM = { category: 'MORNING' as AzkarCategory, language: 'AR' as AzkarLang, textAr: '', translationEn: '', translationAr: '', repetitions: 1 }
+const EMPTY_FORM = { category: 'MORNING' as AzkarCategory, language: 'AR' as AzkarLang, textAr: '', transliteration: '', translationEn: '', translationAr: '', repetitions: 1 }
 
 export default function AdminAzkar() {
   const { lang, dir } = useLang()
@@ -78,6 +80,7 @@ export default function AdminAzkar() {
       category:      item.category,
       language:      item.language,
       textAr:        item.textAr,
+      transliteration: item.transliteration ?? '',
       translationEn: item.translationEn ?? '',
       translationAr: item.translationAr ?? '',
       repetitions:   item.repetitions,
@@ -92,6 +95,7 @@ export default function AdminAzkar() {
       category:      form.category,
       language:      form.language,
       textAr:        form.textAr.trim(),
+      transliteration: form.transliteration.trim() || null,
       translationEn: form.translationEn.trim() || null,
       translationAr: form.translationAr.trim() || null,
       repetitions:   form.repetitions,
@@ -313,6 +317,14 @@ export default function AdminAzkar() {
                 placeholder="اللهم..."
                 className="w-full rounded-[10px] border border-gray-200 bg-gray-50 px-3 py-2 text-[15px] focus:outline-none focus:border-emerald-400 leading-relaxed"
                 style={{ fontFamily: "var(--font-quran), 'Amiri', 'Scheherazade New', 'Traditional Arabic', serif", minHeight: '120px', resize: 'vertical' }}/>
+            </div>
+
+            {/* Transliteration */}
+            <div>
+              <p className="text-[11px] text-gray-400 mb-1">{lang === 'ar' ? 'النطق اللاتيني (Transliteration)' : 'Transliteration'}</p>
+              <input value={form.transliteration} onChange={e => setForm(f => ({ ...f, transliteration: e.target.value }))}
+                dir="ltr" placeholder="Subhana Allahi wa bihamdih..."
+                className="w-full h-[40px] rounded-[10px] border border-gray-200 bg-gray-50 px-3 text-[13px] focus:outline-none focus:border-emerald-400"/>
             </div>
 
             {/* Translation EN */}

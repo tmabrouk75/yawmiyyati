@@ -783,6 +783,7 @@ model DiaryEntry {
 enum AzkarCategory {
   MORNING
   EVENING
+  AFTER_SALAH
   CUSTOM
 }
 
@@ -791,6 +792,7 @@ model AzkarDefinition {
   category      AzkarCategory
   language      Language      @default(AR)
   textAr        String        @db.Text
+  transliteration String?     @db.Text
   translationEn String?       @db.Text
   translationAr String?       @db.Text
   repetitions   Int           @default(1)

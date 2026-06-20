@@ -122,6 +122,7 @@ export interface PrayerState {
 export interface AzkarDef {
   id: string
   textAr: string
+  transliteration?: string | null
   translationEn: string | null
   translationAr: string | null
   repetitions: number

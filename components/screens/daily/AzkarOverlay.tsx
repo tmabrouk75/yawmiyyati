@@ -89,6 +89,12 @@ export default function AzkarOverlay({
                          style={{ fontFamily: "var(--font-quran), 'Amiri', 'Scheherazade New', 'Traditional Arabic', serif" }}>
                         {def.textAr}
                       </p>
+                      {/* Transliteration (English view) */}
+                      {lang === 'en' && def.transliteration && (
+                        <p className="text-[12px] text-emerald-700/80 mt-2 leading-relaxed">
+                          {def.transliteration}
+                        </p>
+                      )}
                       {/* Translation in the active language */}
                       {(lang === 'en' ? def.translationEn : def.translationAr) && (
                         <p className="text-[12px] text-gray-400 mt-2 leading-relaxed italic">
@@ -96,34 +102,32 @@ export default function AzkarOverlay({
                         </p>
                       )}
                     </div>
-                    {/* Centered counter box, reachable by either thumb */}
-                    <div className="flex justify-center mt-3">
-                      <button
-                        onClick={() => handleTap(def)}
-                        aria-label={done
-                          ? (lang === 'ar' ? 'مكتمل، اضغط للإعادة' : 'Completed, tap to reset')
-                          : (lang === 'ar'
-                              ? `اضغط للعدّ، المتبقي ${toArabicDigits(rem)} من ${toArabicDigits(def.repetitions)}`
-                              : `Tap to count, ${rem} of ${def.repetitions} remaining`)}
-                        className={[
-                          'w-16 h-16 rounded-2xl border-2 flex flex-col items-center justify-center select-none transition-transform active:scale-90',
-                          done ? 'bg-emerald-50 border-emerald-500' : 'bg-white border-emerald-500',
-                          flashId === def.id ? 'scale-110' : '',
-                        ].join(' ')}
-                      >
-                        {done ? (
-                          <>
-                            <span className="text-emerald-600 text-[20px] leading-none">✓</span>
-                            <span className="text-emerald-700 text-[11px] mt-[2px]">↻ {lang === 'ar' ? 'إعادة' : 'Reset'}</span>
-                          </>
-                        ) : (
-                          <>
-                            <span className="text-emerald-700 text-[22px] font-bold leading-none">{fmt(rem)}</span>
-                            <span className="text-gray-400 text-[11px] mt-[2px]">{lang === 'ar' ? `من ${toArabicDigits(def.repetitions)}` : `of ${def.repetitions}`}</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
+                    {/* Full-width counter, reachable by either thumb */}
+                    <button
+                      onClick={() => handleTap(def)}
+                      aria-label={done
+                        ? (lang === 'ar' ? 'مكتمل، اضغط للإعادة' : 'Completed, tap to reset')
+                        : (lang === 'ar'
+                            ? `اضغط للعدّ، المتبقي ${toArabicDigits(rem)} من ${toArabicDigits(def.repetitions)}`
+                            : `Tap to count, ${rem} of ${def.repetitions} remaining`)}
+                      className={[
+                        'w-full h-14 mt-3 rounded-2xl border-2 flex items-center justify-center gap-2 select-none transition-all active:scale-[0.99]',
+                        done ? 'border-emerald-500 bg-emerald-50' : 'border-emerald-500 bg-white',
+                        flashId === def.id ? 'bg-emerald-100' : '',
+                      ].join(' ')}
+                    >
+                      {done ? (
+                        <span className="flex items-center gap-2 text-emerald-700 text-[15px] font-semibold">
+                          <span>✓ {lang === 'ar' ? 'تم' : 'Done'}</span>
+                          <span className="text-[12px] font-normal text-emerald-600">↻ {lang === 'ar' ? 'إعادة' : 'Reset'}</span>
+                        </span>
+                      ) : (
+                        <span className="flex items-baseline gap-2 text-emerald-700">
+                          <span className="text-[22px] font-bold leading-none">{fmt(rem)}</span>
+                          <span className="text-[12px] font-normal text-gray-400">{lang === 'ar' ? `من ${toArabicDigits(def.repetitions)}` : `of ${def.repetitions}`}</span>
+                        </span>
+                      )}
+                    </button>
                   </div>
                 )
               })}

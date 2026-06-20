@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     if (language === 'EN' || language === 'AR') where.language = language
     const azkar = await prisma.azkarDefinition.findMany({
       where, orderBy: { sortOrder: 'asc' },
-      select: { id: true, category: true, language: true, textAr: true, translationEn: true, translationAr: true, repetitions: true },
+      select: { id: true, category: true, language: true, textAr: true, transliteration: true, translationEn: true, translationAr: true, repetitions: true },
     })
     return NextResponse.json({ azkar })
   } catch (e) { return NextResponse.json({ error: 'Failed' }, { status: 500 }) }

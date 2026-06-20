@@ -98,15 +98,18 @@ export function useDailyEntryState(today: Date, init: DailyEntryInitial) {
   // ── Azkar definitions for the read overlays
   const [morningAzkarDefs, setMorningAzkarDefs] = useState<AzkarDef[]>([])
   const [eveningAzkarDefs, setEveningAzkarDefs] = useState<AzkarDef[]>([])
+  const [afterSalahAzkarDefs, setAfterSalahAzkarDefs] = useState<AzkarDef[]>([])
 
   useEffect(() => {
     const L = lang === 'ar' ? 'AR' : 'EN'
     Promise.all([
       fetch(`/api/azkar?category=MORNING&language=${L}`).then(r => r.json()),
       fetch(`/api/azkar?category=EVENING&language=${L}`).then(r => r.json()),
-    ]).then(([m, e]) => {
+      fetch(`/api/azkar?category=AFTER_SALAH&language=${L}`).then(r => r.json()),
+    ]).then(([m, e, a]) => {
       setMorningAzkarDefs(m.azkar ?? [])
       setEveningAzkarDefs(e.azkar ?? [])
+      setAfterSalahAzkarDefs(a.azkar ?? [])
     }).catch(() => {})
   }, [lang])
 
@@ -205,7 +208,7 @@ export function useDailyEntryState(today: Date, init: DailyEntryInitial) {
   return {
     // state
     prayer, dhikr, quran, surahChecks, fasting, qadaRemaining, sadaqah,
-    isPeriod, saveStatus, morningAzkarDefs, eveningAzkarDefs,
+    isPeriod, saveStatus, morningAzkarDefs, eveningAzkarDefs, afterSalahAzkarDefs,
     // handlers
     updatePrayer, updateFard, updateDhikr, updateQuran, updateSurah,
     updateFasting, markAsQada, updateSadaqah, togglePeriod,

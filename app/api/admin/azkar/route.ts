@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
 import { getAuthUser } from '@/lib/auth'
 
-const CATEGORIES = ['MORNING', 'EVENING', 'CUSTOM'] as const
+const CATEGORIES = ['MORNING', 'EVENING', 'AFTER_SALAH', 'CUSTOM'] as const
 type Category = (typeof CATEGORIES)[number]
 
 const LANGUAGES = ['EN', 'AR'] as const
@@ -21,6 +21,7 @@ function sanitize(body: Record<string, unknown>) {
     category?: Category
     language?: AzkarLang
     textAr?: string
+    transliteration?: string | null
     translationEn?: string | null
     translationAr?: string | null
     repetitions?: number
@@ -42,6 +43,8 @@ function sanitize(body: Record<string, unknown>) {
     if (t.length > MAX_TEXT) return { error: 'Text too long' }
     out.textAr = t
   }
+  if (body.transliteration !== undefined)
+    out.transliteration = body.transliteration ? String(body.transliteration).slice(0, MAX_TEXT) : null
   if (body.translationEn !== undefined)
     out.translationEn = body.translationEn ? String(body.translationEn).slice(0, MAX_TEXT) : null
   if (body.translationAr !== undefined)
@@ -89,6 +92,7 @@ export async function POST(req: NextRequest) {
         category:      data.category,
         language,
         textAr:        data.textAr,
+        transliteration: data.transliteration ?? null,
         translationEn: data.translationEn ?? null,
         translationAr: data.translationAr ?? null,
         repetitions:   data.repetitions ?? 1,

@@ -91,6 +91,7 @@ export default function DailyEntry({
   // ── Overlay visibility (pure UI state)
   const [showMorningAzkar, setShowMorningAzkar] = useState(false)
   const [showEveningAzkar, setShowEveningAzkar] = useState(false)
+  const [showAfterSalahAzkar, setShowAfterSalahAzkar] = useState(false)
 
   // ── Computed live score (updates on every checkbox tap)
   const scoreBreakdown = useMemo(() => computeDayScore(
@@ -211,6 +212,7 @@ export default function DailyEntry({
           updateDhikr={s.updateDhikr}
           onOpenMorningAzkar={() => setShowMorningAzkar(true)}
           onOpenEveningAzkar={() => setShowEveningAzkar(true)}
+          onOpenAfterSalahAzkar={() => setShowAfterSalahAzkar(true)}
         />
 
         {/* ══ BOX 2: DHIKR */}
@@ -286,6 +288,17 @@ export default function DailyEntry({
           category="EVENING"
           onAllComplete={() => s.updateDhikr('eveningAzkarDone', true)}
           onClose={() => setShowEveningAzkar(false)}
+        />
+      )}
+      {showAfterSalahAzkar && (
+        <AzkarOverlay
+          title={lang === 'ar' ? 'أذكار بعد الصلاة' : 'After-salah Azkar'}
+          defs={s.afterSalahAzkarDefs}
+          lang={lang}
+          dir={dir}
+          dateKey={toLocalIso(today)}
+          category="AFTER_SALAH"
+          onClose={() => setShowAfterSalahAzkar(false)}
         />
       )}
 
