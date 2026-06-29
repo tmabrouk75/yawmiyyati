@@ -18,7 +18,7 @@ export function fardStateToBools(s: FardState) {
 
 export default function PrayerRow({
   pKey, hasBefore, hasAfter, hasAzkar, isMale, rakaat, state, onChange, onFardChange, lang, dir, t,
-  overrideLabel, overrideSub,
+  overrideLabel, overrideSub, onOpenAzkar,
 }: {
   pKey:           PrayerKey
   hasBefore:      boolean
@@ -34,6 +34,7 @@ export default function PrayerRow({
   t:              TDict
   overrideLabel?: string
   overrideSub?:   string
+  onOpenAzkar?:   () => void   // open this prayer's after-salah azkar reader
 }) {
   const fardState = getFardState(
     (state as any)[`${pKey}Done`],
@@ -49,8 +50,20 @@ export default function PrayerRow({
   const sub   = overrideSub ?? (lang === 'ar' ? `فرض · ${rakaat} ركعات` : `Fard · ${rakaat} rakaat`)
   const mosqueChecked = (state as any)[`${pKey}Mosque`] ?? false
 
+  const showRead = hasAzkar && !!onOpenAzkar
+
   return (
-    <div className={`flex items-center px-[14px] py-[10px] border-b border-gray-100`}>
+    <div className={`flex items-center px-[14px] py-[10px] border-b border-gray-100 ${showRead ? 'gap-2' : ''}`}>
+
+      {/* After-salah azkar: Read button at the front of the row (shifts the columns over) */}
+      {showRead && (
+        <button onClick={onOpenAzkar}
+          aria-label={lang === 'ar' ? 'اقرأ أذكار بعد الصلاة' : 'Read after-salah azkar'}
+          className="h-[26px] px-2 rounded-[8px] flex items-center gap-1 text-[10px] font-medium bg-blue-50 border border-blue-200 text-blue-500 active:bg-blue-100 flex-shrink-0">
+          <span>📖</span>
+          <span>{lang === 'ar' ? 'اقرأ' : 'Read'}</span>
+        </button>
+      )}
 
       {/* Prayer name */}
       <div className={`flex-1 min-w-0 ${dir === 'rtl' ? 'text-right' : ''}`}>

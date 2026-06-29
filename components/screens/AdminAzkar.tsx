@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useLang } from '@/contexts/LanguageContext'
 import { cn } from '@/lib/utils'
 
-type AzkarCategory = 'MORNING' | 'EVENING' | 'AFTER_SALAH' | 'CUSTOM'
+type AzkarCategory = 'MORNING' | 'EVENING' | 'AFTER_SALAH' | 'AFTER_SALAH_FM' | 'CUSTOM'
 type AzkarLang = 'EN' | 'AR'
 
 interface AzkarDef {
@@ -24,11 +24,12 @@ interface AzkarDef {
 const CAT_LABELS: Record<AzkarCategory, { en: string; ar: string; icon: string }> = {
   MORNING:     { en: 'Morning Azkar',  ar: 'أذكار الصباح',     icon: '🌅' },
   EVENING:     { en: 'Evening Azkar',  ar: 'أذكار المساء',     icon: '🌆' },
-  AFTER_SALAH: { en: 'After Salah',    ar: 'أذكار بعد الصلاة', icon: '🤲' },
-  CUSTOM:      { en: 'Custom / Other', ar: 'أذكار مخصصة',      icon: '📿' },
+  AFTER_SALAH:    { en: 'After Salah',  ar: 'بعد الصلاة',  icon: '🤲' },
+  AFTER_SALAH_FM: { en: 'Fajr/Maghrib', ar: 'الفجر/المغرب', icon: '🌅' },
+  CUSTOM:         { en: 'Custom / Other', ar: 'أذكار مخصصة',      icon: '📿' },
 }
 
-const CATS: AzkarCategory[] = ['MORNING', 'EVENING', 'AFTER_SALAH', 'CUSTOM']
+const CATS: AzkarCategory[] = ['MORNING', 'EVENING', 'AFTER_SALAH', 'AFTER_SALAH_FM', 'CUSTOM']
 
 const LANGS: AzkarLang[] = ['AR', 'EN']
 const LANG_LABELS: Record<AzkarLang, { en: string; ar: string }> = {
@@ -246,10 +247,10 @@ export default function AdminAzkar() {
       </div>
 
       {/* Category tabs */}
-      <div className={cn('flex gap-2 px-4 mb-4')}>
+      <div className={cn('flex gap-2 px-4 mb-4 overflow-x-auto')}>
         {CATS.map(cat => (
           <button key={cat} onClick={() => setActiveTab(cat)}
-            className={cn('flex-1 py-[8px] rounded-[10px] text-[12px] font-semibold border transition-all',
+            className={cn('flex-shrink-0 px-3 py-[8px] rounded-[10px] text-[12px] font-semibold border transition-all whitespace-nowrap',
               activeTab === cat ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-gray-500 border-gray-200')}>
             {CAT_LABELS[cat].icon} {lang === 'ar' ? CAT_LABELS[cat].ar : CAT_LABELS[cat].en}
           </button>

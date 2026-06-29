@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
 import { getAuthUser } from '@/lib/auth'
 
-const CATEGORIES = ['MORNING', 'EVENING', 'AFTER_SALAH', 'CUSTOM'] as const
+const CATEGORIES = ['MORNING', 'EVENING', 'AFTER_SALAH', 'AFTER_SALAH_FM', 'CUSTOM'] as const
 type Category = (typeof CATEGORIES)[number]
 
 const LANGUAGES = ['EN', 'AR'] as const

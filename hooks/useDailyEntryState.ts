@@ -99,6 +99,7 @@ export function useDailyEntryState(today: Date, init: DailyEntryInitial) {
   const [morningAzkarDefs, setMorningAzkarDefs] = useState<AzkarDef[]>([])
   const [eveningAzkarDefs, setEveningAzkarDefs] = useState<AzkarDef[]>([])
   const [afterSalahAzkarDefs, setAfterSalahAzkarDefs] = useState<AzkarDef[]>([])
+  const [afterSalahFmAzkarDefs, setAfterSalahFmAzkarDefs] = useState<AzkarDef[]>([])
 
   useEffect(() => {
     const L = lang === 'ar' ? 'AR' : 'EN'
@@ -106,10 +107,12 @@ export function useDailyEntryState(today: Date, init: DailyEntryInitial) {
       fetch(`/api/azkar?category=MORNING&language=${L}`).then(r => r.json()),
       fetch(`/api/azkar?category=EVENING&language=${L}`).then(r => r.json()),
       fetch(`/api/azkar?category=AFTER_SALAH&language=${L}`).then(r => r.json()),
-    ]).then(([m, e, a]) => {
+      fetch(`/api/azkar?category=AFTER_SALAH_FM&language=${L}`).then(r => r.json()),
+    ]).then(([m, e, a, afm]) => {
       setMorningAzkarDefs(m.azkar ?? [])
       setEveningAzkarDefs(e.azkar ?? [])
       setAfterSalahAzkarDefs(a.azkar ?? [])
+      setAfterSalahFmAzkarDefs(afm.azkar ?? [])
     }).catch(() => {})
   }, [lang])
 
@@ -208,7 +211,7 @@ export function useDailyEntryState(today: Date, init: DailyEntryInitial) {
   return {
     // state
     prayer, dhikr, quran, surahChecks, fasting, qadaRemaining, sadaqah,
-    isPeriod, saveStatus, morningAzkarDefs, eveningAzkarDefs, afterSalahAzkarDefs,
+    isPeriod, saveStatus, morningAzkarDefs, eveningAzkarDefs, afterSalahAzkarDefs, afterSalahFmAzkarDefs,
     // handlers
     updatePrayer, updateFard, updateDhikr, updateQuran, updateSurah,
     updateFasting, markAsQada, updateSadaqah, togglePeriod,

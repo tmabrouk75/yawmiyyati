@@ -91,7 +91,8 @@ export default function DailyEntry({
   // ── Overlay visibility (pure UI state)
   const [showMorningAzkar, setShowMorningAzkar] = useState(false)
   const [showEveningAzkar, setShowEveningAzkar] = useState(false)
-  const [showAfterSalahAzkar, setShowAfterSalahAzkar] = useState(false)
+  // Which prayer's after-salah azkar is open (null = closed). Fajr & Maghrib show the higher-count set.
+  const [afterSalahPrayer, setAfterSalahPrayer] = useState<string | null>(null)
 
   // ── Computed live score (updates on every checkbox tap)
   const scoreBreakdown = useMemo(() => computeDayScore(
@@ -212,7 +213,7 @@ export default function DailyEntry({
           updateDhikr={s.updateDhikr}
           onOpenMorningAzkar={() => setShowMorningAzkar(true)}
           onOpenEveningAzkar={() => setShowEveningAzkar(true)}
-          onOpenAfterSalahAzkar={() => setShowAfterSalahAzkar(true)}
+          onOpenAfterSalah={(pKey) => setAfterSalahPrayer(pKey)}
         />
 
         {/* ══ BOX 2: DHIKR */}
@@ -290,15 +291,18 @@ export default function DailyEntry({
           onClose={() => setShowEveningAzkar(false)}
         />
       )}
-      {showAfterSalahAzkar && (
+      {afterSalahPrayer && (
         <AzkarOverlay
-          title={lang === 'ar' ? 'أذكار بعد الصلاة' : 'After-salah Azkar'}
-          defs={s.afterSalahAzkarDefs}
+          title={(lang === 'ar' ? 'أذكار بعد صلاة ' : 'Azkar after ') + ((t as any)[afterSalahPrayer] ?? '')}
+          defs={(afterSalahPrayer === 'fajr' || afterSalahPrayer === 'maghrib')
+            ? s.afterSalahFmAzkarDefs
+            : s.afterSalahAzkarDefs}
           lang={lang}
           dir={dir}
           dateKey={toLocalIso(today)}
-          category="AFTER_SALAH"
-          onClose={() => setShowAfterSalahAzkar(false)}
+          category={`AFTER_SALAH_${afterSalahPrayer}`}
+          onAllComplete={() => s.updatePrayer(`${afterSalahPrayer}Azkar`, true)}
+          onClose={() => setAfterSalahPrayer(null)}
         />
       )}
 

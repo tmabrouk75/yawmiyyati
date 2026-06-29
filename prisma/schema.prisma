@@ -784,6 +784,7 @@ enum AzkarCategory {
   MORNING
   EVENING
   AFTER_SALAH
+  AFTER_SALAH_FM   // Fajr & Maghrib set (higher counts than the other prayers)
   CUSTOM
 }
 
